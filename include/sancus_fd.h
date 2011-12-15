@@ -95,4 +95,28 @@ close_retry:
 	}
 	return ret;
 }
+
+/**
+ * sancus_write - auto-retrying for write(2)
+ */
+static inline ssize_t sancus_write(int fd, const char *data, size_t size)
+{
+	int wc, wt = 0;
+
+	while (size > 0) {
+write_retry:
+		wc = write(fd, data, size);
+		if (wc > 0) {
+			wt += wc;
+			size -= wc;
+			data += wc;
+		} else if (wc < 0) {
+			if (errno == EINTR)
+				goto write_retry;
+			return wc;
+		}
+	}
+
+	return wt;
+}
 #endif /* !_SANCUS_FD_H */
