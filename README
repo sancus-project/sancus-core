@@ -1,0 +1,8 @@
+sancus-core
+A C Framework for lightweight mini network servers
+
+sancus-core aims to easy to creation of light mini networked servers
+using Marc Lehmann's libev[1] and licensed under the terms described
+in the LICENSE file (tl;dr BSD or GPL just as libev itself).
+
+[1] http://software.schmorp.de/pkg/libev.html
