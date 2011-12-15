@@ -40,6 +40,9 @@
 #ifndef _SANCUS_FD_H
 #define _SANCUS_FD_H
 
+/**
+ * sancus_open - auto-retrying wrapper for open(2) with easier cloexec support
+ */
 static inline int sancus_open(const char *pathname, int flags, int cloexec, mode_t mode)
 {
 	int fd;
@@ -76,4 +79,20 @@ open_done:
 	return fd;
 }
 
+/**
+ * sancus_close - auto-retrying wrapper for close(2) which resets the fd on success
+ */
+static inline int sancus_close(int *fd)
+{
+	int ret = 0;
+	if (fd != NULL && *fd >= 0) {
+close_retry:
+		ret = close(*fd);
+		if (ret == 0)
+			*fd = 0xdead;
+		else if (errno == EINTR)
+			goto close_retry;
+	}
+	return ret;
+}
 #endif /* !_SANCUS_FD_H */
