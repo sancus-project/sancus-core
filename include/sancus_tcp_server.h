@@ -77,4 +77,12 @@ int sancus_tcp_ipv6_listen(struct sacus_tcp_server *self,
 			   const char *addr, unsigned port,
 			   bool cloexec, unsigned backlog);
 
+/**
+ * sancus_tcp_local_listen - initializes and prepares local domain tcp server
+ */
+int sancus_tcp_local_listen(struct sacus_tcp_server *self,
+			    struct sancus_tcp_server_settings *settings,
+			    const char *path,
+			    bool cloexec, unsigned backlog);
+
 #endif /* !_SANCUS_TCP_SERVER_H */
