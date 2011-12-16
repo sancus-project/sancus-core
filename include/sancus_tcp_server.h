@@ -66,4 +66,12 @@ int sancus_tcp_ipv4_listen(struct sancus_tcp_listener *self,
 			   const char *addr, unsigned port,
 			   bool cloexec, unsigned backlog);
 
+/**
+ * sancus_tcp_ipv6_listen - initializes and prepares ipv6 tcp server
+ */
+int sancus_tcp_ipv6_listen(struct sancus_tcp_listener *self,
+			   struct sancus_tcp_server_settings *settings,
+			   const char *addr, unsigned port,
+			   bool cloexec, unsigned backlog);
+
 #endif /* !_SANCUS_TCP_SERVER_H */
