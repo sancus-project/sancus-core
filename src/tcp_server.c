@@ -110,7 +110,7 @@ static inline int init_tcp(struct sacus_tcp_server *self,
 	assert(self);
 	assert(settings);
 
-	{
+	if (sa->sa_family != AF_LOCAL) {
 		int flags = 1;
 		struct linger ling = {0, 0}; /* disabled */
 
