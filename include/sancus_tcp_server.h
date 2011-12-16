@@ -40,11 +40,14 @@
 #ifndef _SANCUS_TCP_SERVER_H
 #define _SANCUS_TCP_SERVER_H
 
+struct sancus_tcp_listener;
+
 /**
  * struct sancus_tcp_server_settings - driving callbacks of tcp server
+ * @pre_bind:	hook to tweak fd's sockopts before calling bind()
  */
 struct sancus_tcp_server_settings {
-	int placeholder;
+	void (*pre_bind) (struct sancus_tcp_listener *);
 };
 
 /**

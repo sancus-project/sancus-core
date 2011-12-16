@@ -104,16 +104,19 @@ static inline int init_tcp(struct sancus_tcp_listener *self,
 		setsockopt(fd, SOL_SOCKET, SO_LINGER, (void*)&ling, sizeof(ling));
 	}
 
+	self->fd = fd;
+	self->settings = settings;
+
+	if (settings->pre_bind)
+		settings->pre_bind(self);
+
 	if (bind(fd, sa, sa_len) < 0 ||
 	    listen(fd, backlog) < 0) {
 		int e = errno;
-		sancus_close(&fd);
+		sancus_close(&self->fd);
 		errno = e;
 		return -1;
 	}
-
-	self->fd = fd;
-	self->settings = settings;
 
 	return 1;
 }
