@@ -40,23 +40,23 @@
 #ifndef _SANCUS_TCP_SERVER_H
 #define _SANCUS_TCP_SERVER_H
 
-struct sancus_tcp_listener;
+struct sacus_tcp_server;
 
 /**
  * struct sancus_tcp_server_settings - driving callbacks of tcp server
  * @pre_bind:	hook to tweak fd's sockopts before calling bind()
  */
 struct sancus_tcp_server_settings {
-	void (*pre_bind) (struct sancus_tcp_listener *);
+	void (*pre_bind) (struct sacus_tcp_server *);
 };
 
 /**
- * struct sancus_tcp_listener - tcp server
+ * struct sacus_tcp_server - tcp server
  *
  * @fd:		listening file descriptor
  * @settings:	driving callbacks
  */
-struct sancus_tcp_listener {
+struct sacus_tcp_server {
 	int fd;
 	struct sancus_tcp_server_settings *settings;
 };
@@ -64,7 +64,7 @@ struct sancus_tcp_listener {
 /**
  * sancus_tcp_ipv4_listen - initializes and prepares ipv4 tcp server
  */
-int sancus_tcp_ipv4_listen(struct sancus_tcp_listener *self,
+int sancus_tcp_ipv4_listen(struct sacus_tcp_server *self,
 			   struct sancus_tcp_server_settings *settings,
 			   const char *addr, unsigned port,
 			   bool cloexec, unsigned backlog);
@@ -72,7 +72,7 @@ int sancus_tcp_ipv4_listen(struct sancus_tcp_listener *self,
 /**
  * sancus_tcp_ipv6_listen - initializes and prepares ipv6 tcp server
  */
-int sancus_tcp_ipv6_listen(struct sancus_tcp_listener *self,
+int sancus_tcp_ipv6_listen(struct sacus_tcp_server *self,
 			   struct sancus_tcp_server_settings *settings,
 			   const char *addr, unsigned port,
 			   bool cloexec, unsigned backlog);
