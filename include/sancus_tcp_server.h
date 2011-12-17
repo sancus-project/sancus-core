@@ -43,12 +43,24 @@
 struct sancus_tcp_server;
 
 /**
+ * enum sancus_tcp_server_error - list of possible errors
+ */
+enum sancus_tcp_server_error {
+	SANCUS_TCP_SERVER_WATCHER_ERROR,
+	SANCUS_TCP_SERVER_ACCEPT_ERROR,
+};
+
+/**
  * struct sancus_tcp_server_settings - driving callbacks of tcp server
  *
  * @pre_bind:	hook to tweak fd's sockopts before calling bind()
  */
 struct sancus_tcp_server_settings {
 	void (*pre_bind) (struct sancus_tcp_server *);
+
+	void (*on_error) (struct sancus_tcp_server *,
+			  struct ev_loop *,
+			  enum sancus_tcp_server_error);
 };
 
 /**

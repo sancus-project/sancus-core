@@ -56,17 +56,30 @@
 /**
  * connect_cb - called when there is incoming
  */
-static void connect_cb(struct ev_loop *UNUSED(loop), struct ev_io *w, int revents)
+static void connect_cb(struct ev_loop *loop, struct ev_io *w, int revents)
 {
+	struct sancus_tcp_server *self = container_of(w, struct sancus_tcp_server,
+						      connect);
+	struct sancus_tcp_server_settings *settings = self->settings;
+
 	if (revents & EV_READ) {
 		struct sockaddr_storage addr;
 		socklen_t addrlen = sizeof(addr);
 
 		int fd = sancus_accept(w->fd, (struct sockaddr*)&addr, &addrlen);
-		if (fd >= 0)
+		if (fd < 0) {
+			settings->on_error(self, loop,
+					   SANCUS_TCP_SERVER_ACCEPT_ERROR);
+		} else {
 			sancus_close(&fd);
+		}
 	}
-	assert(revents & EV_ERROR);
+	if (revents & EV_ERROR) {
+		sancus_tcp_server_stop(self, loop);
+		sancus_tcp_server_close(self);
+
+		settings->on_error(self, loop, SANCUS_TCP_SERVER_WATCHER_ERROR);
+	}
 }
 
 /*
