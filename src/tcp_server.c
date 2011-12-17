@@ -62,7 +62,7 @@ static void connect_cb(struct ev_loop *UNUSED(loop), struct ev_io *w, int revent
 		struct sockaddr_storage addr;
 		socklen_t addrlen = sizeof(addr);
 
-		int fd = accept(w->fd, (struct sockaddr*)&addr, &addrlen);
+		int fd = sancus_accept(w->fd, (struct sockaddr*)&addr, &addrlen);
 		if (fd >= 0)
 			sancus_close(&fd);
 	}

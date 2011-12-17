@@ -83,4 +83,17 @@ socket_done:
 	return fd;
 }
 
+/**
+ * sancus_accept - auto-retrying wrapper for accept()
+ */
+static inline int sancus_accept(int fd, struct sockaddr *sa, socklen_t *sa_len)
+{
+	int ret;
+accept_retry:
+	if ((ret = accept(fd, sa, sa_len)) < 0 && errno == EINTR)
+		goto accept_retry;
+
+	return ret;
+}
+
 #endif /* !_SANCUS_SOCKET_H */
