@@ -40,6 +40,8 @@
 #ifndef _SANCUS_COMMON_H
 #define _SANCUS_COMMON_H
 
+#include <ev.h>
+
 /**
  * container_of - find reference to container of a given struct element
  */
