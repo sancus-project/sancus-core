@@ -42,6 +42,21 @@
 
 #include <ev.h>
 
+/*
+ * helpers to avoid strict-aliasing problems in ev.h
+ */
+#undef ev_io_init
+static inline void ev_io_init(struct ev_io *w,
+			      void (*cb) (struct ev_loop *, struct ev_io *, int),
+			      int fd, int events)
+{
+	ev_init(w, cb);
+	ev_io_set(w, fd, events);
+}
+
+#undef ev_is_active
+#define ev_is_active(w)	(w)->active
+
 /**
  * container_of - find reference to container of a given struct element
  */
