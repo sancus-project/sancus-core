@@ -53,11 +53,12 @@ struct sancus_tcp_server_settings {
 /**
  * struct sancus_tcp_server - tcp server
  *
- * @fd:		listening file descriptor
+ * @connect:	connection watcher
  * @settings:	driving callbacks
  */
 struct sancus_tcp_server {
-	int fd;
+	struct ev_io connect;
+
 	struct sancus_tcp_server_settings *settings;
 };
 

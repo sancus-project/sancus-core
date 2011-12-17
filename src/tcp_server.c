@@ -39,6 +39,7 @@
  */
 #include <assert.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <unistd.h>
 #include <errno.h>
 
@@ -47,9 +48,26 @@
 #include <sys/un.h>
 #include <arpa/inet.h>
 
+#include "sancus_common.h"
 #include "sancus_fd.h"
 #include "sancus_socket.h"
 #include "sancus_tcp_server.h"
+
+/**
+ * connect_cb - called when there is incoming
+ */
+static void connect_cb(struct ev_loop *UNUSED(loop), struct ev_io *w, int revents)
+{
+	if (revents & EV_READ) {
+		struct sockaddr_storage addr;
+		socklen_t addrlen = sizeof(addr);
+
+		int fd = accept(w->fd, (struct sockaddr*)&addr, &addrlen);
+		if (fd >= 0)
+			sancus_close(&fd);
+	}
+	assert(revents & EV_ERROR);
+}
 
 /*
  * init helpers
@@ -119,7 +137,9 @@ static inline int init_tcp(struct sancus_tcp_server *self,
 		setsockopt(fd, SOL_SOCKET, SO_LINGER, (void*)&ling, sizeof(ling));
 	}
 
-	self->fd = fd;
+	ev_io_init(&self->connect, connect_cb, fd, EV_READ);
+	/* TODO: any ->data to add? */
+
 	self->settings = settings;
 
 	if (settings->pre_bind)
@@ -128,7 +148,7 @@ static inline int init_tcp(struct sancus_tcp_server *self,
 	if (bind(fd, sa, sa_len) < 0 ||
 	    listen(fd, backlog) < 0) {
 		int e = errno;
-		sancus_close(&self->fd);
+		sancus_close(&fd);
 		errno = e;
 		return -1;
 	}
