@@ -49,4 +49,14 @@
 #define container_of(P,T,M)	(T *)((char *)(P) - offsetof(T, M))
 #endif
 
+/**
+ * UNUSED - Not used function argument
+ */
+#ifdef UNUSED
+#elif defined(__GNUC__)
+#	define UNUSED(x) UNUSED_ ## x __attribute__((unused))
+#else
+#	define UNUSED(x) x
+#endif
+
 #endif /* !_SANCUS_COMMON_H */
