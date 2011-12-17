@@ -44,6 +44,7 @@ struct sancus_tcp_server;
 
 /**
  * struct sancus_tcp_server_settings - driving callbacks of tcp server
+ *
  * @pre_bind:	hook to tweak fd's sockopts before calling bind()
  */
 struct sancus_tcp_server_settings {
@@ -64,21 +65,42 @@ struct sancus_tcp_server {
 
 /**
  * sancus_tcp_server_start - start watching port
+ *
+ * @self:	server to be started
+ * @loop:	event loop
+ *
+ * The server shall not be already active. Nothing returned
  */
-void sancus_tcp_server_start(struct sancus_tcp_server *, struct ev_loop *);
+void sancus_tcp_server_start(struct sancus_tcp_server *self, struct ev_loop *loop);
 
 /**
  * sancus_tcp_server_stop - stop watching port
+ * @self:	server to be stopped
+ * @loop:	event loop
+ *
+ * The server shall not be already stopped. Nothing returned
  */
-void sancus_tcp_server_stop(struct sancus_tcp_server *, struct ev_loop *);
+void sancus_tcp_server_stop(struct sancus_tcp_server *self, struct ev_loop *loop);
 
 /**
- * sancus_tcp_server_close - closes and already stopped port
+ * sancus_tcp_server_close - closes an already stopped port
+ *
+ * @self:	server to close
  */
 void sancus_tcp_server_close(struct sancus_tcp_server *self);
 
 /**
  * sancus_tcp_ipv4_listen - initializes and prepares ipv4 tcp server
+ *
+ * @self:	server structure to initialize
+ * @settings:	driving callbacks
+ * @addr:	ipv4 string
+ * @port:	port number
+ * @cloexec:	enable close-on-exec or not
+ * @backlog:	backlog value for listen()
+ *
+ * Returns 0 if @addr is invalid, 1 on success and -1 on error. errno set
+ * accordingly.
  */
 int sancus_tcp_ipv4_listen(struct sancus_tcp_server *self,
 			   struct sancus_tcp_server_settings *settings,
@@ -87,6 +109,16 @@ int sancus_tcp_ipv4_listen(struct sancus_tcp_server *self,
 
 /**
  * sancus_tcp_ipv6_listen - initializes and prepares ipv6 tcp server
+ *
+ * @self:	server structure to initialize
+ * @settings:	driving callbacks
+ * @addr:	ipv6 string
+ * @port:	port number
+ * @cloexec:	enable close-on-exec or not
+ * @backlog:	backlog value for listen()
+ *
+ * Returns 0 if @addr is invalid, 1 on success and -1 on error. errno set
+ * accordingly.
  */
 int sancus_tcp_ipv6_listen(struct sancus_tcp_server *self,
 			   struct sancus_tcp_server_settings *settings,
@@ -95,6 +127,15 @@ int sancus_tcp_ipv6_listen(struct sancus_tcp_server *self,
 
 /**
  * sancus_tcp_local_listen - initializes and prepares local domain tcp server
+ *
+ * @self:	server structure to initialize
+ * @settings:	driving callbacks
+ * @path:	location for the unix/local domain socket
+ * @cloexec:	enable close-on-exec or not
+ * @backlog:	backlog value for listen()
+ *
+ * Returns 0 if @addr is invalid, 1 on success and -1 on error. errno set
+ * accordingly.
  */
 int sancus_tcp_local_listen(struct sancus_tcp_server *self,
 			    struct sancus_tcp_server_settings *settings,
