@@ -148,7 +148,7 @@ static inline int init_tcp(struct sancus_tcp_server *self,
 	if (bind(fd, sa, sa_len) < 0 ||
 	    listen(fd, backlog) < 0) {
 		int e = errno;
-		sancus_close(&fd);
+		sancus_close(&self->connect.fd);
 		errno = e;
 		return -1;
 	}
@@ -170,6 +170,14 @@ void sancus_tcp_server_stop(struct sancus_tcp_server *self, struct ev_loop *loop
 {
 	assert(ev_is_active(&self->connect));
 	ev_io_stop(loop, &self->connect);
+}
+
+void sancus_tcp_server_close(struct sancus_tcp_server *self)
+{
+	assert(self->connect.fd >= 0);
+	assert(ev_is_active(&self->connect));
+
+	sancus_close(&self->connect.fd);
 }
 
 int sancus_tcp_ipv4_listen(struct sancus_tcp_server *self,

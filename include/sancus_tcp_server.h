@@ -73,6 +73,11 @@ void sancus_tcp_server_start(struct sancus_tcp_server *, struct ev_loop *);
 void sancus_tcp_server_stop(struct sancus_tcp_server *, struct ev_loop *);
 
 /**
+ * sancus_tcp_server_close - closes and already stopped port
+ */
+void sancus_tcp_server_close(struct sancus_tcp_server *self);
+
+/**
  * sancus_tcp_ipv4_listen - initializes and prepares ipv4 tcp server
  */
 int sancus_tcp_ipv4_listen(struct sancus_tcp_server *self,
