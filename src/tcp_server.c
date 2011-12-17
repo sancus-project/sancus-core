@@ -159,6 +159,19 @@ static inline int init_tcp(struct sancus_tcp_server *self,
 /*
  * exported functions
  */
+
+void sancus_tcp_server_start(struct sancus_tcp_server *self, struct ev_loop *loop)
+{
+	assert(!ev_is_active(&self->connect));
+	ev_io_start(loop, &self->connect);
+}
+
+void sancus_tcp_server_stop(struct sancus_tcp_server *self, struct ev_loop *loop)
+{
+	assert(ev_is_active(&self->connect));
+	ev_io_stop(loop, &self->connect);
+}
+
 int sancus_tcp_ipv4_listen(struct sancus_tcp_server *self,
 			   struct sancus_tcp_server_settings *settings,
 			   const char *addr, unsigned port,
