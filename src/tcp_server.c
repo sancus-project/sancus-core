@@ -53,8 +53,6 @@
 #include "sancus_socket.h"
 #include "sancus_tcp_server.h"
 
-void sancus_tcp_client_start(struct sancus_tcp_client *self, struct ev_loop *loop);
-
 /**
  * connect_cb - called when there is incoming
  */
@@ -65,8 +63,6 @@ static void connect_cb(struct ev_loop *loop, struct ev_io *w, int revents)
 	struct sancus_tcp_server_settings *settings = self->settings;
 
 	if (revents & EV_READ) {
-		struct sancus_tcp_client *peer;
-
 		struct sockaddr_storage addr;
 		socklen_t addrlen = sizeof(addr);
 
@@ -74,11 +70,8 @@ static void connect_cb(struct ev_loop *loop, struct ev_io *w, int revents)
 		if (fd < 0) {
 			settings->on_error(self, loop,
 					   SANCUS_TCP_SERVER_ACCEPT_ERROR);
-		} else if ((peer = settings->on_connect(self, fd,
-							(struct sockaddr*)&addr,
-							addrlen))) {
-			sancus_tcp_client_start(peer, loop);
-		} else {
+		} else if (!settings->on_connect(self, loop, fd,
+						 (struct sockaddr*)&addr, addrlen)) {
 			sancus_close(&fd);
 		}
 	}
