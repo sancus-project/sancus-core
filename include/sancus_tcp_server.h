@@ -157,4 +157,18 @@ int sancus_tcp_local_listen(struct sancus_tcp_server *self,
 			    const char *path,
 			    bool cloexec, unsigned backlog);
 
+/**
+ * sancus_tcp_server_fd - returns fd been listened by a tcp server
+ *
+ * @S:	server structure to query
+ */
+#define sancus_tcp_server_fd(S)		(S)->connect.fd
+
+/**
+ * sancus_tcp_server_is_active - checks if a server has not been closed nor stoped
+ *
+ * @S:	server structure to query
+ */
+#define sancus_tcp_server_is_active(S)	((S)->connect.fd > 0 && ev_is_active(&(S)->connect))
+
 #endif /* !_SANCUS_TCP_SERVER_H */
