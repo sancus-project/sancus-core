@@ -41,6 +41,7 @@
 #define _SANCUS_TCP_SERVER_H
 
 struct sancus_tcp_server;
+struct sancus_tcp_client;
 
 /**
  * enum sancus_tcp_server_error - list of possible errors
@@ -57,6 +58,10 @@ enum sancus_tcp_server_error {
  */
 struct sancus_tcp_server_settings {
 	void (*pre_bind) (struct sancus_tcp_server *);
+
+	struct sancus_tcp_client *(*on_connect) (struct sancus_tcp_server *,
+						 int, struct sockaddr *,
+						 socklen_t);
 
 	void (*on_error) (struct sancus_tcp_server *,
 			  struct ev_loop *,
