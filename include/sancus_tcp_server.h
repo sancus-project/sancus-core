@@ -44,6 +44,9 @@ struct sancus_tcp_server;
 
 /**
  * enum sancus_tcp_server_error - list of possible errors
+ *
+ * @SANCUS_TCP_SERVER_WATCHER_ERROR:	connect watcher error, server has been closed
+ * @SANCUS_TCP_SERVER_ACCEPT_ERROR:	accept() call failed, check %errno
  */
 enum sancus_tcp_server_error {
 	SANCUS_TCP_SERVER_WATCHER_ERROR,
@@ -54,6 +57,8 @@ enum sancus_tcp_server_error {
  * struct sancus_tcp_server_settings - driving callbacks of tcp server
  *
  * @pre_bind:	hook to tweak fd's sockopts before calling bind()
+ * @on_connect:	new connection received, return %false if it should be closed
+ * @on_error:	an error has happened, tell the world
  */
 struct sancus_tcp_server_settings {
 	void (*pre_bind) (struct sancus_tcp_server *);
