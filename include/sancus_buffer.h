@@ -54,4 +54,9 @@ struct sancus_buffer {
 	uint_fast16_t base, len, size;
 };
 
+/**
+ * sancus_buffer_bind - binds an static bytes array to a buffer struct
+ */
+void sancus_buffer_bind(struct sancus_buffer *self, char *buf, size_t size);
+
 #endif /* !_SANCUS_BUFFER_H */

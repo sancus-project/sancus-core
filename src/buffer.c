@@ -37,6 +37,19 @@
  * not delete the provisions above, a recipient may use your version of this
  * file under either the BSD or the GPL.
  */
+#include <assert.h>
+
+#include <stdlib.h>
 #include <stdint.h>
 
 #include "sancus_buffer.h"
+
+void sancus_buffer_bind(struct sancus_buffer *self, char *buf, size_t size)
+{
+	assert((buf && size > 0) || (!buf && size == 0));
+
+	*self = (struct sancus_buffer) {
+		.buf = buf,
+		.size = size,
+	};
+}
