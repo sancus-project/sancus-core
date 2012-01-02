@@ -189,7 +189,7 @@ void sancus_tcp_server_stop(struct sancus_tcp_server *self, struct ev_loop *loop
 void sancus_tcp_server_close(struct sancus_tcp_server *self)
 {
 	assert(self->connect.fd >= 0);
-	assert(ev_is_active(&self->connect));
+	assert(!ev_is_active(&self->connect));
 
 	sancus_close(&self->connect.fd);
 }
