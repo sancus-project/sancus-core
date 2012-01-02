@@ -203,7 +203,7 @@ int sancus_tcp_ipv4_listen(struct sancus_tcp_server *self,
 	int e;
 
 	if ((e = init_ipv4(&sin, addr, port)) != 1)
-	    return e;
+		return e;
 
 	return init_tcp(self, settings, (struct sockaddr *)&sin, sizeof(sin),
 			cloexec, backlog);
@@ -218,7 +218,7 @@ int sancus_tcp_ipv6_listen(struct sancus_tcp_server *self,
 	int e;
 
 	if ((e = init_ipv6(&sin6, addr, port)) != 1)
-	    return e;
+		return e;
 
 	return init_tcp(self, settings, (struct sockaddr *)&sin6, sizeof(sin6),
 			cloexec, backlog);
@@ -233,7 +233,7 @@ int sancus_tcp_local_listen(struct sancus_tcp_server *self,
 	int e;
 
 	if ((e = init_local(&sun, path)) != 1)
-	    return e;
+		return e;
 	unlink(path);
 
 	return init_tcp(self, settings, (struct sockaddr *)&sun, sizeof(sun),
