@@ -64,6 +64,21 @@ struct sancus_stream {
 /**
  *
  */
+void sancus_stream_start(struct sancus_stream *self, struct ev_loop *loop);
+
+/**
+ *
+ */
+void sancus_stream_stop(struct sancus_stream *self, struct ev_loop *loop);
+
+/**
+ *
+ */
+void sancus_stream_close(struct sancus_stream *self);
+
+/**
+ *
+ */
 int sancus_stream_init(struct sancus_stream *self,
 		       struct sancus_stream_settings *settings,
 		       int fd,

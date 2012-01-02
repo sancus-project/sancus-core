@@ -39,10 +39,15 @@
  */
 
 #include <assert.h>
+#include <errno.h>
+#include <unistd.h>
 #include <stddef.h>
 #include <stdint.h>
 
+#include <fcntl.h>
+
 #include "sancus_common.h"
+#include "sancus_fd.h"
 #include "sancus_buffer.h"
 #include "sancus_stream.h"
 
@@ -60,6 +65,36 @@ static void write_cb(struct ev_loop *UNUSED(loop), struct ev_io *UNUSED(w), int 
 /*
  * exported functions
  */
+
+void sancus_stream_start(struct sancus_stream *self, struct ev_loop *loop)
+{
+	assert(!ev_is_active(&self->read_watcher));
+	ev_io_start(loop, &self->read_watcher);
+}
+
+void sancus_stream_stop(struct sancus_stream *self, struct ev_loop *loop)
+{
+	assert(ev_is_active(&self->read_watcher));
+
+	ev_io_stop(loop, &self->read_watcher);
+	if (ev_is_active(&self->write_watcher))
+		ev_io_stop(loop, &self->write_watcher);
+
+}
+
+void sancus_stream_close(struct sancus_stream *self)
+{
+	int fd = self->read_watcher.fd;
+
+	assert(fd >= 0);
+
+	assert(!ev_is_active(&self->read_watcher));
+	assert(!ev_is_active(&self->write_watcher));
+
+	sancus_close(&fd);
+	self->write_watcher.fd = self->read_watcher.fd = fd;
+}
+
 int sancus_stream_init(struct sancus_stream *self,
 		       struct sancus_stream_settings *settings,
 		       int fd,
