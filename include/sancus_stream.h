@@ -45,10 +45,18 @@ struct sancus_stream;
 /**
  *
  */
+enum sancus_stream_error {
+	SANCUS_STREAM_READ_WATCHER_ERROR,
+	SANCUS_STREAM_WRITE_WATCHER_ERROR,
+};
+
+/**
+ *
+ */
 struct sancus_stream_settings {
 	void (*on_error) (struct sancus_stream *,
 			  struct ev_loop *,
-			  int);
+			  enum sancus_stream_error);
 };
 
 /**
