@@ -97,7 +97,7 @@ close_retry:
 }
 
 /**
- * sancus_write - auto-retrying for write(2)
+ * sancus_write - auto-retrying wrapper for write(2)
  */
 static inline ssize_t sancus_write(int fd, const char *data, size_t size)
 {
@@ -119,4 +119,44 @@ write_retry:
 
 	return wt;
 }
+
+#ifdef _SYS_UIO_H
+/**
+ * sancus_writev - auto-retrying wrapper for writev(2)
+ */
+static inline ssize_t sancus_writev(int fd, struct iovec *iov, int iovcnt)
+{
+	int wt = 0;
+
+	while (iovcnt) {
+		register int wc;
+try_write:
+		wc = writev(fd, iov, iovcnt);
+		if (wc > 0) {
+			wt += wc;
+
+			/* consume accordingly */
+			while (wc) {
+				if ((unsigned)wc >= iov->iov_len) {
+					wc -= iov->iov_len;
+					iovcnt--;
+					iov++;
+				} else {
+					iov->iov_len -= wc;
+					/* GCC: warning: pointer of type ‘void *’ used in arithmetic */
+					iov->iov_base = (char*)iov->iov_base+wc;
+					wc = 0;
+				}
+			}
+		} else if (wc < 0) {
+			if (errno == EINTR)
+				goto try_write;
+			return wc;
+		}
+	}
+
+	return wt;
+}
+#endif /* _SYS_UIO_H */
+
 #endif /* !_SANCUS_FD_H */
