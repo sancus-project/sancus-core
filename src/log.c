@@ -58,8 +58,8 @@
 
 /*
  */
-static inline ssize_t _write_stderr(unsigned level, const char *name,
-				 const char *str, size_t str_len)
+static inline ssize_t _write_stderr(enum sancus_log_level level, const char *name,
+				    const char *str, size_t str_len)
 {
 	struct iovec v[5];
 	size_t l=0, l2;
@@ -92,13 +92,13 @@ static inline ssize_t _write_stderr(unsigned level, const char *name,
 /*
  * exported
  */
-void sancus_log_write(unsigned level, const char *name,
+void sancus_log_write(enum sancus_log_level level, const char *name,
 		      const char *str)
 {
 	_write_stderr(level, name, str, strlen(str));
 }
 
-void sancus_log_writef(unsigned level, const char *name,
+void sancus_log_writef(enum sancus_log_level level, const char *name,
 		       const char *fmt, ...)
 {
 	va_list ap;

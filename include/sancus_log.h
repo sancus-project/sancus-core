@@ -40,8 +40,27 @@
 #ifndef _SANCUS_LOG_H
 #define _SANCUS_LOG_H
 
-void sancus_log_write(unsigned level, const char *name,
+/**
+ */
+enum sancus_log_level {
+	SANCUS_LOG_EMERG = 0,
+	SANCUS_LOG_ALERT = 1,
+	SANCUS_LOG_CRITICAL = 2,
+	SANCUS_LOG_ERROR = 3,
+	SANCUS_LOG_WARNING = 4,
+	SANCUS_LOG_NOTICE = 5,
+	SANCUS_LOG_INFO = 6,
+	SANCUS_LOG_DEBUG = 7,
+	SANCUS_LOG_TRACE = 8,
+};
+
+/**
+ */
+void sancus_log_write(enum sancus_log_level level, const char *name,
 		      const char *str);
-void sancus_log_writef(unsigned level, const char *name,
+/**
+ */
+void sancus_log_writef(enum sancus_log_level level, const char *name,
 		       const char *fmt, ...) TYPECHECK_PRINTF(3,4);
+
 #endif
