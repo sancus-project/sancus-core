@@ -54,12 +54,37 @@
 /*
  * event callbacks
  */
-static void read_cb(struct ev_loop *UNUSED(loop), struct ev_io *UNUSED(w), int UNUSED(revents))
+static void read_cb(struct ev_loop *loop, struct ev_io *w, int revents)
 {
+	struct sancus_stream *self = container_of(w, struct sancus_stream, read_watcher);
+	struct sancus_stream_settings *settings = self->settings;
+
+	if (revents & EV_READ) {
+	}
+
+	if (revents & EV_ERROR) {
+		sancus_stream_stop(self, loop);
+		sancus_stream_close(self);
+
+		settings->on_error(self, loop, SANCUS_STREAM_READ_WATCHER_ERROR);
+	}
 }
 
-static void write_cb(struct ev_loop *UNUSED(loop), struct ev_io *UNUSED(w), int UNUSED(revents))
+static void write_cb(struct ev_loop *loop, struct ev_io *w, int revents)
 {
+	struct sancus_stream *self = container_of(w, struct sancus_stream, read_watcher);
+	struct sancus_stream_settings *settings = self->settings;
+
+	if (revents & EV_WRITE) {
+		ev_io_stop(loop, w);
+	}
+
+	if (revents & EV_ERROR) {
+		sancus_stream_stop(self, loop);
+		sancus_stream_close(self);
+
+		settings->on_error(self, loop, SANCUS_STREAM_WRITE_WATCHER_ERROR);
+	}
 }
 
 /*
