@@ -74,4 +74,14 @@ static inline void ev_io_init(struct ev_io *w,
 #	define UNUSED(x) x
 #endif
 
+/**
+ * TYPECHECK_PRINTF - Check printf format
+ */
+#ifdef TYPECHECK_PRINTF
+#elif defined(__GNUC__)
+#	define TYPECHECK_PRINTF(I, J)	__attribute__((format (printf, I, J)))
+#else
+#	define TYPECHECK_PRINTF(I, J)
+#endif
+
 #endif /* !_SANCUS_COMMON_H */
