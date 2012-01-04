@@ -43,7 +43,7 @@
 /**
  */
 enum sancus_log_level {
-	SANCUS_LOG_EMERG = 0,
+	SANCUS_LOG_FATAL = 0,
 	SANCUS_LOG_ALERT = 1,
 	SANCUS_LOG_CRITICAL = 2,
 	SANCUS_LOG_ERROR = 3,
