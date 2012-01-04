@@ -63,4 +63,15 @@ void sancus_log_write(enum sancus_log_level level, const char *name,
 void sancus_log_writef(enum sancus_log_level level, const char *name,
 		       const char *fmt, ...) TYPECHECK_PRINTF(3,4);
 
+/**
+ */
+void sancus_log_trace(unsigned level, const char *name,
+		      const char *filename, unsigned line, const char *func,
+		      const char *str);
+/**
+ */
+void sancus_log_tracef(unsigned level, const char *name,
+		       const char *filename, unsigned line, const char *func,
+		       const char *fmt, ...) TYPECHECK_PRINTF(6,7);
+
 #endif

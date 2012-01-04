@@ -55,13 +55,15 @@
 
 /* arbitrary sizes */
 #define STR_BUFSIZE 1024
+#define TRACE_STR_BUFSIZE 1024
 
 /*
  */
 static inline ssize_t _write_stderr(enum sancus_log_level level, const char *name,
+				    const char *trace, size_t trace_len,
 				    const char *str, size_t str_len)
 {
-	struct iovec v[5];
+	struct iovec v[6];
 	size_t l=0, l2;
 	char level_s[] = "<0> ";
 
@@ -75,9 +77,13 @@ static inline ssize_t _write_stderr(enum sancus_log_level level, const char *nam
 	l2 = name ? strlen(name) : 0;
 	if (l2 > 0) {
 		v[l++] = (struct iovec) { (void*)name, l2 };
-		if (str_len > 0)
+		if ((str_len + trace_len) > 0)
 			v[l++] = (struct iovec) { ": ", 2 };
 	}
+
+	/* "trace" */
+	if (trace_len > 0)
+		v[l++] = (struct iovec) { (void*)trace, trace_len };
 
 	/* "str" */
 	if (str_len > 0)
@@ -89,31 +95,76 @@ static inline ssize_t _write_stderr(enum sancus_log_level level, const char *nam
 	return sancus_writev(2, v, l);
 }
 
+static inline size_t _fmt(char *buf, size_t size, const char *fmt, va_list ap)
+{
+	size_t l = vsnprintf(buf, size, fmt, ap);
+
+	/* truncated? */
+	if (l > size-1) {
+		l = size-1;
+		buf[l] = '\0';
+	}
+
+	return l;
+}
+
+static inline size_t _fmt_trace(char *buf, size_t size,
+				const char *filename, unsigned line, const char *func)
+{
+	return snprintf(buf, size, "%s:%u: %s: ", filename, line, func);
+}
+
 /*
  * exported
  */
 void sancus_log_write(enum sancus_log_level level, const char *name,
 		      const char *str)
 {
-	_write_stderr(level, name, str, strlen(str));
+	size_t str_len = str ? strlen(str) : 0;
+
+	_write_stderr(level, name, NULL, 0, str, str_len);
 }
+
 
 void sancus_log_writef(enum sancus_log_level level, const char *name,
 		       const char *fmt, ...)
 {
 	va_list ap;
 	char str[STR_BUFSIZE];
-	size_t l;
+	size_t str_len;
 
 	va_start(ap, fmt);
-	l = vsnprintf(str, sizeof(str), fmt, ap);
+	str_len = _fmt(str, sizeof(str), fmt, ap);
 	va_end(ap);
 
-	/* truncated? */
-	if (l > sizeof(str)-1) {
-		l = sizeof(str)-1;
-		str[l] = '\0';
-	}
+	_write_stderr(level, name, NULL, 0, str, str_len);
+}
 
-	_write_stderr(level, name, str, l);
+void sancus_log_trace(unsigned level, const char *name,
+		      const char *filename, unsigned line, const char *func,
+		      const char *str)
+{
+	char trace[TRACE_STR_BUFSIZE];
+	size_t trace_len = _fmt_trace(trace, sizeof(trace), filename, line, func);
+	size_t str_len = str ? strlen(str) : 0;
+
+	_write_stderr(level, name, trace, trace_len, str, str_len);
+}
+
+void sancus_log_tracef(unsigned level, const char *name,
+		       const char *filename, unsigned line, const char *func,
+		       const char *fmt, ...)
+{
+	va_list ap;
+	char str[STR_BUFSIZE];
+	size_t str_len;
+
+	char trace[TRACE_STR_BUFSIZE];
+	size_t trace_len = _fmt_trace(trace, sizeof(trace), filename, line, func);
+
+	va_start(ap, fmt);
+	str_len = _fmt(str, sizeof(str), fmt, ap);
+	va_end(ap);
+
+	_write_stderr(level, name, trace, trace_len, str, str_len);
 }
