@@ -56,4 +56,26 @@ static inline void sancus_list_init(struct sancus_list *self)
 	*self = (struct sancus_list) { self, self };
 }
 
+/**
+ * sancus_list_inject - injects a list element between two other
+ */
+static inline void sancus_list_inject(struct sancus_list *self,
+				      struct sancus_list *prev,
+				      struct sancus_list *next)
+{
+	*self = (struct sancus_list) { prev, next };
+
+	next->prev = prev->next = self;
+}
+
+/**
+ * sancus_list_insert - inserts element at the begining of a list
+ */
+#define sancus_list_insert(H, E)	sancus_list_inject((E), (H), (H)->next)
+
+/**
+ * sancus_list_append - append element at the end of a list
+ */
+#define sancus_list_append(H, E)	sancus_list_inject((E), (H)->prev, (H))
+
 #endif /* !_SANCUS_LIST_H */
