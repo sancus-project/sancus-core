@@ -78,4 +78,8 @@ static inline void sancus_list_inject(struct sancus_list *self,
  */
 #define sancus_list_append(H, E)	sancus_list_inject((E), (H)->prev, (H))
 
+/**
+ * sancus_list_isempty - tells if there are no (other) elements in this list
+ */
+#define sancus_list_isempty(H)		((H)->next == (H))
 #endif /* !_SANCUS_LIST_H */
