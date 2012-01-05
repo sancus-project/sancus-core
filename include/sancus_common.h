@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, Alejandro Mery <amery@geeks.cl>
+ * Copyright (c) 2011-2012, Alejandro Mery <amery@geeks.cl>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -62,6 +62,13 @@ static inline void ev_io_init(struct ev_io *w,
  */
 #ifndef container_of
 #define container_of(P,T,M)	(T *)((char *)(P) - offsetof(T, M))
+#endif
+
+/**
+ * ELEMENTS - Number of elements of an array
+ */
+#ifndef ELEMENTS
+#define ELEMENTS(A)	(sizeof(A)/sizeof((A)[0]))
 #endif
 
 /**
