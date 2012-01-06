@@ -93,4 +93,12 @@ int sancus_stream_init(struct sancus_stream *self,
 		       char *read_buffer, size_t read_buf_size,
 		       char *write_buffer, size_t write_buf_size);
 
+/**
+ * sancus_stream_fd - returns fd watched by the given stream
+ */
+static inline int sancus_stream_fd(struct sancus_stream *self)
+{
+	return self->read_watcher.fd;
+}
+
 #endif /* !_SANCUS_STREAM_H */
