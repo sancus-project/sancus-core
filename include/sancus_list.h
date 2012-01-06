@@ -84,6 +84,11 @@ static inline void sancus_list_inject(struct sancus_list *self,
 #define sancus_list_foreach(H, I)	for(struct sancus_list *I = (H)->next; (I) != (H); (I) = (I)->next)
 
 /**
+ * sancus_list_foreach2 - safely iterate over a list
+ */
+#define sancus_list_foreach2(H, I, N)	for(struct sancus_list *I = (H)->next, *N = (I)->next; (I) != (H); (I) = (N), (N) = (I)->next)
+
+/**
  * sancus_list_isempty - tells if there are no (other) elements in this list
  */
 #define sancus_list_isempty(H)		((H)->next == (H))
