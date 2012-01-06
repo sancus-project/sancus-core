@@ -69,14 +69,19 @@ static inline void sancus_list_inject(struct sancus_list *self,
 }
 
 /**
- * sancus_list_insert - inserts element at the begining of a list
+ * sancus_list_insert - inserts item at the begining of a list
  */
-#define sancus_list_insert(H, E)	sancus_list_inject((E), (H), (H)->next)
+#define sancus_list_insert(H, I)	sancus_list_inject((I), (H), (H)->next)
 
 /**
- * sancus_list_append - append element at the end of a list
+ * sancus_list_append - append item at the end of a list
  */
-#define sancus_list_append(H, E)	sancus_list_inject((E), (H)->prev, (H))
+#define sancus_list_append(H, I)	sancus_list_inject((I), (H)->prev, (H))
+
+/**
+ * sancus_list_foreach - iterates over a list
+ */
+#define sancus_list_foreach(H, I)	for(struct sancus_list *I = (H)->next; (I) != (H); (I) = (I)->next)
 
 /**
  * sancus_list_isempty - tells if there are no (other) elements in this list
