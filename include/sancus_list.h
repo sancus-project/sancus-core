@@ -79,6 +79,17 @@ static inline void sancus_list_inject(struct sancus_list *self,
 #define sancus_list_append(H, I)	sancus_list_inject((I), (H)->prev, (H))
 
 /**
+ * sancus_list_del - removes item from the list
+ */
+static inline void __sancus_list_del(struct sancus_list *prev,
+				     struct sancus_list *next)
+{
+	next->prev = prev;
+	prev->next = next;
+}
+#define sancus_list_del(S)	__sancus_list_del((S)->prev, (S)->next)
+
+/**
  * sancus_list_foreach - iterates over a list
  */
 #define sancus_list_foreach(H, I)	for(struct sancus_list *I = (H)->next; (I) != (H); (I) = (I)->next)
