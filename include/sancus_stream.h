@@ -48,6 +48,10 @@ struct sancus_stream;
 enum sancus_stream_error {
 	SANCUS_STREAM_READ_WATCHER_ERROR,
 	SANCUS_STREAM_WRITE_WATCHER_ERROR,
+
+	SANCUS_STREAM_READ_ERROR,
+	SANCUS_STREAM_READ_EOF,
+	SANCUS_STREAM_READ_FULL,
 };
 
 /**
@@ -59,6 +63,9 @@ struct sancus_stream_settings {
 			  enum sancus_stream_error);
 
 	void (*on_close) (struct sancus_stream *);
+
+	ssize_t (*on_read) (struct sancus_stream *,
+			    char *, size_t);
 };
 
 /**

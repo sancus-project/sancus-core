@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, Alejandro Mery <amery@geeks.cl>
+ * Copyright (c) 2011-2012, Alejandro Mery <amery@geeks.cl>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -61,11 +61,46 @@ static void read_cb(struct ev_loop *loop, struct ev_io *w, int revents)
 	struct sancus_stream_settings *settings = self->settings;
 
 	if (revents & EV_READ) {
+		struct sancus_buffer *buf = &self->read_buffer;
+		ssize_t l;
+
+read_buffer_available:
+		if (!sancus_buffer_available(buf)) {
+			if (!settings->on_error(self, loop,
+						SANCUS_STREAM_READ_FULL))
+				goto read_buffer_available;
+			else
+				goto close_stream;
+		}
+
+try_read:
+		l = sancus_buffer_read(buf, w->fd);
+		if (l > 0) {
+			while ((l = sancus_buffer_len(buf))) {
+				l = settings->on_read(self, sancus_buffer_data(buf), l);
+				if (l > 0)
+					sancus_buffer_skip(buf, l);
+				else if (l == 0)
+					break;
+				else
+					goto close_stream;
+			}
+		} else if (l == 0) {
+			if (settings->on_error(self, loop, SANCUS_STREAM_READ_EOF))
+				goto close_stream;
+		} else if (errno == EINTR) {
+			goto try_read;
+		} else if (errno != EAGAIN && errno != EWOULDBLOCK) {
+			if (settings->on_error(self, loop, SANCUS_STREAM_READ_ERROR))
+				goto close_stream;
+		}
+
 	}
 
 	if (revents & EV_ERROR) {
 		settings->on_error(self, loop, SANCUS_STREAM_READ_WATCHER_ERROR);
 
+close_stream:
 		sancus_stream_stop(self, loop);
 		sancus_stream_close(self);
 	}
