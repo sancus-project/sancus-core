@@ -42,6 +42,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 
 #include "sancus_buffer.h"
 #include "sancus_fd.h"
@@ -60,4 +61,33 @@ ssize_t sancus_buffer_read(struct sancus_buffer *self, int fd)
 {
 	return sancus_read(fd, sancus_buffer_data(self)+sancus_buffer_len(self),
 			   sancus_buffer_available(self));
+}
+
+void sancus_buffer_rebase(struct sancus_buffer *self)
+{
+	if (self->base > 0) {
+		if (self->len > 0) {
+			memmove(self->buf,
+				self->buf+self->base,
+				self->len);
+		}
+		self->base = 0;
+	}
+}
+
+size_t sancus_buffer_skip(struct sancus_buffer *self, size_t step)
+{
+	if (step >= self->len) {
+		sancus_buffer_reset(self);
+		return self->size;
+	} else if (step > 0) {
+		self->base += step;
+		self->len -= step;
+	}
+
+	/* if there is less than 10% available, try to rebase */
+	if (sancus_buffer_available(self) < (self->size / 10))
+		sancus_buffer_rebase(self);
+
+	return sancus_buffer_available(self);
 }

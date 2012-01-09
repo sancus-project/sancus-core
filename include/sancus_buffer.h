@@ -79,4 +79,19 @@ void sancus_buffer_bind(struct sancus_buffer *self, char *buf, size_t size);
  */
 ssize_t sancus_buffer_read(struct sancus_buffer *, int fd);
 
+/**
+ * sancus_buffer_rebase - moves data to the head of the buffer
+ */
+void sancus_buffer_rebase(struct sancus_buffer *);
+
+/**
+ * sancus_buffer_skip - drop the first n chars from the buffer
+ */
+size_t sancus_buffer_skip(struct sancus_buffer *, size_t);
+
+/**
+ * sancus_buffer_reset - trashes all data in the buffer
+ */
+#define sancus_buffer_reset(B)	do { (B)->base = (B)->len = 0; } while(0)
+
 #endif /* !_SANCUS_BUFFER_H */
