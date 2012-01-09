@@ -64,4 +64,14 @@ void sancus_buffer_bind(struct sancus_buffer *self, char *buf, size_t size);
  */
 #define sancus_buffer_available(B)	((B)->size - (B)->base - (B)->len)
 
+/**
+ * sancus_buffer_len - amount of data in the buffer
+ */
+#define sancus_buffer_len(B)	((B)->len)
+
+/**
+ * sancus_buffer_data - pointer to the data in the buffer
+ */
+#define sancus_buffer_data(B)	((B)->buf + (B)->base)
+
 #endif /* !_SANCUS_BUFFER_H */
