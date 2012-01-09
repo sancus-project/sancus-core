@@ -38,11 +38,13 @@
  * file under either the BSD or the GPL.
  */
 #include <assert.h>
-
+#include <errno.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include <stdint.h>
 
 #include "sancus_buffer.h"
+#include "sancus_fd.h"
 
 void sancus_buffer_bind(struct sancus_buffer *self, char *buf, size_t size)
 {
@@ -52,4 +54,10 @@ void sancus_buffer_bind(struct sancus_buffer *self, char *buf, size_t size)
 		.buf = buf,
 		.size = size,
 	};
+}
+
+ssize_t sancus_buffer_read(struct sancus_buffer *self, int fd)
+{
+	return sancus_read(fd, sancus_buffer_data(self)+sancus_buffer_len(self),
+			   sancus_buffer_available(self));
 }

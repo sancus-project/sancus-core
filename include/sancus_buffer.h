@@ -74,4 +74,9 @@ void sancus_buffer_bind(struct sancus_buffer *self, char *buf, size_t size);
  */
 #define sancus_buffer_data(B)	((B)->buf + (B)->base)
 
+/**
+ * sancus_buffer_read - read from fd to buffer
+ */
+ssize_t sancus_buffer_read(struct sancus_buffer *, int fd);
+
 #endif /* !_SANCUS_BUFFER_H */
