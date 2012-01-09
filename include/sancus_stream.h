@@ -57,6 +57,8 @@ struct sancus_stream_settings {
 	void (*on_error) (struct sancus_stream *,
 			  struct ev_loop *,
 			  enum sancus_stream_error);
+
+	void (*on_close) (struct sancus_stream *);
 };
 
 /**

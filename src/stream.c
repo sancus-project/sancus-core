@@ -63,10 +63,10 @@ static void read_cb(struct ev_loop *loop, struct ev_io *w, int revents)
 	}
 
 	if (revents & EV_ERROR) {
+		settings->on_error(self, loop, SANCUS_STREAM_READ_WATCHER_ERROR);
+
 		sancus_stream_stop(self, loop);
 		sancus_stream_close(self);
-
-		settings->on_error(self, loop, SANCUS_STREAM_READ_WATCHER_ERROR);
 	}
 }
 
@@ -80,10 +80,10 @@ static void write_cb(struct ev_loop *loop, struct ev_io *w, int revents)
 	}
 
 	if (revents & EV_ERROR) {
+		settings->on_error(self, loop, SANCUS_STREAM_WRITE_WATCHER_ERROR);
+
 		sancus_stream_stop(self, loop);
 		sancus_stream_close(self);
-
-		settings->on_error(self, loop, SANCUS_STREAM_WRITE_WATCHER_ERROR);
 	}
 }
 
@@ -118,6 +118,8 @@ void sancus_stream_close(struct sancus_stream *self)
 
 	sancus_close(&fd);
 	self->write_watcher.fd = self->read_watcher.fd = fd;
+
+	self->settings->on_close(self);
 }
 
 int sancus_stream_init(struct sancus_stream *self,
@@ -128,6 +130,9 @@ int sancus_stream_init(struct sancus_stream *self,
 {
 	assert(self);
 	assert(settings);
+	assert(settings->on_error);
+	assert(settings->on_close);
+
 	assert(fd >= 0);
 	assert(!read_buffer || read_buf_size > 0);
 	assert(!write_buffer || write_buf_size > 0);
