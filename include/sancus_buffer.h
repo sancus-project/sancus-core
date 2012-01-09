@@ -59,4 +59,9 @@ struct sancus_buffer {
  */
 void sancus_buffer_bind(struct sancus_buffer *self, char *buf, size_t size);
 
+/**
+ * sancus_buffer_available - tells how much free space lefts in the buffer
+ */
+#define sancus_buffer_available(B)	((B)->size - (B)->len)
+
 #endif /* !_SANCUS_BUFFER_H */
