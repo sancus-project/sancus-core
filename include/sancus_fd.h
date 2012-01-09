@@ -40,6 +40,7 @@
 #ifndef _SANCUS_FD_H
 #define _SANCUS_FD_H
 
+#ifdef _FCNTL_H
 /**
  * sancus_open - auto-retrying wrapper for open(2) with easier cloexec support
  */
@@ -78,7 +79,9 @@ open_failed:
 open_done:
 	return fd;
 }
+#endif
 
+#ifdef _UNISTD_H
 /**
  * sancus_close - auto-retrying wrapper for close(2) which resets the fd on success
  */
@@ -94,6 +97,19 @@ close_retry:
 			goto close_retry;
 	}
 	return ret;
+}
+
+/**
+ * sancus_read - auto-retrying wrapper for read(2)
+ */
+static inline ssize_t sancus_read(int fd, char *buf, size_t count)
+{
+	ssize_t rc;
+read_retry:
+	rc = read(fd, buf, count);
+	if (rc < 0 && errno == EINTR)
+		goto read_retry;
+	return rc;
 }
 
 /**
@@ -119,6 +135,7 @@ write_retry:
 
 	return wt;
 }
+#endif
 
 #ifdef _SYS_UIO_H
 /**
