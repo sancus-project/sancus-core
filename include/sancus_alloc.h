@@ -40,7 +40,7 @@
 #ifndef _SANCUS_ALLOC_H
 #define _SANCUS_ALLOC_H
 
-extern void *(_sancus_realloc) (void *, size_t);
+extern void *(*_sancus_realloc) (void *, size_t);
 
 /**
  */

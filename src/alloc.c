@@ -39,6 +39,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 #include "sancus_alloc.h"
 
 void *(*_sancus_realloc) (void *, size_t) = realloc;
