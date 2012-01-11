@@ -110,4 +110,8 @@ static inline int sancus_stream_fd(struct sancus_stream *self)
 	return self->read_watcher.fd;
 }
 
+/**
+ */
+#define sancus_stream_reset_readbuffer(S) sancus_buffer_reset(&(S)->read_buffer)
+
 #endif /* !_SANCUS_STREAM_H */
