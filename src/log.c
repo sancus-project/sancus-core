@@ -59,9 +59,9 @@
 
 /*
  */
-static inline ssize_t _write_stderr(enum sancus_log_level level, const char *name,
-				    const char *trace, size_t trace_len,
-				    const char *str, size_t str_len)
+static ssize_t _write_stderr(enum sancus_log_level level, const char *name,
+			     const char *trace, size_t trace_len,
+			     const char *str, size_t str_len)
 {
 	struct iovec v[6];
 	size_t l=0, l2;
