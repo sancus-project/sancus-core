@@ -47,7 +47,6 @@ struct sancus_stream;
  */
 enum sancus_stream_error {
 	SANCUS_STREAM_READ_WATCHER_ERROR,
-	SANCUS_STREAM_WRITE_WATCHER_ERROR,
 
 	SANCUS_STREAM_READ_ERROR,
 	SANCUS_STREAM_READ_EOF,
@@ -72,8 +71,8 @@ struct sancus_stream_settings {
  *
  */
 struct sancus_stream {
-	struct ev_io read_watcher, write_watcher;
-	struct sancus_buffer read_buffer, write_buffer;
+	struct ev_io read_watcher;
+	struct sancus_buffer read_buffer;
 
 	struct sancus_stream_settings *settings;
 };
@@ -99,8 +98,7 @@ void sancus_stream_close(struct sancus_stream *self);
 int sancus_stream_init(struct sancus_stream *self,
 		       struct sancus_stream_settings *settings,
 		       int fd,
-		       char *read_buffer, size_t read_buf_size,
-		       char *write_buffer, size_t write_buf_size);
+		       char *read_buffer, size_t read_buf_size);
 
 /**
  * sancus_stream_fd - returns fd watched by the given stream

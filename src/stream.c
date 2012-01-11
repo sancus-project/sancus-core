@@ -106,23 +106,6 @@ close_stream:
 	}
 }
 
-static void write_cb(struct ev_loop *loop, struct ev_io *w, int revents)
-{
-	struct sancus_stream *self = container_of(w, struct sancus_stream, read_watcher);
-	struct sancus_stream_settings *settings = self->settings;
-
-	if (revents & EV_WRITE) {
-		ev_io_stop(loop, w);
-	}
-
-	if (revents & EV_ERROR) {
-		settings->on_error(self, loop, SANCUS_STREAM_WRITE_WATCHER_ERROR);
-
-		sancus_stream_stop(self, loop);
-		sancus_stream_close(self);
-	}
-}
-
 /*
  * exported functions
  */
@@ -136,24 +119,17 @@ void sancus_stream_start(struct sancus_stream *self, struct ev_loop *loop)
 void sancus_stream_stop(struct sancus_stream *self, struct ev_loop *loop)
 {
 	assert(ev_is_active(&self->read_watcher));
-
 	ev_io_stop(loop, &self->read_watcher);
-	if (ev_is_active(&self->write_watcher))
-		ev_io_stop(loop, &self->write_watcher);
 
 }
 
 void sancus_stream_close(struct sancus_stream *self)
 {
-	int fd = self->read_watcher.fd;
-
-	assert(fd >= 0);
+	assert(self->read_watcher.fd >= 0);
 
 	assert(!ev_is_active(&self->read_watcher));
-	assert(!ev_is_active(&self->write_watcher));
 
-	sancus_close(&fd);
-	self->write_watcher.fd = self->read_watcher.fd = fd;
+	sancus_close(&self->read_watcher.fd);
 
 	self->settings->on_close(self);
 }
@@ -161,8 +137,7 @@ void sancus_stream_close(struct sancus_stream *self)
 int sancus_stream_init(struct sancus_stream *self,
 		       struct sancus_stream_settings *settings,
 		       int fd,
-		       char *read_buffer, size_t read_buf_size,
-		       char *write_buffer, size_t write_buf_size)
+		       char *read_buffer, size_t read_buf_size)
 {
 	assert(self);
 	assert(settings);
@@ -171,15 +146,12 @@ int sancus_stream_init(struct sancus_stream *self,
 
 	assert(fd >= 0);
 	assert(!read_buffer || read_buf_size > 0);
-	assert(!write_buffer || write_buf_size > 0);
 
 	self->settings = settings;
 
 	ev_io_init(&self->read_watcher, read_cb, fd, EV_READ);
-	ev_io_init(&self->write_watcher, write_cb, fd, EV_WRITE);
 
 	sancus_buffer_bind(&self->read_buffer, read_buffer, read_buf_size);
-	sancus_buffer_bind(&self->write_buffer, write_buffer, write_buf_size);
 
 	return 1;
 }
