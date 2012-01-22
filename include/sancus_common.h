@@ -65,10 +65,10 @@ static inline void ev_io_init(struct ev_io *w,
 #endif
 
 /**
- * ELEMENTS - Number of elements of an array
+ * ARRAY_SIZE - Number of elements of an array
  */
-#ifndef ELEMENTS
-#define ELEMENTS(A)	(sizeof(A)/sizeof((A)[0]))
+#ifndef ARRAY_SIZE
+#define ARRAY_SIZE(A)	(sizeof(A)/sizeof((A)[0]))
 #endif
 
 /**
