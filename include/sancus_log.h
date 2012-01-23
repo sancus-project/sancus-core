@@ -57,11 +57,13 @@ enum sancus_log_level {
 /**
  */
 void sancus_log_write(enum sancus_log_level level, const char *name,
+		      const char *dump, size_t dump_len,
 		      const char *str);
 /**
  */
 void sancus_log_writef(enum sancus_log_level level, const char *name,
-		       const char *fmt, ...) TYPECHECK_PRINTF(3,4);
+		       const char *dump, size_t dump_len,
+		       const char *fmt, ...) TYPECHECK_PRINTF(5,6);
 
 /**
  */
@@ -74,12 +76,16 @@ void sancus_log_tracef(unsigned level, const char *name,
 		       const char *filename, unsigned line, const char *func,
 		       const char *fmt, ...) TYPECHECK_PRINTF(6,7);
 
-#define _log(L, S)	sancus_log_write(L, LOG_NAME, S)
-#define _plog(L, S)	sancus_log_writef(L, LOG_NAME, S ": %s", strerror(errno))
+#define _log(L, S)	sancus_log_write(L, LOG_NAME, NULL, 0, S)
+#define _plog(L, S)	sancus_log_writef(L, LOG_NAME, NULL, 0, S ": %s", strerror(errno))
 #define _trace(L, S)	sancus_log_trace(L, LOG_NAME, __FILE__, __LINE__, __func__, S)
 
-#define _logf(L, F, ...)	sancus_log_writef(L, LOG_NAME, F, __VA_ARGS__)
-#define _plogf(L, F, ...)	sancus_log_writef(L, LOG_NAME, F ": %s", __VA_ARGS__, strerror(errno))
+#define _logdump(L, ...)	sancus_log_write(L, LOG_NAME, __VA_ARGS__)
+
+#define _logf(L, F, ...)	sancus_log_writef(L, LOG_NAME, NULL, 0, F, __VA_ARGS__)
+#define _plogf(L, F, ...)	sancus_log_writef(L, LOG_NAME, NULL, 0, F ": %s", __VA_ARGS__, strerror(errno))
 #define _tracef(L, F, ...)	sancus_log_tracef(L, LOG_NAME, __FILE__, __LINE__, __func__, F, __VA_ARGS__)
+
+#define _logdumpf(L, ...)	sancus_log_writef(L, LOG_NAME, __VA_ARGS__)
 
 #endif
