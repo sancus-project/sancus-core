@@ -92,7 +92,7 @@ static inline int sancus_close(int *fd)
 close_retry:
 		ret = close(*fd);
 		if (ret == 0)
-			*fd = 0xdead;
+			*fd = -0xdead;
 		else if (errno == EINTR)
 			goto close_retry;
 	}
