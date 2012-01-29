@@ -78,9 +78,11 @@ try_read:
 		if (l > 0) {
 			while ((l = sancus_buffer_len(buf))) {
 				l = settings->on_read(self, sancus_buffer_data(buf), l);
-				if (l > 0)
+				if (l > 0) {
 					sancus_buffer_skip(buf, l);
-				else if (l == 0)
+					if (!ev_is_active(w))
+						break;
+				} else if (l == 0)
 					break;
 				else
 					goto close_stream;
