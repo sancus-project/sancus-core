@@ -111,6 +111,20 @@ close_stream:
 /*
  * exported functions
  */
+ssize_t sancus_stream_process(struct sancus_stream *self)
+{
+	struct sancus_stream_settings *settings = self->settings;
+	struct sancus_buffer *buf = &self->read_buffer;
+	ssize_t l = sancus_buffer_len(buf);
+
+	if (l > 0) {
+		l = settings->on_read(self, sancus_buffer_data(buf), l);
+		if (l > 0)
+			sancus_buffer_skip(buf, l);
+	}
+
+	return l;
+}
 
 void sancus_stream_start(struct sancus_stream *self, struct ev_loop *loop)
 {

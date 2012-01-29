@@ -109,6 +109,16 @@ static inline int sancus_stream_fd(struct sancus_stream *self)
 }
 
 /**
+ * sancus_stream_process - try to process more of the read buffer
+ *
+ * @self:	stream
+ *
+ * Returns 0 if there is nothing to process, < 0 on error and > 0 if
+ * part of the buffer was processed.
+ */
+ssize_t sancus_stream_process(struct sancus_stream *self);
+
+/**
  */
 #define sancus_stream_reset_readbuffer(S) sancus_buffer_reset(&(S)->read_buffer)
 
