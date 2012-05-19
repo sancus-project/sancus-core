@@ -1,9 +1,14 @@
 #!/bin/sh
 
-for x in ${0%/*}/*/Makefile.am.sh; do
+case "$0" in
+*/*)	BASE="${%/*}" ;;
+*)	BASE=. ;;
+esac
+
+for x in ${BASE}/*/Makefile.am.sh; do
 	[ -s "$x" ] || continue
 	$SHELL "$x"
 done
 
-mkdir -p "${0%/*}/m4"
-exec autoreconf -ivs "${0%/*}"
+mkdir -p "${BASE}/m4"
+exec autoreconf -ivs "${BASE}"
