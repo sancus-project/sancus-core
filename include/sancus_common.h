@@ -64,6 +64,22 @@ static inline void ev_io_init(struct ev_io *w,
 #define container_of(P,T,M)	(T *)((char *)(P) - offsetof(T, M))
 #endif
 
+/** likely to be 1 */
+#ifdef likely
+#elif defined(__GNUC__)
+#	define likely(e)	__builtin_expect((e), 1)
+#else
+#	define likely(e)	(e)
+#endif
+
+/** likely to be 0 */
+#ifdef unlikely
+#elif defined(__GNUC__)
+#	define unlikely(e)	__builtin_expect((e), 0)
+#else
+#	define unlikely(e)	(e)
+#endif
+
 /**
  * ARRAY_SIZE - Number of elements of an array
  */
