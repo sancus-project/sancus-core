@@ -13,4 +13,6 @@ lib_LTLIBRARIES = libsancus.la
 
 libsancus_la_SOURCES = \\
 	$(list *.c)
+
+libsancus_la_LIBADD = @EV_LIBS@
 EOT
