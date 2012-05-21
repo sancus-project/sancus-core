@@ -1,7 +1,7 @@
 #!/bin/sh
 
 case "$0" in
-*/*)	BASE="${%/*}" ;;
+*/*)	BASE="${0%/*}" ;;
 *)	BASE=. ;;
 esac
 
