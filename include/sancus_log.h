@@ -76,16 +76,16 @@ void sancus_log_tracef(unsigned level, const char *name,
 		       const char *filename, unsigned line, const char *func,
 		       const char *fmt, ...) TYPECHECK_PRINTF(6,7);
 
-#define _log(L, S)	sancus_log_write(L, LOG_NAME, NULL, 0, S)
-#define _plog(L, S)	sancus_log_writef(L, LOG_NAME, NULL, 0, S ": %s", strerror(errno))
-#define _trace(L, S)	sancus_log_trace(L, LOG_NAME, __FILE__, __LINE__, __func__, S)
+/*
+ */
+#define _log(L, N, S)		sancus_log_write(L, N, NULL, 0, S)
+#define _plog(L, N, S)		sancus_log_writef(L, N, NULL, 0, S ": %s", strerror(errno))
+#define _trace(L, N, S)		sancus_log_trace(L, N, __FILE__, __LINE__, __func__, S)
+#define _logdump(...)		sancus_log_write(__VA_ARGS__)
 
-#define _logdump(L, ...)	sancus_log_write(L, LOG_NAME, __VA_ARGS__)
-
-#define _logf(L, F, ...)	sancus_log_writef(L, LOG_NAME, NULL, 0, F, __VA_ARGS__)
-#define _plogf(L, F, ...)	sancus_log_writef(L, LOG_NAME, NULL, 0, F ": %s", __VA_ARGS__, strerror(errno))
-#define _tracef(L, F, ...)	sancus_log_tracef(L, LOG_NAME, __FILE__, __LINE__, __func__, F, __VA_ARGS__)
-
-#define _logdumpf(L, ...)	sancus_log_writef(L, LOG_NAME, __VA_ARGS__)
+#define _logf(L, N, F, ...)	sancus_log_writef(L, N, NULL, 0, F, __VA_ARGS__)
+#define _plogf(L, N, F, ...)	sancus_log_writef(L, N, NULL, 0, F ": %s", __VA_ARGS__, strerror(errno))
+#define _tracef(L, N, F, ...)	sancus_log_tracef(L, N, __FILE__, __LINE__, __func__, F, __VA_ARGS__)
+#define _logdumpf(...)		sancus_log_writef(__VA_ARGS__)
 
 #endif

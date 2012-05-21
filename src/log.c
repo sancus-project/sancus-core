@@ -130,7 +130,10 @@ static inline size_t _fmt(char *buf, size_t size, const char *fmt, va_list ap)
 static inline size_t _fmt_trace(char *buf, size_t size,
 				const char *filename, unsigned line, const char *func)
 {
-	return snprintf(buf, size, "%s:%u: %s: ", filename, line, func);
+	if (filename)
+		return snprintf(buf, size, "%s:%u: %s: ", filename, line, func);
+	else
+		return snprintf(buf, size, "%s: ", func);
 }
 
 /*
