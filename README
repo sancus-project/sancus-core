@@ -5,13 +5,13 @@ A C Framework for lightweight mini network servers
 
 sancus-core aims to easy to creation of light mini networked servers
 using Marc Lehmann's libev[1] and licensed under the terms described
-in the LICENSE file (tl;dr BSD or GPL just as libev itself).
+in the LICENSE file (tl;dr BSD).
 
 [1] http://software.schmorp.de/pkg/libev.html
 
-## APIs
+= APIs =
 
-### Low Level API ==
+== Low Level API ==
 
 The Low Level API mostly wraps POSIX functions and provides basic data
 structures.
@@ -20,8 +20,8 @@ structures.
 * sancus_fd.h
 * sancus_socket.h
 
-### Mid Level API ==
+== Mid Level API ==
 
 * sancus_tcp_server.h
 
-### High Level API ==
+== High Level API ==

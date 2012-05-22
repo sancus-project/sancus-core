@@ -25,17 +25,6 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Alternatively, the contents of this package may be used under the terms
- * of the GNU General Public License ("GPL") version 2 or any later version,
- * in which case the provisions of the GPL are applicable instead of the
- * above. If you wish to allow the use of your version of this package only
- * under the terms of the GPL and not to allow others to use your version of
- * this file under the BSD license, indicate your decision by deleting the
- * provisions above and replace them with the notice and other provisions
- * required by the GPL in this and the other files of this package. If you do
- * not delete the provisions above, a recipient may use your version of this
- * file under either the BSD or the GPL.
  */
 
 #include <assert.h>
@@ -129,12 +118,14 @@ ssize_t sancus_stream_process(struct sancus_stream *self)
 void sancus_stream_start(struct sancus_stream *self, struct ev_loop *loop)
 {
 	assert(!ev_is_active(&self->read_watcher));
+
 	ev_io_start(loop, &self->read_watcher);
 }
 
 void sancus_stream_stop(struct sancus_stream *self, struct ev_loop *loop)
 {
 	assert(ev_is_active(&self->read_watcher));
+
 	ev_io_stop(loop, &self->read_watcher);
 
 }
@@ -142,11 +133,9 @@ void sancus_stream_stop(struct sancus_stream *self, struct ev_loop *loop)
 void sancus_stream_close(struct sancus_stream *self)
 {
 	assert(self->read_watcher.fd >= 0);
-
 	assert(!ev_is_active(&self->read_watcher));
 
 	sancus_close(&self->read_watcher.fd);
-
 	self->settings->on_close(self);
 }
 
