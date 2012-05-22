@@ -103,4 +103,12 @@ static inline void __sancus_list_del(struct sancus_list *prev,
  * sancus_list_isempty - tells if there are no (other) elements in this list
  */
 #define sancus_list_isempty(H)		((H)->next == (H))
+
+/**
+ * sancus_list_first - returns the first element on a list, if any
+ */
+#define sancus_list_first(H)		(sancus_list_isempty(H)?NULL:(H)->next)
+
+#define sancus_list_next(H, E)		((E)->next == (H) ? NULL : (E)->next)
+
 #endif /* !_SANCUS_LIST_H */
