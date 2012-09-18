@@ -49,7 +49,7 @@ static void connect_cb(struct ev_loop *loop, struct ev_io *w, int revents)
 {
 	struct sancus_tcp_server *self = container_of(w, struct sancus_tcp_server,
 						      connect);
-	struct sancus_tcp_server_settings *settings = self->settings;
+	const struct sancus_tcp_server_settings *settings = self->settings;
 
 	if (revents & EV_READ) {
 		struct sockaddr_storage addr;
@@ -120,7 +120,7 @@ static inline int init_local(struct sockaddr_un *sun, const char *path)
 }
 
 static inline int init_tcp(struct sancus_tcp_server *self,
-			   struct sancus_tcp_server_settings *settings,
+			   const struct sancus_tcp_server_settings *settings,
 			   struct sockaddr *sa, socklen_t sa_len,
 			   bool cloexec, unsigned backlog)
 {
@@ -184,7 +184,7 @@ void sancus_tcp_server_close(struct sancus_tcp_server *self)
 }
 
 int sancus_tcp_ipv4_listen(struct sancus_tcp_server *self,
-			   struct sancus_tcp_server_settings *settings,
+			   const struct sancus_tcp_server_settings *settings,
 			   const char *addr, unsigned port,
 			   bool cloexec, unsigned backlog)
 {
@@ -199,7 +199,7 @@ int sancus_tcp_ipv4_listen(struct sancus_tcp_server *self,
 }
 
 int sancus_tcp_ipv6_listen(struct sancus_tcp_server *self,
-			   struct sancus_tcp_server_settings *settings,
+			   const struct sancus_tcp_server_settings *settings,
 			   const char *addr, unsigned port,
 			   bool cloexec, unsigned backlog)
 {
@@ -214,7 +214,7 @@ int sancus_tcp_ipv6_listen(struct sancus_tcp_server *self,
 }
 
 int sancus_tcp_local_listen(struct sancus_tcp_server *self,
-			    struct sancus_tcp_server_settings *settings,
+			    const struct sancus_tcp_server_settings *settings,
 			    const char *path,
 			    bool cloexec, unsigned backlog)
 {

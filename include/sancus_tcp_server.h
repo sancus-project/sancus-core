@@ -69,7 +69,7 @@ struct sancus_tcp_server_settings {
 struct sancus_tcp_server {
 	struct ev_io connect;
 
-	struct sancus_tcp_server_settings *settings;
+	const struct sancus_tcp_server_settings *settings;
 };
 
 /**
@@ -112,7 +112,7 @@ void sancus_tcp_server_close(struct sancus_tcp_server *self);
  * accordingly.
  */
 int sancus_tcp_ipv4_listen(struct sancus_tcp_server *self,
-			   struct sancus_tcp_server_settings *settings,
+			   const struct sancus_tcp_server_settings *settings,
 			   const char *addr, unsigned port,
 			   bool cloexec, unsigned backlog);
 
@@ -130,7 +130,7 @@ int sancus_tcp_ipv4_listen(struct sancus_tcp_server *self,
  * accordingly.
  */
 int sancus_tcp_ipv6_listen(struct sancus_tcp_server *self,
-			   struct sancus_tcp_server_settings *settings,
+			   const struct sancus_tcp_server_settings *settings,
 			   const char *addr, unsigned port,
 			   bool cloexec, unsigned backlog);
 
@@ -147,7 +147,7 @@ int sancus_tcp_ipv6_listen(struct sancus_tcp_server *self,
  * accordingly.
  */
 int sancus_tcp_local_listen(struct sancus_tcp_server *self,
-			    struct sancus_tcp_server_settings *settings,
+			    const struct sancus_tcp_server_settings *settings,
 			    const char *path,
 			    bool cloexec, unsigned backlog);
 
