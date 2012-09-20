@@ -48,14 +48,59 @@ static void io_cb(struct ev_loop *loop, struct ev_io *w, int revents)
 	struct sancus_tcp_conn *self = container_of(w, struct sancus_tcp_conn, io);
 	const struct sancus_tcp_conn_settings *settings = self->settings;
 
-	if (revents & EV_READ) {
-		settings->on_read(self, loop);
-	}
-	if (revents & EV_WRITE) {
-		settings->on_write(self, loop);
-	}
 	if (revents & EV_ERROR) {
 		settings->on_error(self, loop, SANCUS_TCP_CONN_WATCHER_ERROR);
+		return;
+	}
+
+	switch (self->state) {
+	case SANCUS_TCP_CONN_INPROGRESS:
+		assert(revents & EV_WRITE);
+
+		if (revents & EV_READ) {
+			/* failed to connected? */
+			int error;
+			socklen_t len = sizeof(error);
+
+			if (getsockopt(sancus_tcp_conn_fd(self),
+				       SOL_SOCKET, SO_ERROR, &error, &len) < 0)
+				; /* connect failed but errno already set. */
+			else if (error == 0)
+				goto connect_done;
+			else
+				errno = error;
+
+			/* might want to retry */
+			self->state = SANCUS_TCP_CONN_FAILED;
+			settings->on_error(self, loop, SANCUS_TCP_CONN_CONNECT_ERROR);
+			return;
+		}
+
+connect_done:
+		; /* pass thru */
+	case SANCUS_TCP_CONN_CONNECTED:
+		assert(revents & EV_WRITE);
+
+		{
+			/* only reads from now on */
+			int fd = w->fd;
+			ev_io_stop (loop, w);
+			ev_io_init(w, io_cb, fd, EV_READ);
+			ev_io_start(loop, w);
+		}
+
+		settings->on_write(self, loop);
+		self->state = SANCUS_TCP_CONN_RUNNING;
+		self->state_time = ev_now(loop);
+		break;
+	case SANCUS_TCP_CONN_RUNNING:
+		if (revents & EV_READ) {
+			settings->on_read(self, loop);
+			self->state_time = ev_now(loop);
+		}
+		break;
+	case SANCUS_TCP_CONN_FAILED:
+		assert(0); /* fix your app! */
 	}
 }
 
@@ -108,6 +153,9 @@ void sancus_tcp_conn_start(struct sancus_tcp_conn *self, struct ev_loop *loop)
 {
 	assert(!ev_is_active(&self->io));
 	ev_io_start(loop, &self->io);
+
+	if (self->state_time == 0.0)
+		self->state_time = ev_now(loop);
 }
 
 void sancus_tcp_conn_stop(struct sancus_tcp_conn *self, struct ev_loop *loop)

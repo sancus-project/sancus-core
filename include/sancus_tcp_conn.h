@@ -33,10 +33,14 @@ struct sancus_tcp_conn;
 
 enum sancus_tcp_conn_error {
 	SANCUS_TCP_CONN_WATCHER_ERROR,
+	SANCUS_TCP_CONN_CONNECT_ERROR,
 };
+
 enum sancus_tcp_conn_state {
 	SANCUS_TCP_CONN_INPROGRESS,
 	SANCUS_TCP_CONN_CONNECTED,
+	SANCUS_TCP_CONN_RUNNING,
+	SANCUS_TCP_CONN_FAILED,
 };
 
 struct sancus_tcp_conn_settings {
@@ -51,10 +55,14 @@ struct sancus_tcp_conn_settings {
 
 struct sancus_tcp_conn {
 	struct ev_io io;
+
 	enum sancus_tcp_conn_state state;
+	ev_tstamp state_time;
 
 	const struct sancus_tcp_conn_settings *settings;
 };
+
+#define sancus_tcp_conn_fd(P)	((P)->io.fd)
 
 /**
  * sancus_tcp_conn_start - start watching connection
