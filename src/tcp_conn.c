@@ -89,7 +89,7 @@ connect_done:
 			ev_io_start(loop, w);
 		}
 
-		settings->on_write(self, loop);
+		settings->on_connect(self, loop);
 		self->state = SANCUS_TCP_CONN_RUNNING;
 		self->state_time = ev_now(loop);
 		break;

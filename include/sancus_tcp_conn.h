@@ -46,7 +46,7 @@ enum sancus_tcp_conn_state {
 struct sancus_tcp_conn_settings {
 	void (*on_read) (struct sancus_tcp_conn *,
 			 struct ev_loop *);
-	void (*on_write) (struct sancus_tcp_conn *,
+	void (*on_connect) (struct sancus_tcp_conn *,
 			 struct ev_loop *);
 	void (*on_error) (struct sancus_tcp_conn *,
 			  struct ev_loop *,
