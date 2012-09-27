@@ -91,12 +91,12 @@ connect_done:
 
 		settings->on_connect(self, loop);
 		self->state = SANCUS_TCP_CONN_RUNNING;
-		self->state_time = ev_now(loop);
+		sancus_tcp_conn_touch(self, loop);
 		break;
 	case SANCUS_TCP_CONN_RUNNING:
 		if (revents & EV_READ) {
 			settings->on_read(self, loop);
-			self->state_time = ev_now(loop);
+			sancus_tcp_conn_touch(self, loop);
 		}
 		break;
 	case SANCUS_TCP_CONN_FAILED:
@@ -154,8 +154,8 @@ void sancus_tcp_conn_start(struct sancus_tcp_conn *self, struct ev_loop *loop)
 	assert(!ev_is_active(&self->io));
 	ev_io_start(loop, &self->io);
 
-	if (self->state_time == 0.0)
-		self->state_time = ev_now(loop);
+	if (self->last_activity == 0.0)
+		sancus_tcp_conn_touch(self, loop);
 }
 
 void sancus_tcp_conn_stop(struct sancus_tcp_conn *self, struct ev_loop *loop)
