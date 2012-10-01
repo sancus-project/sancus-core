@@ -119,7 +119,7 @@ static inline int init_tcp(struct sancus_tcp_conn *self,
 			   struct sockaddr *sa, socklen_t sa_len,
 			   bool cloexec)
 {
-	int fd = sancus_socket(sa->sa_family, SOCK_STREAM, cloexec, true);
+	int fd = sancus_socket(sa->sa_family, SOCK_STREAM, 0, cloexec, true);
 	if (fd < 0)
 		return -1;
 

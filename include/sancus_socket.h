@@ -32,7 +32,7 @@
 /**
  * sancus_socket - wrapper for socket() to easy setting cloexec and nonblocking
  */
-static inline int sancus_socket(int family, int type, int cloexec, int nonblock)
+static inline int sancus_socket(int family, int type, int protocol, int cloexec, int nonblock)
 {
 	int fd;
 #ifdef SOCK_CLOEXEC
@@ -47,7 +47,7 @@ static inline int sancus_socket(int family, int type, int cloexec, int nonblock)
 	else
 		type &= ~SOCK_NONBLOCK;
 #endif
-	if ((fd = socket(family, type, 0)) < 0)
+	if ((fd = socket(family, type, protocol)) < 0)
 		goto socket_done;
 
 	if (cloexec || nonblock) {

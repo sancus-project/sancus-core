@@ -124,7 +124,7 @@ static inline int init_tcp(struct sancus_tcp_server *self,
 			   struct sockaddr *sa, socklen_t sa_len,
 			   bool cloexec, unsigned backlog)
 {
-	int fd = sancus_socket(sa->sa_family, SOCK_STREAM, cloexec, true);
+	int fd = sancus_socket(sa->sa_family, SOCK_STREAM, 0, cloexec, true);
 	if (fd < 0)
 		return -1;
 
