@@ -77,6 +77,29 @@ static ssize_t sancus_netlink_recvfrom(int fd, void *buf, size_t buflen)
 	return ret;
 }
 
+/* extract the netlink message from the buffer and call on_data callback */
+static inline int extract_netlink_message(struct sancus_netlink_receiver *self,
+				    struct ev_loop *loop,
+				    const void *buf, size_t recvbytes)
+{
+	const struct sancus_netlink_receiver_settings *settings = self->settings;
+
+	int ret = 0;
+	int len = recvbytes;
+	const struct nlmsghdr *nlh = buf;
+
+	while (sancus_netlink_message_ok(nlh, len)) {
+		if (nlh->nlmsg_type >= NLMSG_MIN_TYPE) {
+			ret = settings->on_data(self, loop, nlh);
+			if (!ret) goto out;
+		}
+		nlh = sancus_netlink_message_next(nlh, &len);
+	}
+
+out:
+	return ret;
+}
+
 /**
  * recv_cb - called when there is data received
  */
@@ -92,7 +115,7 @@ static void recv_cb(struct ev_loop *loop, struct ev_io *w, int revents)
 		if (ret < 0) {
 			settings->on_error(self, loop,
 					   SANCUS_NETLINK_RECEIVER_RECVFROM_ERROR);
-		} else if (!settings->on_data(self, loop, buf)) {
+		} else if (!extract_netlink_message(self, loop, buf, ret)) {
 			sancus_close(&w->fd);
 		}
 	}

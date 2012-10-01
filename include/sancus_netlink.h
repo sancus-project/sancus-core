@@ -48,7 +48,7 @@ enum sancus_netlink_receiver_error {
  * @on_error:	an error has happened, tell the world
  */
 struct sancus_netlink_receiver_settings {
-	bool (*on_data) (struct sancus_netlink_receiver *, struct ev_loop *, void *);
+	bool (*on_data) (struct sancus_netlink_receiver *, struct ev_loop *, const struct nlmsghdr *);
 
 	void (*on_error) (struct sancus_netlink_receiver *,
 			  struct ev_loop *,
