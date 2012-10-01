@@ -8,6 +8,7 @@ libsancus_la_SOURCES = \
 	fmt_cstr.c \
 	log.c \
 	netlink_io.c \
+	netlink_message.c \
 	sancus_serial.c \
 	stream.c \
 	tcp_conn.c \

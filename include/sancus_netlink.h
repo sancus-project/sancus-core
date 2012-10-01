@@ -127,4 +127,29 @@ int sancus_netlink_receiver_listen(struct sancus_netlink_receiver *self,
  */
 #define sancus_netlink_receiver_is_active(S)	((S)->recv_watcher.fd > 0 && ev_is_active(&(S)->recv_watcher))
 
+
+
+/**
+ * Netlink Message handling
+ */
+
+/* Netlink message headers and its attributes are always aligned to four bytes. */
+#define SANCUS_NETLINK_ALIGNTO		4
+#define SANCUS_NETLINK_ALIGN(len)	(((len)+SANCUS_NETLINK_ALIGNTO-1) & ~(SANCUS_NETLINK_ALIGNTO-1))
+#define SANCUS_NETLINK_MESSAGE_HDRLEN	SANCUS_NETLINK_ALIGN(sizeof(struct nlmsghdr))
+
+/**
+ * sancus_netlink_message_ok - check if there is room for a netlink message
+ * @nlh:	netlink message that we want to check
+ * @len:	remaining bytes in a buffer that contains the netlink message
+ */
+bool sancus_netlink_message_ok(const struct nlmsghdr *nlh, int len);
+
+/**
+ * sancus_netlink_message_next - get the next netlink message out of a multipart message
+ * @nlh:	netlink message that is currently handled
+ * @len:	length of the remaining bytes in the buffer
+ */
+struct nlmsghdr *sancus_netlink_message_next(const struct nlmsghdr *nlh, int *len);
+
 #endif /* !_SANCUS_NETLINK_H */
