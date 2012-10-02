@@ -152,4 +152,11 @@ bool sancus_netlink_message_ok(const struct nlmsghdr *nlh, int len);
  */
 struct nlmsghdr *sancus_netlink_message_next(const struct nlmsghdr *nlh, int *len);
 
+/**
+ * sancus_netlink_message_pid_ok - perform a check if sending port ID is correct
+ * @nlh:	netlink message that is currently handled
+ * @pid:	netlink portid to check
+ */
+bool sancus_netlink_message_pid_ok(const struct nlmsghdr *nlh, unsigned int pid);
+
 #endif /* !_SANCUS_NETLINK_H */

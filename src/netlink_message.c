@@ -53,3 +53,9 @@ struct nlmsghdr *sancus_netlink_message_next(const struct nlmsghdr *nlh, int *le
 	*len -= SANCUS_NETLINK_ALIGN(nlh->nlmsg_len);
 	return (struct nlmsghdr *)((struct nlmsghdr *)nlh + SANCUS_NETLINK_ALIGN(nlh->nlmsg_len));
 }
+
+bool sancus_netlink_message_pid_ok(const struct nlmsghdr *nlh, unsigned int pid)
+{
+	return nlh->nlmsg_pid && pid ? nlh->nlmsg_pid == pid : true;
+}
+
