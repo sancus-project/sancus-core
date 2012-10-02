@@ -89,6 +89,12 @@ static inline int extract_netlink_message(struct sancus_netlink_receiver *self,
 	const struct nlmsghdr *nlh = buf;
 
 	while (sancus_netlink_message_ok(nlh, len)) {
+		/* check port id of netlink message against the one of the receiver */
+		if (!sancus_netlink_message_pid_ok(nlh, self->pid)) {
+			errno = ESRCH;
+			return -1;
+		}
+
 		if (nlh->nlmsg_type >= NLMSG_MIN_TYPE) {
 			ret = settings->on_data(self, loop, nlh);
 			if (!ret) goto out;
@@ -173,6 +179,7 @@ int sancus_netlink_receiver_listen(struct sancus_netlink_receiver *self,
 	ev_io_init(&self->recv_watcher, recv_cb, fd, EV_READ);
 
 	self->settings = settings;
+	self->pid = pid;
 
 	if (bind(fd, (struct sockaddr *) &sa, sizeof(sa)) < 0) { 
 		int e = errno;

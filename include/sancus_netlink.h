@@ -60,11 +60,14 @@ struct sancus_netlink_receiver_settings {
  *
  * @recv_watcher:	receive watcher
  * @settings:		driving callbacks
+ * @pid:		port ID
  */
 struct sancus_netlink_receiver {
 	struct ev_io recv_watcher;
 
 	const struct sancus_netlink_receiver_settings *settings;
+
+	pid_t pid;
 };
 
 /**
