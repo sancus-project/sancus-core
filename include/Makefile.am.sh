@@ -1,7 +1,7 @@
 #!/bin/sh
 
 list() {
-	echo "$@" | sort -V | fmt -w60 | tr '\n' '|' |
+	echo "$@" | tr ' ' '\n' | sort -V | tr '\n' '|' |
 		sed -e 's,|$,,' -e 's,|, \\\n\t,g'
 }
 
