@@ -88,9 +88,9 @@ static inline int extract_netlink_message(struct sancus_nl_receiver *self,
 	int len = recvbytes;
 	const struct nlmsghdr *nlh = buf;
 
-	while (sancus_nl_message_ok(nlh, len)) {
+	while (sancus_nl_msg_ok(nlh, len)) {
 		/* check port id of netlink message against the one of the receiver */
-		if (!sancus_nl_message_pid_ok(nlh, self->pid)) {
+		if (!sancus_nl_msg_pid_ok(nlh, self->pid)) {
 			errno = ESRCH;
 			return -1;
 		}
@@ -99,7 +99,7 @@ static inline int extract_netlink_message(struct sancus_nl_receiver *self,
 			ret = settings->on_data(self, loop, nlh);
 			if (!ret) goto out;
 		}
-		nlh = sancus_nl_message_next(nlh, &len);
+		nlh = sancus_nl_msg_next(nlh, &len);
 	}
 
 out:

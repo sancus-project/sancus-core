@@ -142,30 +142,30 @@ int sancus_nl_receiver_listen(struct sancus_nl_receiver *self,
 #define SANCUS_NL_MESSAGE_HDRLEN	SANCUS_NL_ALIGN(sizeof(struct nlmsghdr))
 
 /**
- * sancus_nl_message_ok - check if there is room for a netlink message
+ * sancus_nl_msg_ok - check if there is room for a netlink message
  * @nlh:	netlink message that we want to check
  * @len:	remaining bytes in a buffer that contains the netlink message
  */
-bool sancus_nl_message_ok(const struct nlmsghdr *nlh, int len);
+bool sancus_nl_msg_ok(const struct nlmsghdr *nlh, int len);
 
 /**
- * sancus_nl_message_next - get the next netlink message out of a multipart message
+ * sancus_nl_msg_next - get the next netlink message out of a multipart message
  * @nlh:	netlink message that is currently handled
  * @len:	length of the remaining bytes in the buffer
  */
-struct nlmsghdr *sancus_nl_message_next(const struct nlmsghdr *nlh, int *len);
+struct nlmsghdr *sancus_nl_msg_next(const struct nlmsghdr *nlh, int *len);
 
 /**
- * sancus_nl_message_pid_ok - perform a check if sending port ID is correct
+ * sancus_nl_msg_pid_ok - perform a check if sending port ID is correct
  * @nlh:	netlink message that is currently handled
  * @pid:	netlink portid to check
  */
-bool sancus_nl_message_pid_ok(const struct nlmsghdr *nlh, unsigned int pid);
+bool sancus_nl_msg_pid_ok(const struct nlmsghdr *nlh, unsigned int pid);
 
 /**
- * sancus_nl_message_get_payload - get a pointer to the payload of the netlink message
+ * sancus_nl_msg_get_payload - get a pointer to the payload of the netlink message
  * @nlh:	netlink message to get the payload from
  */
-void *sancus_nl_message_get_payload(const struct nlmsghdr *nlh);
+void *sancus_nl_msg_get_payload(const struct nlmsghdr *nlh);
 
 #endif /* !_SANCUS_NETLINK_H */
