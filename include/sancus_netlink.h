@@ -214,4 +214,10 @@ void *sancus_nl_attr_get_payload(const struct nlattr *attr);
  */
 bool sancus_nl_attr_ok(const struct nlattr *attr, int len);
 
+/**
+ * sancus_nl_attr_next - get the next attribute in the payload of a netlink message
+ * @attr:	pointer to the current attribute
+ */
+struct nlattr *sancus_nl_attr_next(const struct nlattr *attr);
+
 #endif /* !_SANCUS_NETLINK_H */

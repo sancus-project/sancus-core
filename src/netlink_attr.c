@@ -67,3 +67,8 @@ bool sancus_nl_attr_ok(const struct nlattr *attr, int len)
 	       attr->nla_len >= sizeof(struct nlattr) &&
 	       (int)attr->nla_len <= len;
 }
+
+struct nlattr *sancus_nl_attr_next(const struct nlattr *attr)
+{
+	return (struct nlattr *)((char *)attr + SANCUS_NL_ALIGN(attr->nla_len));
+}
