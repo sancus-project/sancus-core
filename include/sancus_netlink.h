@@ -193,4 +193,10 @@ uint16_t sancus_nl_attr_get_len(const struct nlattr *attr);
  */
 uint16_t sancus_nl_attr_get_payload_len(const struct nlattr *attr);
 
+/**
+ * sancus_nl_attr_get_payload - get the payload of a netlink attribute
+ * @attr:	pointer to a netlink attribute
+ */
+void *sancus_nl_attr_get_payload(const struct nlattr *attr);
+
 #endif /* !_SANCUS_NETLINK_H */

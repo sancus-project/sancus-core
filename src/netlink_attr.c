@@ -55,3 +55,8 @@ uint16_t sancus_nl_attr_get_payload_len(const struct nlattr *attr)
 {
 	return attr->nla_len - SANCUS_NL_ATTR_HDRLEN;
 }
+
+void *sancus_nl_attr_get_payload(const struct nlattr *attr)
+{
+	return (char *)attr + SANCUS_NL_ATTR_HDRLEN;
+}
