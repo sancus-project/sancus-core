@@ -45,10 +45,13 @@ enum sancus_nl_receiver_error {
  * struct sancus_receiver_settings - driving callbacks of netlink receiver
  *
  * @on_message:		callback triggered on each new message
+ * @on_attribute:	callback triggered on each new message
  * @on_error:		an error has happened, tell the world
  */
 struct sancus_nl_receiver_settings {
 	bool (*on_message) (struct sancus_nl_receiver *, struct ev_loop *, const struct nlmsghdr *);
+
+	bool (*on_attribute) (struct sancus_nl_receiver *, struct ev_loop *, const struct nlattr *);
 
 	void (*on_error) (struct sancus_nl_receiver *,
 			  struct ev_loop *,
