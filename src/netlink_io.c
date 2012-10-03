@@ -96,7 +96,7 @@ static inline int extract_netlink_message(struct sancus_nl_receiver *self,
 		}
 
 		if (nlh->nlmsg_type >= NLMSG_MIN_TYPE) {
-			ret = settings->on_data(self, loop, nlh);
+			ret = settings->on_message(self, loop, nlh);
 			if (!ret) goto out;
 		}
 		nlh = sancus_nl_msg_next(nlh, &len);

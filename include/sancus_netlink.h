@@ -44,11 +44,11 @@ enum sancus_nl_receiver_error {
 /**
  * struct sancus_receiver_settings - driving callbacks of netlink receiver
  *
- * @on_data:	new data received, return %false if it should be closed
- * @on_error:	an error has happened, tell the world
+ * @on_message:		callback triggered on each new message
+ * @on_error:		an error has happened, tell the world
  */
 struct sancus_nl_receiver_settings {
-	bool (*on_data) (struct sancus_nl_receiver *, struct ev_loop *, const struct nlmsghdr *);
+	bool (*on_message) (struct sancus_nl_receiver *, struct ev_loop *, const struct nlmsghdr *);
 
 	void (*on_error) (struct sancus_nl_receiver *,
 			  struct ev_loop *,
