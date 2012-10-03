@@ -60,3 +60,10 @@ void *sancus_nl_attr_get_payload(const struct nlattr *attr)
 {
 	return (char *)attr + SANCUS_NL_ATTR_HDRLEN;
 }
+
+bool sancus_nl_attr_ok(const struct nlattr *attr, int len)
+{
+	return len >= (int)sizeof(struct nlattr) &&
+	       attr->nla_len >= sizeof(struct nlattr) &&
+	       (int)attr->nla_len <= len;
+}

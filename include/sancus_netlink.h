@@ -207,4 +207,11 @@ uint16_t sancus_nl_attr_get_payload_len(const struct nlattr *attr);
  */
 void *sancus_nl_attr_get_payload(const struct nlattr *attr);
 
+/**
+ * sancus_nl_attr_ok - check if there is space for an attribute in a buffer
+ * @attr:	attribute to be checked
+ * @len:	remaining bytes in the buffer that contains the attribute
+ */
+bool sancus_nl_attr_ok(const struct nlattr *attr, int len);
+
 #endif /* !_SANCUS_NETLINK_H */
