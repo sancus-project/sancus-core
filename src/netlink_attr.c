@@ -45,3 +45,8 @@ uint16_t sancus_nl_attr_get_type(const struct nlattr *attr)
 {
 	return attr->nla_type & NLA_TYPE_MASK;
 }
+
+uint16_t sancus_nl_attr_get_len(const struct nlattr *attr)
+{
+	return attr->nla_len;
+}
