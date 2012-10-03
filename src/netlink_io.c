@@ -116,11 +116,11 @@ static void recv_cb(struct ev_loop *loop, struct ev_io *w, int revents)
 	const struct sancus_nl_receiver_settings *settings = self->settings;
 
 	if (revents & EV_READ) {
-		char buf[SANCUS_NETLINK_SOCKET_BUFFER_SIZE];
+		char buf[SANCUS_NL_SOCKET_BUFFER_SIZE];
 		int ret = sancus_nl_recvfrom(w->fd, buf, sizeof(buf)); 
 		if (ret < 0) {
 			settings->on_error(self, loop,
-					   SANCUS_NETLINK_RECEIVER_RECVFROM_ERROR);
+					   SANCUS_NL_RECEIVER_RECVFROM_ERROR);
 		} else if (!extract_netlink_message(self, loop, buf, ret)) {
 			sancus_close(&w->fd);
 		}
@@ -130,7 +130,7 @@ static void recv_cb(struct ev_loop *loop, struct ev_io *w, int revents)
 		sancus_nl_receiver_stop(self, loop);
 		sancus_nl_receiver_close(self);
 
-		settings->on_error(self, loop, SANCUS_NETLINK_RECEIVER_WATCHER_ERROR);
+		settings->on_error(self, loop, SANCUS_NL_RECEIVER_WATCHER_ERROR);
 	}
 }
 

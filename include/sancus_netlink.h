@@ -34,11 +34,11 @@ struct sancus_nl_receiver;
 /**
  * enum sancus_nl_receiver_error - list of possible errors
  *
- * @SANCUS_NETLINK_RECEIVER_WATCHER_ERROR:	receive watcher error, server has been closed
+ * @SANCUS_NL_RECEIVER_WATCHER_ERROR:	receive watcher error, server has been closed
  */
 enum sancus_nl_receiver_error {
-	SANCUS_NETLINK_RECEIVER_WATCHER_ERROR,
-	SANCUS_NETLINK_RECEIVER_RECVFROM_ERROR,
+	SANCUS_NL_RECEIVER_WATCHER_ERROR,
+	SANCUS_NL_RECEIVER_RECVFROM_ERROR,
 };
 
 /**
@@ -112,9 +112,9 @@ int sancus_nl_receiver_listen(struct sancus_nl_receiver *self,
 			   const struct sancus_nl_receiver_settings *settings,
 			   int bus, unsigned int groups, pid_t pid);
 /**
- * SANCUS_NETLINK_SOCKET_BUFFER_SIZE - netlink socket buffer size
+ * SANCUS_NL_SOCKET_BUFFER_SIZE - netlink socket buffer size
  */
-#define SANCUS_NETLINK_SOCKET_BUFFER_SIZE (getpagesize() < 8192L ? getpagesize() : 8192L)
+#define SANCUS_NL_SOCKET_BUFFER_SIZE (getpagesize() < 8192L ? getpagesize() : 8192L)
 
 /**
  * sancus_nl_receiver_fd - returns fd been listened by a netlink receiver
@@ -137,9 +137,9 @@ int sancus_nl_receiver_listen(struct sancus_nl_receiver *self,
  */
 
 /* Netlink message headers and its attributes are always aligned to four bytes. */
-#define SANCUS_NETLINK_ALIGNTO		4
-#define SANCUS_NETLINK_ALIGN(len)	(((len)+SANCUS_NETLINK_ALIGNTO-1) & ~(SANCUS_NETLINK_ALIGNTO-1))
-#define SANCUS_NETLINK_MESSAGE_HDRLEN	SANCUS_NETLINK_ALIGN(sizeof(struct nlmsghdr))
+#define SANCUS_NL_ALIGNTO		4
+#define SANCUS_NL_ALIGN(len)	(((len)+SANCUS_NL_ALIGNTO-1) & ~(SANCUS_NL_ALIGNTO-1))
+#define SANCUS_NL_MESSAGE_HDRLEN	SANCUS_NL_ALIGN(sizeof(struct nlmsghdr))
 
 /**
  * sancus_nl_message_ok - check if there is room for a netlink message

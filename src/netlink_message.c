@@ -50,8 +50,8 @@ bool sancus_nl_message_ok(const struct nlmsghdr *nlh, int len)
 
 struct nlmsghdr *sancus_nl_message_next(const struct nlmsghdr *nlh, int *len)
 {
-	*len -= SANCUS_NETLINK_ALIGN(nlh->nlmsg_len);
-	return (struct nlmsghdr *)((struct nlmsghdr *)nlh + SANCUS_NETLINK_ALIGN(nlh->nlmsg_len));
+	*len -= SANCUS_NL_ALIGN(nlh->nlmsg_len);
+	return (struct nlmsghdr *)((struct nlmsghdr *)nlh + SANCUS_NL_ALIGN(nlh->nlmsg_len));
 }
 
 bool sancus_nl_message_pid_ok(const struct nlmsghdr *nlh, unsigned int pid)
@@ -61,5 +61,5 @@ bool sancus_nl_message_pid_ok(const struct nlmsghdr *nlh, unsigned int pid)
 
 void *sancus_nl_message_get_payload(const struct nlmsghdr *nlh)
 {
-	return (void *)nlh + SANCUS_NETLINK_MESSAGE_HDRLEN;
+	return (void *)nlh + SANCUS_NL_MESSAGE_HDRLEN;
 }
