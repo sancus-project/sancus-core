@@ -41,25 +41,25 @@
  * Netlink Message handling
  */
 
-bool sancus_netlink_message_ok(const struct nlmsghdr *nlh, int len)
+bool sancus_nl_message_ok(const struct nlmsghdr *nlh, int len)
 {
 	return len >= (int)sizeof(struct nlmsghdr) &&
 	       nlh->nlmsg_len >= sizeof(struct nlmsghdr) &&
 	       (int)nlh->nlmsg_len <= len;
 }
 
-struct nlmsghdr *sancus_netlink_message_next(const struct nlmsghdr *nlh, int *len)
+struct nlmsghdr *sancus_nl_message_next(const struct nlmsghdr *nlh, int *len)
 {
 	*len -= SANCUS_NETLINK_ALIGN(nlh->nlmsg_len);
 	return (struct nlmsghdr *)((struct nlmsghdr *)nlh + SANCUS_NETLINK_ALIGN(nlh->nlmsg_len));
 }
 
-bool sancus_netlink_message_pid_ok(const struct nlmsghdr *nlh, unsigned int pid)
+bool sancus_nl_message_pid_ok(const struct nlmsghdr *nlh, unsigned int pid)
 {
 	return nlh->nlmsg_pid && pid ? nlh->nlmsg_pid == pid : true;
 }
 
-void *sancus_netlink_message_get_payload(const struct nlmsghdr *nlh)
+void *sancus_nl_message_get_payload(const struct nlmsghdr *nlh)
 {
 	return (void *)nlh + SANCUS_NETLINK_MESSAGE_HDRLEN;
 }
