@@ -59,3 +59,7 @@ bool sancus_netlink_message_pid_ok(const struct nlmsghdr *nlh, unsigned int pid)
 	return nlh->nlmsg_pid && pid ? nlh->nlmsg_pid == pid : true;
 }
 
+void *sancus_netlink_message_get_payload(const struct nlmsghdr *nlh)
+{
+	return (void *)nlh + SANCUS_NETLINK_MESSAGE_HDRLEN;
+}

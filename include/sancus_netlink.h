@@ -162,4 +162,10 @@ struct nlmsghdr *sancus_netlink_message_next(const struct nlmsghdr *nlh, int *le
  */
 bool sancus_netlink_message_pid_ok(const struct nlmsghdr *nlh, unsigned int pid);
 
+/**
+ * sancus_netlink_message_get_payload - get a pointer to the payload of the netlink message
+ * @nlh:	netlink message to get the payload from
+ */
+void *sancus_netlink_message_get_payload(const struct nlmsghdr *nlh);
+
 #endif /* !_SANCUS_NETLINK_H */
