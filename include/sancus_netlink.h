@@ -173,6 +173,8 @@ void *sancus_nl_msg_get_payload(const struct nlmsghdr *nlh);
  * Netlink Attribute handling
  */
 
+#define SANCUS_NL_ATTR_HDRLEN	SANCUS_NL_ALIGN(sizeof(struct nlattr))
+
 /**
  * sancus_nl_attr_get_type - get the type of a netlink attribute
  * @attr:	pointer to a netlink attribute
