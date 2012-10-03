@@ -168,6 +168,11 @@ bool sancus_nl_msg_pid_ok(const struct nlmsghdr *nlh, unsigned int pid);
  */
 void *sancus_nl_msg_get_payload(const struct nlmsghdr *nlh);
 
+/**
+ * sancus_nl_msg_get_payload_offset - get a pointer to the payload at a given offset of the netlink message
+ * @nlh:	netlink message to get the payload from
+ */
+void *sancus_nl_msg_get_payload_offset(const struct nlmsghdr *nlh, size_t offset);
 
 /**
  * Netlink Attribute handling
