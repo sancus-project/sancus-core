@@ -61,5 +61,5 @@ bool sancus_nl_msg_pid_ok(const struct nlmsghdr *nlh, unsigned int pid)
 
 void *sancus_nl_msg_get_payload(const struct nlmsghdr *nlh)
 {
-	return (void *)nlh + SANCUS_NL_MESSAGE_HDRLEN;
+	return (void *)nlh + SANCUS_NL_MSG_HDRLEN;
 }

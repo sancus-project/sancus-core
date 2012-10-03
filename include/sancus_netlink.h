@@ -139,7 +139,7 @@ int sancus_nl_receiver_listen(struct sancus_nl_receiver *self,
 /* Netlink message headers and its attributes are always aligned to four bytes. */
 #define SANCUS_NL_ALIGNTO		4
 #define SANCUS_NL_ALIGN(len)	(((len)+SANCUS_NL_ALIGNTO-1) & ~(SANCUS_NL_ALIGNTO-1))
-#define SANCUS_NL_MESSAGE_HDRLEN	SANCUS_NL_ALIGN(sizeof(struct nlmsghdr))
+#define SANCUS_NL_MSG_HDRLEN	SANCUS_NL_ALIGN(sizeof(struct nlmsghdr))
 
 /**
  * sancus_nl_msg_ok - check if there is room for a netlink message
