@@ -168,4 +168,15 @@ bool sancus_nl_msg_pid_ok(const struct nlmsghdr *nlh, unsigned int pid);
  */
 void *sancus_nl_msg_get_payload(const struct nlmsghdr *nlh);
 
+
+/**
+ * Netlink Attribute handling
+ */
+
+/**
+ * sancus_nl_attr_get_type - get the type of a netlink attribute
+ * @attr:	pointer to a netlink attribute
+ */
+uint16_t sancus_nl_attr_get_type(const struct nlattr *attr);
+
 #endif /* !_SANCUS_NETLINK_H */

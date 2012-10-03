@@ -27,9 +27,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
-#include <stdint.h>		/* for uint16_t */
 #include <stdbool.h>
+#include <stdint.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -39,28 +38,10 @@
 #include "sancus_netlink.h"
 
 /**
- * Netlink Message handling
+ * Netlink Attribute handling
  */
 
-bool sancus_nl_msg_ok(const struct nlmsghdr *nlh, int len)
+uint16_t sancus_nl_attr_get_type(const struct nlattr *attr)
 {
-	return len >= (int)sizeof(struct nlmsghdr) &&
-	       nlh->nlmsg_len >= sizeof(struct nlmsghdr) &&
-	       (int)nlh->nlmsg_len <= len;
-}
-
-struct nlmsghdr *sancus_nl_msg_next(const struct nlmsghdr *nlh, int *len)
-{
-	*len -= SANCUS_NL_ALIGN(nlh->nlmsg_len);
-	return (struct nlmsghdr *)((struct nlmsghdr *)nlh + SANCUS_NL_ALIGN(nlh->nlmsg_len));
-}
-
-bool sancus_nl_msg_pid_ok(const struct nlmsghdr *nlh, unsigned int pid)
-{
-	return nlh->nlmsg_pid && pid ? nlh->nlmsg_pid == pid : true;
-}
-
-void *sancus_nl_msg_get_payload(const struct nlmsghdr *nlh)
-{
-	return (void *)nlh + SANCUS_NL_MSG_HDRLEN;
+	return attr->nla_type & NLA_TYPE_MASK;
 }
