@@ -230,4 +230,15 @@ bool sancus_nl_attr_ok(const struct nlattr *attr, int len);
  */
 struct nlattr *sancus_nl_attr_next(const struct nlattr *attr);
 
+/**
+ * sancus_nl_attr_foreach - iterate over the attributes of a netlink message
+ * @attr:	pointer to the current attribute
+ * @nlh:	pointer to the netlink message
+ * @offset:	offset within the message where attributes start
+ */
+#define sancus_nl_attr_foreach(attr, nlh, offset) \
+	for ((attr) = sancus_nl_msg_get_payload_offset((nlh), (offset)); \
+	     sancus_nl_attr_ok((attr), (char *)sancus_nl_msg_get_payload_tail(nlh) - (char *)(attr)); \
+	     (attr) = sancus_nl_attr_next(attr))
+
 #endif /* !_SANCUS_NETLINK_H */
