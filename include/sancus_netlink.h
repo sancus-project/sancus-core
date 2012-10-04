@@ -252,4 +252,8 @@ struct nlattr *sancus_nl_attr_next(const struct nlattr *attr);
 	     sancus_nl_attr_ok((attr), (char *)sancus_nl_msg_get_payload_tail(nlh) - (char *)(attr)); \
 	     (attr) = sancus_nl_attr_next(attr))
 
+
+int sancus_nl_attr_parse(const struct nlmsghdr *nlh, unsigned int offset,
+			 sancus_nl_attr_parse_cb cb, void *data);
+
 #endif /* !_SANCUS_NETLINK_H */

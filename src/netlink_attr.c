@@ -72,3 +72,15 @@ struct nlattr *sancus_nl_attr_next(const struct nlattr *attr)
 {
 	return (struct nlattr *)((char *)attr + SANCUS_NL_ALIGN(attr->nla_len));
 }
+
+int sancus_nl_attr_parse(const struct nlmsghdr *nlh, unsigned int offset,
+			 sancus_nl_attr_parse_cb cb, void *data)
+{
+	int ret = SANCUS_NL_CB_OK;
+	const struct nlattr *attr;
+
+	sancus_nl_attr_foreach(attr, nlh, offset)
+		if ((ret = cb(attr, data)) <= SANCUS_NL_CB_STOP)
+			return ret;
+	return ret;
+}
