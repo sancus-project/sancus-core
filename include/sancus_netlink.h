@@ -47,6 +47,7 @@ enum sancus_nl_receiver_error {
  * @on_message:		callback triggered on each new message
  * @on_attribute:	callback triggered on each new message
  * @on_error:		an error has happened, tell the world
+ * @attribute_offset:	offset within the message where attributes start
  */
 struct sancus_nl_receiver_settings {
 	bool (*on_message) (struct sancus_nl_receiver *, struct ev_loop *, const struct nlmsghdr *);
@@ -56,6 +57,8 @@ struct sancus_nl_receiver_settings {
 	void (*on_error) (struct sancus_nl_receiver *,
 			  struct ev_loop *,
 			  enum sancus_nl_receiver_error);
+
+	size_t attribute_offset;
 };
 
 /**
