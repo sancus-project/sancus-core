@@ -29,6 +29,16 @@
 #ifndef _SANCUS_NETLINK_H
 #define _SANCUS_NETLINK_H
 
+/**
+ * Callback API
+ */
+
+#define SANCUS_NL_CB_ERROR      -1
+#define SANCUS_NL_CB_STOP        0
+#define SANCUS_NL_CB_OK          1
+
+
+
 struct sancus_nl_receiver;
 
 /**
