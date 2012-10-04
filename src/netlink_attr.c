@@ -84,3 +84,28 @@ int sancus_nl_attr_parse(const struct nlmsghdr *nlh, unsigned int offset,
 			return ret;
 	return ret;
 }
+
+uint8_t sancus_nl_attr_get_u8(const struct nlattr *attr)
+{
+	return *((uint8_t *)sancus_nl_attr_get_payload(attr));
+}
+
+uint16_t sancus_nl_attr_get_u16(const struct nlattr *attr)
+{
+	return *((uint16_t *)sancus_nl_attr_get_payload(attr));
+}
+
+uint32_t sancus_nl_attr_get_u32(const struct nlattr *attr)
+{
+	return *((uint32_t *)sancus_nl_attr_get_payload(attr));
+}
+
+uint64_t sancus_nl_attr_get_u64(const struct nlattr *attr)
+{
+	return *((uint64_t *)sancus_nl_attr_get_payload(attr));
+}
+
+const char *sancus_nl_attr_get_str(const struct nlattr *attr)
+{
+	return sancus_nl_attr_get_payload(attr);
+}

@@ -256,4 +256,34 @@ struct nlattr *sancus_nl_attr_next(const struct nlattr *attr);
 int sancus_nl_attr_parse(const struct nlmsghdr *nlh, unsigned int offset,
 			 sancus_nl_attr_parse_cb cb, void *data);
 
+/**
+ * sancus_nl_attr_get_u8 - return a 8-bit unsigned integer attribute
+ * @attr:	pointer to attribute
+ */
+uint8_t sancus_nl_attr_get_u8(const struct nlattr *attr);
+
+/**
+ * sancus_nl_attr_get_u16 - return a 16-bit unsigned integer attribute
+ * @attr:	pointer to attribute
+ */
+uint16_t sancus_nl_attr_get_u16(const struct nlattr *attr);
+
+/**
+ * sancus_nl_attr_get_u32 - return a 32-bit unsigned integer attribute
+ * @attr:	pointer to attribute
+ */
+uint32_t sancus_nl_attr_get_u32(const struct nlattr *attr);
+
+/**
+ * sancus_nl_attr_get_u64 - return a 64-bit unsigned integer attribute
+ * @attr:	pointer to attribute
+ */
+uint64_t sancus_nl_attr_get_u64(const struct nlattr *attr);
+
+/**
+ * sancus_nl_attr_get_str - return a string attribute
+ * @attr:	pointer to attribute
+ */
+const char *sancus_nl_attr_get_str(const struct nlattr *attr);
+
 #endif /* !_SANCUS_NETLINK_H */
