@@ -69,3 +69,8 @@ void *sancus_nl_msg_get_payload_offset(const struct nlmsghdr *nlh, size_t offset
 {
 	return (char *)nlh + SANCUS_NL_MSG_HDRLEN + SANCUS_NL_ALIGN(offset);
 }
+
+void *sancus_nl_msg_get_payload_tail(const struct nlmsghdr *nlh)
+{
+        return (char *)nlh + SANCUS_NL_ALIGN(nlh->nlmsg_len);
+}

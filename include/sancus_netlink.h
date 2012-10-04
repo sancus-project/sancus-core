@@ -181,6 +181,13 @@ void *sancus_nl_msg_get_payload(const struct nlmsghdr *nlh);
 void *sancus_nl_msg_get_payload_offset(const struct nlmsghdr *nlh, size_t offset);
 
 /**
+ * sancus_nl_msg_get_payload_tail - get a pointer to the end of the netlink message
+ * @nlh:	pointer to a netlink message
+ */
+void *sancus_nl_msg_get_payload_tail(const struct nlmsghdr *nlh);
+
+
+/**
  * Netlink Attribute handling
  */
 
