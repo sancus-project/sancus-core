@@ -37,6 +37,7 @@
 #define SANCUS_NL_CB_STOP        0
 #define SANCUS_NL_CB_OK          1
 
+typedef int (*sancus_nl_attr_parse_cb)(const struct nlattr *attr, void *data);
 
 
 struct sancus_nl_receiver;
@@ -62,7 +63,7 @@ enum sancus_nl_receiver_error {
 struct sancus_nl_receiver_settings {
 	bool (*on_message) (struct sancus_nl_receiver *, struct ev_loop *, const struct nlmsghdr *);
 
-	bool (*on_attribute) (struct sancus_nl_receiver *, struct ev_loop *, const struct nlattr *);
+	sancus_nl_attr_parse_cb on_attribute;
 
 	void (*on_error) (struct sancus_nl_receiver *,
 			  struct ev_loop *,
