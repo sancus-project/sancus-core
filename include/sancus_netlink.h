@@ -63,8 +63,6 @@ enum sancus_nl_receiver_error {
 struct sancus_nl_receiver_settings {
 	bool (*on_message) (struct sancus_nl_receiver *, struct ev_loop *, const struct nlmsghdr *);
 
-	sancus_nl_attr_parse_cb on_attribute;
-
 	void (*on_error) (struct sancus_nl_receiver *,
 			  struct ev_loop *,
 			  enum sancus_nl_receiver_error);
