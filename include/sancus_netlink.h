@@ -75,14 +75,14 @@ struct sancus_nl_receiver_settings {
  *
  * @recv_watcher:	receive watcher
  * @settings:		driving callbacks
- * @pid:		port ID
+ * @portid:		port ID
  */
 struct sancus_nl_receiver {
 	struct ev_io recv_watcher;
 
 	const struct sancus_nl_receiver_settings *settings;
 
-	pid_t pid;
+	pid_t portid;
 };
 
 /**
@@ -118,14 +118,14 @@ void sancus_nl_receiver_close(struct sancus_nl_receiver *self);
  * @settings:	driving callbacks
  * @bus:	netlink socket bus ID (see NETLINK_* constants)	
  * @groups:	the group of message you're interested in
- * @pid:	port ID you want to use (use zero for automatic selection)
+ * @portid:	port ID you want to use (use zero for automatic selection)
  *
  * Returns 0 if @addr is invalid, 1 on success and -1 on error. errno set
  * accordingly.
  */
 int sancus_nl_receiver_listen(struct sancus_nl_receiver *self,
 			   const struct sancus_nl_receiver_settings *settings,
-			   int bus, unsigned int groups, pid_t pid);
+			   int bus, unsigned int groups, pid_t portid);
 /**
  * SANCUS_NL_SOCKET_BUFFER_SIZE - netlink socket buffer size
  */
@@ -171,11 +171,11 @@ bool sancus_nl_msg_ok(const struct nlmsghdr *nlh, int len);
 struct nlmsghdr *sancus_nl_msg_next(const struct nlmsghdr *nlh, int *len);
 
 /**
- * sancus_nl_msg_pid_ok - perform a check if sending port ID is correct
+ * sancus_nl_msg_portid_ok - perform a check if sending port ID is correct
  * @nlh:	netlink message that is currently handled
- * @pid:	netlink portid to check
+ * @portid:	netlink portid to check
  */
-bool sancus_nl_msg_pid_ok(const struct nlmsghdr *nlh, unsigned int pid);
+bool sancus_nl_msg_portid_ok(const struct nlmsghdr *nlh, unsigned int portid);
 
 /**
  * sancus_nl_msg_get_payload - get a pointer to the payload of the netlink message

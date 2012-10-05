@@ -90,7 +90,7 @@ static inline int extract_netlink_message(struct sancus_nl_receiver *self,
 
 	while (sancus_nl_msg_ok(nlh, len)) {
 		/* check port id of netlink message against the one of the receiver */
-		if (!sancus_nl_msg_pid_ok(nlh, self->pid)) {
+		if (!sancus_nl_msg_portid_ok(nlh, self->portid)) {
 			errno = ESRCH;
 			return -1;
 		}
@@ -161,12 +161,12 @@ void sancus_nl_receiver_close(struct sancus_nl_receiver *self)
 
 int sancus_nl_receiver_listen(struct sancus_nl_receiver *self,
 			   const struct sancus_nl_receiver_settings *settings,
-			   int bus, unsigned int groups, pid_t pid)
+			   int bus, unsigned int groups, pid_t portid)
 {
 	struct sockaddr_nl sa = {
 		.nl_family = AF_NETLINK,
 		.nl_groups = groups,
-		.nl_pid = pid,
+		.nl_pid = portid,
 	};
 
 	int fd = sancus_socket(AF_NETLINK, SOCK_RAW, bus, 0, true);
@@ -179,7 +179,7 @@ int sancus_nl_receiver_listen(struct sancus_nl_receiver *self,
 	ev_io_init(&self->recv_watcher, recv_cb, fd, EV_READ);
 
 	self->settings = settings;
-	self->pid = pid;
+	self->portid = portid;
 
 	if (bind(fd, (struct sockaddr *) &sa, sizeof(sa)) < 0) { 
 		int e = errno;
