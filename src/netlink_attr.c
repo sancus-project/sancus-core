@@ -29,6 +29,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <errno.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -71,6 +72,15 @@ bool sancus_nl_attr_ok(const struct nlattr *attr, int len)
 struct nlattr *sancus_nl_attr_next(const struct nlattr *attr)
 {
 	return (struct nlattr *)((char *)attr + SANCUS_NL_ALIGN(attr->nla_len));
+}
+
+int sancus_nl_attr_type_valid(const struct nlattr *attr, uint16_t max)
+{
+	if (sancus_nl_attr_get_type(attr) > max) {
+		errno = EOPNOTSUPP;
+		return -1;
+	}
+	return 1;
 }
 
 int sancus_nl_attr_parse(const struct nlmsghdr *nlh, unsigned int offset,

@@ -240,6 +240,13 @@ bool sancus_nl_attr_ok(const struct nlattr *attr, int len);
 struct nlattr *sancus_nl_attr_next(const struct nlattr *attr);
 
 /**
+ * sancus_nl_attr_type_valid - check if the attribute type is valid
+ * @attr:	pointer to attribute
+ * @max:	maximum attribute type
+ */
+int sancus_nl_attr_type_valid(const struct nlattr *attr, uint16_t max);
+
+/**
  * sancus_nl_attr_foreach - iterate over the attributes of a netlink message
  * @attr:	pointer to the current attribute
  * @nlh:	pointer to the netlink message
