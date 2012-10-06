@@ -77,7 +77,7 @@ static ssize_t sancus_nl_recvfrom(int fd, void *buf, size_t buflen)
 	return ret;
 }
 
-/* extract the netlink message from the buffer and call on_data callback */
+/* extract the netlink message from the buffer and call on_message callback */
 static inline int extract_netlink_message(struct sancus_nl_receiver *self,
 				    struct ev_loop *loop,
 				    const void *buf, size_t recvbytes)
