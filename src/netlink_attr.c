@@ -147,6 +147,19 @@ static int validate_attr(const struct nlattr *attr,
 	return 0;
 }
 
+int sancus_nl_attr_validate_minlen(const struct nlattr *attr,
+				   enum sancus_nl_attr_data_type type)
+{
+	int minlen;
+
+	if (type >= SANCUS_NL_ATTR_TYPE_MAX) {
+		errno = EINVAL;
+		return -1;
+	}
+	minlen = sancus_nl_attr_data_type_minlen[type];
+	return validate_attr(attr, type, minlen);
+}
+
 int sancus_nl_attr_parse(const struct nlmsghdr *nlh, unsigned int offset,
 			 sancus_nl_attr_parse_cb cb, void *data)
 {

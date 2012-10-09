@@ -264,6 +264,20 @@ struct nlattr *sancus_nl_attr_next(const struct nlattr *attr);
 int sancus_nl_attr_type_valid(const struct nlattr *attr, uint16_t max);
 
 /**
+ * sancus_nl_attr_validate_minlen - validate netlink attribute based on the
+ * 				    minimal length of the data type
+ * @attr:	netlink attribute
+ * @type:	attribute type
+ *
+ * The basic validation is based on the minimal length a data type will occupy.
+ * Specifically, it checks that integer the types (u8, u16, u32 and u64) will
+ * have enough space and that string types do not have an empty payload.
+ * This function returns -1 in case of an error setting errno appropriately.
+ */
+int sancus_nl_attr_validate_minlen(const struct nlattr *attr,
+				   enum sancus_nl_attr_data_type type);
+
+/**
  * sancus_nl_attr_foreach - iterate over the attributes of a netlink message
  * @attr:	pointer to the current attribute
  * @nlh:	pointer to the netlink message
