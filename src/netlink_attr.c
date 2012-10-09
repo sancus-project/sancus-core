@@ -93,6 +93,60 @@ static const size_t sancus_nl_attr_data_type_minlen[SANCUS_NL_ATTR_TYPE_MAX + 1]
 	[SANCUS_NL_ATTR_TYPE_NUL_STRING]	= 1,
 };
 
+/* internally used generic attribute validation */
+static int validate_attr(const struct nlattr *attr,
+			 enum sancus_nl_attr_data_type type,
+			 size_t expected_len)
+{
+	uint16_t len = sancus_nl_attr_get_payload_len(attr);
+	const char *payload = sancus_nl_attr_get_payload(attr);
+
+	if (len < expected_len) {
+		errno = ERANGE;
+		return -1;
+	}
+	switch(type) {
+	case SANCUS_NL_ATTR_TYPE_FLAG:
+		/* len is unused */
+		if (len > 0) {
+			errno = ERANGE;
+			return -1;
+		}
+		break;
+	case SANCUS_NL_ATTR_TYPE_STRING:
+		if (len == 0) {
+			errno = ERANGE;
+			return -1;
+		}
+		break;
+	case SANCUS_NL_ATTR_TYPE_NUL_STRING:
+		if (len == 0) {
+			errno = ERANGE;
+			return -1;
+		}
+		/* payload needs to be NUL terminated */
+		if (payload[len-1] != '\0') {
+			errno = EINVAL;
+			return -1;
+		}
+		break;
+	case SANCUS_NL_ATTR_TYPE_NESTED:
+		/* empty nested attributes are allowed */
+		if (len == 0)
+			break;
+		/* if not empty, it must contain one header */
+		if (len < SANCUS_NL_ATTR_HDRLEN) {
+			errno = ERANGE;
+			return -1;
+		}
+		break;
+	default: /* gcc -Wswitch warns about unhandled cases otherwise */
+		break;
+	}
+
+	return 0;
+}
+
 int sancus_nl_attr_parse(const struct nlmsghdr *nlh, unsigned int offset,
 			 sancus_nl_attr_parse_cb cb, void *data)
 {
