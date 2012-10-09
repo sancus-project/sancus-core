@@ -335,6 +335,6 @@ uint64_t sancus_nl_attr_get_u64(const struct nlattr *attr);
  * sancus_nl_attr_get_str - return a string attribute
  * @attr:	pointer to attribute
  */
-const char *sancus_nl_attr_get_str(const struct nlattr *attr);
+const char *sancus_nl_attr_get_string(const struct nlattr *attr);
 
 #endif /* !_SANCUS_NETLINK_H */
