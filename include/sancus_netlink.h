@@ -200,6 +200,23 @@ void *sancus_nl_msg_get_payload_tail(const struct nlmsghdr *nlh);
  * Netlink Attribute handling
  */
 
+/* attribute data types */
+enum sancus_nl_attr_data_type {
+	SANCUS_NL_ATTR_TYPE_UNSPEC,
+	SANCUS_NL_ATTR_TYPE_U8,
+	SANCUS_NL_ATTR_TYPE_U16,
+	SANCUS_NL_ATTR_TYPE_U32,
+	SANCUS_NL_ATTR_TYPE_U64,
+	SANCUS_NL_ATTR_TYPE_STRING,
+	SANCUS_NL_ATTR_TYPE_FLAG,
+	SANCUS_NL_ATTR_TYPE_MSECS,
+	SANCUS_NL_ATTR_TYPE_NESTED,
+	SANCUS_NL_ATTR_TYPE_NESTED_COMPAT,
+	SANCUS_NL_ATTR_TYPE_NUL_STRING,
+	SANCUS_NL_ATTR_TYPE_BINARY,
+	SANCUS_NL_ATTR_TYPE_MAX,
+};
+
 #define SANCUS_NL_ATTR_HDRLEN	SANCUS_NL_ALIGN(sizeof(struct nlattr))
 
 /**
