@@ -83,6 +83,16 @@ int sancus_nl_attr_type_valid(const struct nlattr *attr, uint16_t max)
 	return 1;
 }
 
+/* minimum length of basic attribute data types */
+static const size_t sancus_nl_attr_data_type_minlen[SANCUS_NL_ATTR_TYPE_MAX + 1] = {
+	[SANCUS_NL_ATTR_TYPE_U8]		= sizeof(uint8_t),
+	[SANCUS_NL_ATTR_TYPE_U16]		= sizeof(uint16_t),
+	[SANCUS_NL_ATTR_TYPE_U32]		= sizeof(uint32_t),
+	[SANCUS_NL_ATTR_TYPE_U64]		= sizeof(uint64_t),
+	[SANCUS_NL_ATTR_TYPE_STRING]		= 1,
+	[SANCUS_NL_ATTR_TYPE_NUL_STRING]	= 1,
+};
+
 int sancus_nl_attr_parse(const struct nlmsghdr *nlh, unsigned int offset,
 			 sancus_nl_attr_parse_cb cb, void *data)
 {
