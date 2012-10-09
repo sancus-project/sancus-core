@@ -278,6 +278,21 @@ int sancus_nl_attr_validate_minlen(const struct nlattr *attr,
 				   enum sancus_nl_attr_data_type type);
 
 /**
+ * sancus_nl_attr_validate_explen - validate netlink attribute based on the
+ * 				    expected length of the data type
+ * @attr:	netlink attribute
+ * @type:	attribute type
+ * @explen:	expected length
+ *
+ * The validation is based on the expected length the data type will occupy.
+ * This validation is more suitable for validating variable size data types.
+ * This function returns -1 in case of an error setting errno appropriately.
+ */
+int sancus_nl_attr_validate_explen(const struct nlattr *attr,
+				   enum sancus_nl_attr_data_type type,
+				   size_t explen);
+
+/**
  * sancus_nl_attr_foreach - iterate over the attributes of a netlink message
  * @attr:	pointer to the current attribute
  * @nlh:	pointer to the netlink message
