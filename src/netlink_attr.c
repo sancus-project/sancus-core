@@ -225,3 +225,8 @@ void sancus_nl_attr_put_u8(struct nlmsghdr *nlh, uint16_t type, uint8_t data)
 {
 	sancus_nl_attr_put(nlh, type, sizeof(uint8_t), &data);
 }
+
+void sancus_nl_attr_put_u16(struct nlmsghdr *nlh, uint16_t type, uint16_t data)
+{
+	sancus_nl_attr_put(nlh, type, sizeof(uint16_t), &data);
+}

@@ -366,4 +366,12 @@ void sancus_nl_attr_put(struct nlmsghdr *nlh, uint16_t type, size_t len, const v
  */
 void sancus_nl_attr_put_u8(struct nlmsghdr *nlh, uint16_t type, uint8_t data);
 
+/**
+ * sancus_nl_attr_put_u16 - add 16-bit unsigned integer attribute to netlink message
+ * @nlh:	pointer to the netlink message
+ * @type:	netlink attribute type
+ * @data:	16-bit unsigned integer data that is stored by the new attribute
+ */
+void sancus_nl_attr_put_u16(struct nlmsghdr *nlh, uint16_t type, uint16_t data);
+
 #endif /* !_SANCUS_NETLINK_H */
