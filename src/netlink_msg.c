@@ -88,3 +88,16 @@ struct nlmsghdr *sancus_nl_msg_put_header(void *buf)
 
 	return nlh;
 }
+
+void *sancus_nl_msg_put_extra_header(struct nlmsghdr *nlh, size_t size)
+{
+	char *ptr = (char *)nlh + nlh->nlmsg_len;
+	size_t len = SANCUS_NL_ALIGN(size);
+
+	/* zero'ing the memory occupied by the extra header */
+	memset(ptr, 0, len);
+	/* increase the nlmsg_len field by the lenght of the extra header */
+	nlh->nlmsg_len += len;
+
+	return ptr;
+}

@@ -202,6 +202,13 @@ void *sancus_nl_msg_get_payload_tail(const struct nlmsghdr *nlh);
 struct nlmsghdr *sancus_nl_msg_put_header(void *buf);
 
 /**
+ * sancus_nl_msg_put_extra_header - reserve and prepare space for an extra header
+ * @nlh:	pointer to Netlink header
+ * @size:	size of the extra header that will be added
+ */
+void *sancus_nl_msg_put_extra_header(struct nlmsghdr *nlh, size_t size);
+
+/**
  * Netlink Attribute handling
  */
 
