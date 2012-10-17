@@ -245,3 +245,8 @@ void sancus_nl_attr_put_string(struct nlmsghdr *nlh, uint16_t type, const char *
 {
 	sancus_nl_attr_put(nlh, type, strlen(data), data);
 }
+
+void sancus_nl_attr_put_nul_string(struct nlmsghdr *nlh, uint16_t type, const char *data)
+{
+	sancus_nl_attr_put(nlh, type, strlen(data)+1, data);
+}
