@@ -349,4 +349,13 @@ uint64_t sancus_nl_attr_get_u64(const struct nlattr *attr);
  */
 const char *sancus_nl_attr_get_string(const struct nlattr *attr);
 
+/**
+ * sancus_nl_attr_put - add an attribute to netlink message
+ * @nlh:	pointer to netlink message
+ * @type:	netlink attribute type that will be added
+ * @len:	netlink attribute payload length
+ * @data:	pointer to the data that will be stored by the attribute
+ */
+void sancus_nl_attr_put(struct nlmsghdr *nlh, uint16_t type, size_t len, const void *data);
+
 #endif /* !_SANCUS_NETLINK_H */

@@ -29,6 +29,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <string.h>		/* for memcpy */
 #include <errno.h>
 
 #include <sys/types.h>
@@ -206,4 +207,16 @@ uint64_t sancus_nl_attr_get_u64(const struct nlattr *attr)
 const char *sancus_nl_attr_get_string(const struct nlattr *attr)
 {
 	return sancus_nl_attr_get_payload(attr);
+}
+
+void sancus_nl_attr_put(struct nlmsghdr *nlh, uint16_t type, size_t len, const void *data)
+{
+	struct nlattr *attr = sancus_nl_msg_get_payload_tail(nlh);
+	uint16_t payload_len = SANCUS_NL_ALIGN(sizeof(struct nlattr)) + len;
+
+	attr->nla_type = type;
+	attr->nla_len = payload_len;
+	memcpy(sancus_nl_attr_get_payload(attr), data, len);
+	/* update nlmsg_len field */
+	nlh->nlmsg_len += SANCUS_NL_ALIGN(payload_len);
 }
