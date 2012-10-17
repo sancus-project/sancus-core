@@ -195,6 +195,11 @@ void *sancus_nl_msg_get_payload_offset(const struct nlmsghdr *nlh, size_t offset
  */
 void *sancus_nl_msg_get_payload_tail(const struct nlmsghdr *nlh);
 
+/**
+ * sancus_nl_msg_put_header - reserve and prepare space for a Netlink header
+ * @buf:	already allocated buffer to store the Netlink header
+ */
+struct nlmsghdr *sancus_nl_msg_put_header(void *buf);
 
 /**
  * Netlink Attribute handling

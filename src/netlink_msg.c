@@ -30,6 +30,7 @@
 
 #include <stdint.h>		/* for uint16_t */
 #include <stdbool.h>
+#include <string.h>		/* for memset */
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -73,4 +74,17 @@ void *sancus_nl_msg_get_payload_offset(const struct nlmsghdr *nlh, size_t offset
 void *sancus_nl_msg_get_payload_tail(const struct nlmsghdr *nlh)
 {
         return (char *)nlh + SANCUS_NL_ALIGN(nlh->nlmsg_len);
+}
+
+struct nlmsghdr *sancus_nl_msg_put_header(void *buf)
+{
+	int len = SANCUS_NL_ALIGN(sizeof(struct nlmsghdr));
+	struct nlmsghdr *nlh = buf;
+
+	/* zero'ing the memory occupied by the netlink header */
+	memset(buf, 0, len);
+	/* initialise nlmsg_len field */
+	nlh->nlmsg_len = len;
+
+	return nlh;
 }
