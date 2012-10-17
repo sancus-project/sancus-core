@@ -221,6 +221,17 @@ void sancus_nl_attr_put(struct nlmsghdr *nlh, uint16_t type, size_t len, const v
 	nlh->nlmsg_len += SANCUS_NL_ALIGN(payload_len);
 }
 
+bool sancus_nl_attr_put_check(struct nlmsghdr *nlh, size_t buflen,
+			      uint16_t type, size_t len, const void *data)
+{
+	/* check if attribute fits into the buffer */
+	if (nlh->nlmsg_len + SANCUS_NL_ATTR_HDRLEN + SANCUS_NL_ALIGN(len) > buflen)
+		return false;
+	sancus_nl_attr_put(nlh, type, len, data);
+
+	return true;
+}
+
 void sancus_nl_attr_put_u8(struct nlmsghdr *nlh, uint16_t type, uint8_t data)
 {
 	sancus_nl_attr_put(nlh, type, sizeof(uint8_t), &data);
@@ -250,3 +261,4 @@ void sancus_nl_attr_put_nul_string(struct nlmsghdr *nlh, uint16_t type, const ch
 {
 	sancus_nl_attr_put(nlh, type, strlen(data)+1, data);
 }
+

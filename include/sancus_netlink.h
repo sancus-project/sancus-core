@@ -359,6 +359,17 @@ const char *sancus_nl_attr_get_string(const struct nlattr *attr);
 void sancus_nl_attr_put(struct nlmsghdr *nlh, uint16_t type, size_t len, const void *data);
 
 /**
+ * sancus_nl_attr_put_check - add an attribute to netlink message if it fits into the buffer
+ * @nlh:	pointer to the netlink message
+ * @buflen:	size of buffer for stores the message
+ * @type:	netlink attribute type that will be added
+ * @len:	netlink attribute payload length
+ * @data:	pointer to the data that will be stored by the new attribute
+ */
+bool sancus_nl_attr_put_check(struct nlmsghdr *nlh, size_t buflen,
+			      uint16_t type, size_t len, const void *data);
+
+/**
  * sancus_nl_attr_put_u8 - add 8-bit unsigned integer attribute to netlink message
  * @nlh:	pointer to the netlink message
  * @type:	netlink attribute type
