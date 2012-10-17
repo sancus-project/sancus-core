@@ -29,7 +29,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include <string.h>		/* for memcpy */
+#include <string.h>		/* for memcpy, strlen */
 #include <errno.h>
 
 #include <sys/types.h>
@@ -239,4 +239,9 @@ void sancus_nl_attr_put_u32(struct nlmsghdr *nlh, uint16_t type, uint32_t data)
 void sancus_nl_attr_put_u64(struct nlmsghdr *nlh, uint16_t type, uint64_t data)
 {
 	sancus_nl_attr_put(nlh, type, sizeof(uint64_t), &data);
+}
+
+void sancus_nl_attr_put_string(struct nlmsghdr *nlh, uint16_t type, const char *data)
+{
+	sancus_nl_attr_put(nlh, type, strlen(data), data);
 }

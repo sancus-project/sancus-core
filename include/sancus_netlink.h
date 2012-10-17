@@ -390,4 +390,12 @@ void sancus_nl_attr_put_u32(struct nlmsghdr *nlh, uint16_t type, uint32_t data);
  */
 void sancus_nl_attr_put_u64(struct nlmsghdr *nlh, uint16_t type, uint64_t data);
 
+/**
+ * sancus_nl_attr_put_string - add string attribute to netlink message
+ * @nlh:	pointer to the netlink message
+ * @type:	netlink attribute type
+ * @data:	string data that is stored by the new attribute
+ */
+void sancus_nl_attr_put_string(struct nlmsghdr *nlh, uint16_t type, const char *data);
+
 #endif /* !_SANCUS_NETLINK_H */
