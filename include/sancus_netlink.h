@@ -358,4 +358,12 @@ const char *sancus_nl_attr_get_string(const struct nlattr *attr);
  */
 void sancus_nl_attr_put(struct nlmsghdr *nlh, uint16_t type, size_t len, const void *data);
 
+/**
+ * sancus_nl_attr_put_u8 - add 8-bit unsigned integer attribute to netlink message
+ * @nlh:	pointer to the netlink message
+ * @type:	netlink attribute type
+ * @data:	8-bit unsigned integer data that is stored by the new attribute
+ */
+void sancus_nl_attr_put_u8(struct nlmsghdr *nlh, uint16_t type, uint8_t data);
+
 #endif /* !_SANCUS_NETLINK_H */

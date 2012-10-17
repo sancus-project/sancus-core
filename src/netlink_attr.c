@@ -220,3 +220,8 @@ void sancus_nl_attr_put(struct nlmsghdr *nlh, uint16_t type, size_t len, const v
 	/* update nlmsg_len field */
 	nlh->nlmsg_len += SANCUS_NL_ALIGN(payload_len);
 }
+
+void sancus_nl_attr_put_u8(struct nlmsghdr *nlh, uint16_t type, uint8_t data)
+{
+	sancus_nl_attr_put(nlh, type, sizeof(uint8_t), &data);
+}
