@@ -209,7 +209,18 @@ const char *sancus_nl_attr_get_string(const struct nlattr *attr)
 	return sancus_nl_attr_get_payload(attr);
 }
 
-void sancus_nl_attr_put(struct nlmsghdr *nlh, uint16_t type, size_t len, const void *data)
+/**
+ * __sancus_nl_attr_put_nocheck - private function to add an attribute to
+ * 				  netlink message without buffer len check
+ *
+ * @nlh:	pointer to netlink message
+ * @type:	netlink attribute type that will be added
+ * @len:	netlink attribute payload length
+ * @data:	pointer to the data that will be stored by the attribute
+ */
+static inline void __sancus_nl_attr_put_nocheck(struct nlmsghdr *nlh,
+						uint16_t type, size_t len,
+						const void *data)
 {
 	struct nlattr *attr = sancus_nl_msg_get_payload_tail(nlh);
 	uint16_t payload_len = SANCUS_NL_ALIGN(sizeof(struct nlattr)) + len;
@@ -221,44 +232,60 @@ void sancus_nl_attr_put(struct nlmsghdr *nlh, uint16_t type, size_t len, const v
 	nlh->nlmsg_len += SANCUS_NL_ALIGN(payload_len);
 }
 
-bool sancus_nl_attr_put_check(struct nlmsghdr *nlh, size_t buflen,
-			      uint16_t type, size_t len, const void *data)
+/**
+ * __sancus_nl_attr_put_check - private function to add an attribute to
+ * 				netlink message with prior buffer len check
+ *
+ * @nlh:	pointer to netlink message
+ * @buflen:	size of buffer for stores the message
+ * @type:	netlink attribute type that will be added
+ * @len:	netlink attribute payload length
+ * @data:	pointer to the data that will be stored by the attribute
+ */
+static inline bool __sancus_nl_attr_put_check(struct nlmsghdr *nlh, size_t buflen,
+			uint16_t type, size_t len, const void *data)
 {
 	/* check if attribute fits into the buffer */
 	if (nlh->nlmsg_len + SANCUS_NL_ATTR_HDRLEN + SANCUS_NL_ALIGN(len) > buflen)
 		return false;
-	sancus_nl_attr_put(nlh, type, len, data);
+	__sancus_nl_attr_put_nocheck(nlh, type, len, data);
 
 	return true;
 }
 
-void sancus_nl_attr_put_u8(struct nlmsghdr *nlh, uint16_t type, uint8_t data)
+bool sancus_nl_attr_put(struct nlmsghdr *nlh, size_t buflen,
+			uint16_t type, size_t len, const void *data)
 {
-	sancus_nl_attr_put(nlh, type, sizeof(uint8_t), &data);
+	return __sancus_nl_attr_put_check(nlh, buflen, type, len, &data);
 }
 
-void sancus_nl_attr_put_u16(struct nlmsghdr *nlh, uint16_t type, uint16_t data)
+bool sancus_nl_attr_put_u8(struct nlmsghdr *nlh, size_t buflen, uint16_t type, uint8_t data)
 {
-	sancus_nl_attr_put(nlh, type, sizeof(uint16_t), &data);
+	return __sancus_nl_attr_put_check(nlh, buflen, type, sizeof(uint8_t), &data);
 }
 
-void sancus_nl_attr_put_u32(struct nlmsghdr *nlh, uint16_t type, uint32_t data)
+bool sancus_nl_attr_put_u16(struct nlmsghdr *nlh, size_t buflen, uint16_t type, uint16_t data)
 {
-	sancus_nl_attr_put(nlh, type, sizeof(uint32_t), &data);
+	return __sancus_nl_attr_put_check(nlh, buflen, type, sizeof(uint16_t), &data);
 }
 
-void sancus_nl_attr_put_u64(struct nlmsghdr *nlh, uint16_t type, uint64_t data)
+bool sancus_nl_attr_put_u32(struct nlmsghdr *nlh, size_t buflen, uint16_t type, uint32_t data)
 {
-	sancus_nl_attr_put(nlh, type, sizeof(uint64_t), &data);
+	return __sancus_nl_attr_put_check(nlh, buflen, type, sizeof(uint32_t), &data);
 }
 
-void sancus_nl_attr_put_string(struct nlmsghdr *nlh, uint16_t type, const char *data)
+bool sancus_nl_attr_put_u64(struct nlmsghdr *nlh, size_t buflen, uint16_t type, uint64_t data)
 {
-	sancus_nl_attr_put(nlh, type, strlen(data), data);
+	return __sancus_nl_attr_put_check(nlh, buflen, type, sizeof(uint64_t), &data);
 }
 
-void sancus_nl_attr_put_nul_string(struct nlmsghdr *nlh, uint16_t type, const char *data)
+bool sancus_nl_attr_put_string(struct nlmsghdr *nlh, size_t buflen, uint16_t type, const char *data)
 {
-	sancus_nl_attr_put(nlh, type, strlen(data)+1, data);
+	return __sancus_nl_attr_put_check(nlh, buflen, type, strlen(data), data);
+}
+
+bool sancus_nl_attr_put_nul_string(struct nlmsghdr *nlh, size_t buflen, uint16_t type, const char *data)
+{
+	return __sancus_nl_attr_put_check(nlh, buflen, type, strlen(data)+1, data);
 }
 

@@ -350,71 +350,68 @@ uint64_t sancus_nl_attr_get_u64(const struct nlattr *attr);
 const char *sancus_nl_attr_get_string(const struct nlattr *attr);
 
 /**
- * sancus_nl_attr_put - add an attribute to netlink message
- * @nlh:	pointer to netlink message
- * @type:	netlink attribute type that will be added
- * @len:	netlink attribute payload length
- * @data:	pointer to the data that will be stored by the attribute
- */
-void sancus_nl_attr_put(struct nlmsghdr *nlh, uint16_t type, size_t len, const void *data);
-
-/**
- * sancus_nl_attr_put_check - add an attribute to netlink message if it fits into the buffer
+ * sancus_nl_attr_put - add an attribute to netlink message if it fits into the buffer
  * @nlh:	pointer to the netlink message
  * @buflen:	size of buffer for stores the message
  * @type:	netlink attribute type that will be added
  * @len:	netlink attribute payload length
  * @data:	pointer to the data that will be stored by the new attribute
  */
-bool sancus_nl_attr_put_check(struct nlmsghdr *nlh, size_t buflen,
-			      uint16_t type, size_t len, const void *data);
+bool sancus_nl_attr_put(struct nlmsghdr *nlh, size_t buflen,
+			uint16_t type, size_t len, const void *data);
 
 /**
  * sancus_nl_attr_put_u8 - add 8-bit unsigned integer attribute to netlink message
  * @nlh:	pointer to the netlink message
+ * @buflen:	size of buffer for stores the message
  * @type:	netlink attribute type
  * @data:	8-bit unsigned integer data that is stored by the new attribute
  */
-void sancus_nl_attr_put_u8(struct nlmsghdr *nlh, uint16_t type, uint8_t data);
+bool sancus_nl_attr_put_u8(struct nlmsghdr *nlh, size_t buflen, uint16_t type, uint8_t data);
 
 /**
  * sancus_nl_attr_put_u16 - add 16-bit unsigned integer attribute to netlink message
  * @nlh:	pointer to the netlink message
+ * @buflen:	size of buffer for stores the message
  * @type:	netlink attribute type
  * @data:	16-bit unsigned integer data that is stored by the new attribute
  */
-void sancus_nl_attr_put_u16(struct nlmsghdr *nlh, uint16_t type, uint16_t data);
+bool sancus_nl_attr_put_u16(struct nlmsghdr *nlh, size_t buflen, uint16_t type, uint16_t data);
 
 /**
  * sancus_nl_attr_put_u32 - add 32-bit unsigned integer attribute to netlink message
  * @nlh:	pointer to the netlink message
+ * @buflen:	size of buffer for stores the message
  * @type:	netlink attribute type
  * @data:	32-bit unsigned integer data that is stored by the new attribute
  */
-void sancus_nl_attr_put_u32(struct nlmsghdr *nlh, uint16_t type, uint32_t data);
+bool sancus_nl_attr_put_u32(struct nlmsghdr *nlh, size_t buflen, uint16_t type, uint32_t data);
 
 /**
  * sancus_nl_attr_put_u64 - add 64-bit unsigned integer attribute to netlink message
  * @nlh:	pointer to the netlink message
+ * @buflen:	size of buffer for stores the message
  * @type:	netlink attribute type
  * @data:	64-bit unsigned integer data that is stored by the new attribute
  */
-void sancus_nl_attr_put_u64(struct nlmsghdr *nlh, uint16_t type, uint64_t data);
+bool sancus_nl_attr_put_u64(struct nlmsghdr *nlh, size_t buflen, uint16_t type, uint64_t data);
 
 /**
  * sancus_nl_attr_put_string - add string attribute to netlink message
  * @nlh:	pointer to the netlink message
+ * @buflen:	size of buffer for stores the message
  * @type:	netlink attribute type
  * @data:	string data that is stored by the new attribute
  */
-void sancus_nl_attr_put_string(struct nlmsghdr *nlh, uint16_t type, const char *data);
+bool sancus_nl_attr_put_string(struct nlmsghdr *nlh, size_t buflen, uint16_t type, const char *data);
 
 /**
  * sancus_nl_attr_put_nul_string - add nul terminated string attribute to netlink message
  * @nlh:	pointer to the netlink message
+ * @buflen:	size of buffer for stores the message
  * @type:	netlink attribute type
  * @data:	string data that is stored by the new attribute
  */
-void sancus_nl_attr_put_nul_string(struct nlmsghdr *nlh, uint16_t type, const char *data);
+bool sancus_nl_attr_put_nul_string(struct nlmsghdr *nlh, size_t buflen, uint16_t type, const char *data);
 
 #endif /* !_SANCUS_NETLINK_H */
