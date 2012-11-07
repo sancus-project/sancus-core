@@ -34,11 +34,9 @@ struct sancus_tcp_server;
 /**
  * enum sancus_tcp_server_error - list of possible errors
  *
- * @SANCUS_TCP_SERVER_WATCHER_ERROR:	connect watcher error, server has been closed
  * @SANCUS_TCP_SERVER_ACCEPT_ERROR:	accept() call failed, check %errno
  */
 enum sancus_tcp_server_error {
-	SANCUS_TCP_SERVER_WATCHER_ERROR,
 	SANCUS_TCP_SERVER_ACCEPT_ERROR,
 };
 

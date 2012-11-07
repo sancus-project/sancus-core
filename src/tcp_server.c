@@ -51,6 +51,8 @@ static void connect_cb(struct ev_loop *loop, struct ev_io *w, int revents)
 						      connect);
 	const struct sancus_tcp_server_settings *settings = self->settings;
 
+	assert(revents & EV_ERROR == 0);
+
 	if (revents & EV_READ) {
 		struct sockaddr_storage addr;
 		socklen_t addrlen = sizeof(addr);
@@ -63,12 +65,6 @@ static void connect_cb(struct ev_loop *loop, struct ev_io *w, int revents)
 						 (struct sockaddr*)&addr, addrlen)) {
 			sancus_close(&fd);
 		}
-	}
-	if (revents & EV_ERROR) {
-		sancus_tcp_server_stop(self, loop);
-		sancus_tcp_server_close(self);
-
-		settings->on_error(self, loop, SANCUS_TCP_SERVER_WATCHER_ERROR);
 	}
 }
 
