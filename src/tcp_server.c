@@ -51,7 +51,7 @@ static void connect_cb(struct ev_loop *loop, struct ev_io *w, int revents)
 						      connect);
 	const struct sancus_tcp_server_settings *settings = self->settings;
 
-	assert(revents & EV_ERROR == 0);
+	assert(!(revents & EV_ERROR));
 
 	if (revents & EV_READ) {
 		struct sockaddr_storage addr;
