@@ -49,6 +49,8 @@ static void read_cb(struct ev_loop *loop, struct ev_io *w, int revents)
 	struct sancus_stream *self = container_of(w, struct sancus_stream, read_watcher);
 	struct sancus_stream_settings *settings = self->settings;
 
+	assert((revents & EV_ERROR) == 0);
+
 	if (revents & EV_READ) {
 		struct sancus_buffer *buf = &self->read_buffer;
 		ssize_t l;
@@ -88,13 +90,11 @@ try_read:
 
 	}
 
-	if (revents & EV_ERROR) {
-		settings->on_error(self, loop, SANCUS_STREAM_READ_WATCHER_ERROR);
+	return;
 
 close_stream:
-		sancus_stream_stop(self, loop);
-		sancus_stream_close(self);
-	}
+	sancus_stream_stop(self, loop);
+	sancus_stream_close(self);
 }
 
 /*

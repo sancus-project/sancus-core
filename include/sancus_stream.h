@@ -35,8 +35,6 @@ struct sancus_stream;
  *
  */
 enum sancus_stream_error {
-	SANCUS_STREAM_READ_WATCHER_ERROR,
-
 	SANCUS_STREAM_READ_ERROR,
 	SANCUS_STREAM_READ_EOF,
 	SANCUS_STREAM_READ_FULL,
