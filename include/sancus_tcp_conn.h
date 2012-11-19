@@ -104,4 +104,17 @@ int sancus_tcp_ipv4_connect(struct sancus_tcp_conn *self,
 			    const char *addr, unsigned port,
 			    bool cloexec);
 
+/**
+ * sancus_tcp_ipv6_connect - initialized and prepares an ipv4 tcp connection
+ *
+ * @self:	connection structure
+ *
+ * Returns 0 if @addr is invalid, 1 on success and -1 on error. errno set
+ * accordingly.
+ */
+int sancus_tcp_ipv6_connect(struct sancus_tcp_conn *self,
+			    const struct sancus_tcp_conn_settings *settings,
+			    const char *addr, unsigned port,
+			    bool cloexec);
+
 #endif

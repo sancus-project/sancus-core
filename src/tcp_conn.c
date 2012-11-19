@@ -114,6 +114,13 @@ static inline int init_ipv4(struct sockaddr_in *sin, const char *addr, unsigned 
 	return inet_pton(sin->sin_family, addr, &sin->sin_addr);
 }
 
+static inline int init_ipv6(struct sockaddr_in6 *sin6, const char *addr, unsigned port)
+{
+	sin6->sin6_port = htons(port);
+
+	return inet_pton(sin6->sin6_family, addr, &sin6->sin6_addr);
+}
+
 static inline int init_tcp(struct sancus_tcp_conn *self,
 			   const struct sancus_tcp_conn_settings *settings,
 			   struct sockaddr *sa, socklen_t sa_len,
@@ -184,5 +191,20 @@ int sancus_tcp_ipv4_connect(struct sancus_tcp_conn *self,
 		return e;
 
 	return init_tcp(self, settings, (struct sockaddr *)&sin, sizeof(sin),
+			cloexec);
+}
+
+int sancus_tcp_ipv6_connect(struct sancus_tcp_conn *self,
+			    const struct sancus_tcp_conn_settings *settings,
+			    const char *addr, unsigned port,
+			    bool cloexec)
+{
+	struct sockaddr_in6 sin6 = { .sin6_family = AF_INET6 };
+	int e;
+
+	if ((e = init_ipv6(&sin6, addr, port)) != 1)
+		return e;
+
+	return init_tcp(self, settings, (struct sockaddr *)&sin6, sizeof(sin6),
 			cloexec);
 }
