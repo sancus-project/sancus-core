@@ -121,6 +121,21 @@ static inline int init_ipv6(struct sockaddr_in6 *sin6, const char *addr, unsigne
 	return inet_pton(sin6->sin6_family, addr, &sin6->sin6_addr);
 }
 
+static inline int init_local(struct sockaddr_un *sun, const char *path)
+{
+	size_t l = 0;
+
+	if (path == NULL) {
+		path = "";
+	} else {
+		l = strlen(path);
+		if (l > sizeof(sun->sun_path)-1)
+			return 0; /* too long */
+	}
+	memcpy(sun->sun_path, path, l+1);
+	return 1;
+}
+
 static inline int init_tcp(struct sancus_tcp_conn *self,
 			   const struct sancus_tcp_conn_settings *settings,
 			   struct sockaddr *sa, socklen_t sa_len,
@@ -206,5 +221,19 @@ int sancus_tcp_ipv6_connect(struct sancus_tcp_conn *self,
 		return e;
 
 	return init_tcp(self, settings, (struct sockaddr *)&sin6, sizeof(sin6),
+			cloexec);
+}
+
+int sancus_tcp_local_connect(struct sancus_tcp_conn *self,
+			     const struct sancus_tcp_conn_settings *settings,
+			     const char *path, bool cloexec)
+{
+	struct sockaddr_un sun = { .sun_family = AF_LOCAL };
+	int e;
+
+	if ((e = init_local(&sun, path)) != 1)
+		return e;
+
+	return init_tcp(self, settings, (struct sockaddr *)&sun, sizeof(sun),
 			cloexec);
 }
