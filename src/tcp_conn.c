@@ -48,10 +48,7 @@ static void io_cb(struct ev_loop *loop, struct ev_io *w, int revents)
 	struct sancus_tcp_conn *self = container_of(w, struct sancus_tcp_conn, io);
 	const struct sancus_tcp_conn_settings *settings = self->settings;
 
-	if (revents & EV_ERROR) {
-		settings->on_error(self, loop, SANCUS_TCP_CONN_WATCHER_ERROR);
-		return;
-	}
+	assert((revents & EV_ERROR)==0);
 
 	switch (self->state) {
 	case SANCUS_TCP_CONN_INPROGRESS:

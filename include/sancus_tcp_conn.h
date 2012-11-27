@@ -32,7 +32,6 @@
 struct sancus_tcp_conn;
 
 enum sancus_tcp_conn_error {
-	SANCUS_TCP_CONN_WATCHER_ERROR,
 	SANCUS_TCP_CONN_CONNECT_ERROR,
 };
 
