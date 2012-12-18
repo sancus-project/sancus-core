@@ -98,6 +98,14 @@ static inline void __sancus_list_del(struct sancus_list *prev,
  */
 #define sancus_list_first(H)		(sancus_list_isempty(H)?NULL:(H)->next)
 
+/**
+ * sancus_list_last - returns the last element of a list, if any
+ */
+#define sancus_list_last(H)		(sancus_list_isempty(H)?NULL:(H)->prev)
+
+/**
+ * sancus_list_next - returns the next elemnet on a list, if any
+ */
 #define sancus_list_next(H, E)		((E)->next == (H) ? NULL : (E)->next)
 
 #endif /* !_SANCUS_LIST_H */
