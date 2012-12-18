@@ -50,7 +50,7 @@ static inline void ev_io_init(struct ev_io *w,
  * container_of - find reference to container of a given struct element
  */
 #ifndef container_of
-#define container_of(P,T,M)	(T *)((char *)(P) - offsetof(T, M))
+#define container_of(P,T,M)	((T *)((char *)(P) - offsetof(T, M)))
 #endif
 
 /** likely to be 1 */
