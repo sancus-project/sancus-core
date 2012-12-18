@@ -73,8 +73,13 @@ void sancus_log_tracef(unsigned level, const char *name,
 #define _logdump(...)		sancus_log_write(__VA_ARGS__)
 
 #define _logf(L, N, F, ...)	sancus_log_writef(L, N, NULL, 0, F, __VA_ARGS__)
-#define _plogf(L, N, F, ...)	sancus_log_writef(L, N, NULL, 0, F ": %s", __VA_ARGS__, strerror(errno))
+#define _plogf(L, N, F, ...)	sancus_log_writef(L, N, NULL, 0, F ": %s", \
+						  __VA_ARGS__, strerror(errno))
 #define _tracef(L, N, F, ...)	sancus_log_tracef(L, N, __FILE__, __LINE__, __func__, F, __VA_ARGS__)
+
 #define _logdumpf(...)		sancus_log_writef(__VA_ARGS__)
+#define _plogdumpf(L, N, DP, DL, F, ...)	\
+				sancus_log_writef(L, N, DP, DL, F ": %s", \
+						  __VA_ARGS__, strerror(errno))
 
 #endif
