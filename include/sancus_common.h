@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2012, Alejandro Mery <amery@geeks.cl>
+ * Copyright (c) 2011-2013, Alejandro Mery <amery@geeks.cl>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,24 @@ static inline void ev_io_init(struct ev_io *w,
 {
 	ev_init(w, cb);
 	ev_io_set(w, fd, events);
+}
+
+#undef ev_signal_init
+static inline void ev_signal_init(struct ev_signal *w,
+				  void (*cb) (struct ev_loop *, struct ev_signal *, int),
+				  int signum)
+{
+	ev_init(w, cb);
+	ev_signal_set(w, signum);
+}
+
+#undef ev_timer_init
+static inline void ev_timer_init(struct ev_timer *w,
+				  void (*cb) (struct ev_loop *, struct ev_timer *, int),
+				  ev_tstamp after, ev_tstamp repeat)
+{
+	ev_init(w, cb);
+	ev_timer_set(w, after, repeat);
 }
 
 #undef ev_is_active
