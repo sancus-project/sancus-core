@@ -31,9 +31,9 @@
 
 #ifdef _FCNTL_H
 /**
- * sancus_open - auto-retrying wrapper for open(2) with easier cloexec support
+ * sancus_openat - auto-retrying wrapper for openat(2) with easier cloexec support
  */
-static inline int sancus_open(const char *pathname, int flags, int cloexec, mode_t mode)
+static inline int sancus_openat(int dirfd, const char *pathname, int flags, int cloexec, mode_t mode)
 {
 	int fd;
 #ifdef O_CLOEXEC
@@ -43,7 +43,7 @@ static inline int sancus_open(const char *pathname, int flags, int cloexec, mode
 		flags &= ~O_CLOEXEC;
 #endif
 open_retry:
-	if ((fd = open(pathname, flags, mode)) < 0) {
+	if ((fd = openat(dirfd, pathname, flags, mode)) < 0) {
 		if (errno == EINTR)
 			goto open_retry;
 		else
@@ -68,6 +68,15 @@ open_failed:
 open_done:
 	return fd;
 }
+
+/**
+ * sancus_open - auto-retrying wrapper for open(2) with easier cloexec support
+ */
+static inline int sancus_open(const char *pathname, int flags, int cloexec, mode_t mode)
+{
+	return sancus_openat(AT_FDCWD, pathname, flags, cloexec, mode);
+}
+
 #endif
 
 #ifdef _UNISTD_H
