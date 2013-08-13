@@ -42,6 +42,11 @@ elif test x"$debugit" = x"no"; then
 else
 	CFLAGS="-O2"
 fi
+
+if test "$ac_cv_prog_cc_c99" != "no"; then
+	CFLAGS="$CFLAGS $ac_cv_prog_cc_c99"
+fi
+
 CFLAGS="$CFLAGS -Wall -Wextra -pedantic -Winline"
 
 AC_CONFIG_FILES([sancus-core.pc])
