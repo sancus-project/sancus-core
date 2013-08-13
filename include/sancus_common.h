@@ -52,6 +52,15 @@ static inline void ev_signal_init(struct ev_signal *w,
 	ev_signal_set(w, signum);
 }
 
+#undef ev_stat_init
+static inline void ev_stat_init(struct ev_stat *w,
+				  void (*cb) (struct ev_loop *, struct ev_stat *, int),
+				  const char *path, ev_tstamp interval)
+{
+	ev_init(w, cb);
+	ev_stat_set(w, path, interval);
+}
+
 #undef ev_timer_init
 static inline void ev_timer_init(struct ev_timer *w,
 				  void (*cb) (struct ev_loop *, struct ev_timer *, int),
