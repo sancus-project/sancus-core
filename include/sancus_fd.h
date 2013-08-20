@@ -118,17 +118,13 @@ static inline ssize_t sancus_write(int fd, const char *data, size_t size)
 	int wc, wt = 0;
 
 	while (size > 0) {
-write_retry:
 		wc = write(fd, data, size);
 		if (wc > 0) {
 			wt += wc;
 			size -= wc;
 			data += wc;
-		} else if (wc < 0) {
-			if (errno == EINTR)
-				goto write_retry;
+		} else if (wc < 0 && errno != EINTR)
 			return wc;
-		}
 	}
 
 	return wt;
