@@ -5,7 +5,7 @@ case "$0" in
 *)	BASE=. ;;
 esac
 
-for x in ${BASE}/*/Makefile.am.sh; do
+for x in ${BASE}/*/Makefile.am.sh ${BASE}/*/*/Makefile.am.sh; do
 	[ -s "$x" ] || continue
 	$SHELL "$x"
 done
