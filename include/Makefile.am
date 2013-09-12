@@ -6,9 +6,12 @@ include_HEADERS = \
 	sancus_fmt.h \
 	sancus_list.h \
 	sancus_log.h \
-	sancus_netlink.h \
 	sancus_serial.h \
 	sancus_socket.h \
 	sancus_stream.h \
 	sancus_tcp_conn.h \
 	sancus_tcp_server.h
+
+if HAVE_LINUX_NETLINK
+include_HEADERS += netlink/sancus_netlink.h
+endif

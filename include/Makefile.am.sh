@@ -9,4 +9,8 @@ cd "${0%/*}"
 cat <<EOT | tee Makefile.am
 include_HEADERS = \\
 	$(list *.h)
+
+if HAVE_LINUX_NETLINK
+include_HEADERS += netlink/sancus_netlink.h
+endif
 EOT
