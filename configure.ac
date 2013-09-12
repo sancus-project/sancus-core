@@ -26,6 +26,9 @@ PKG_CHECK_MODULES(EV, [libev])
 # AC_CONFIG_HEADERS([src/config.h])
 AC_CHECK_HEADERS([linux/netlink.h], [have_linux_netlink=yes], [have_linux_netlink=no], [])
 AM_CONDITIONAL([HAVE_LINUX_NETLINK], [test $have_linux_netlink = yes])
+if test x"$have_linux_netlink" = x"yes"; then
+	AC_CONFIG_FILES([sancus-netlink.pc])
+fi
 
 #
 # Options
