@@ -1,8 +1,8 @@
 AM_CFLAGS = -I @top_srcdir@/include @EV_CFLAGS@
 
-lib_LTLIBRARIES = libsancus.la
+lib_LTLIBRARIES = libsancus-core.la
 
-libsancus_la_SOURCES = \
+libsancus_core_la_SOURCES = \
 	alloc.c \
 	buffer.c \
 	fmt_cstr.c \
@@ -12,4 +12,4 @@ libsancus_la_SOURCES = \
 	tcp_conn.c \
 	tcp_server.c
 
-libsancus_la_LIBADD = @EV_LIBS@
+libsancus_core_la_LIBADD = @EV_LIBS@

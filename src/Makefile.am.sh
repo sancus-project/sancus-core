@@ -9,10 +9,10 @@ cd "${0%/*}"
 cat <<EOT | tee Makefile.am
 AM_CFLAGS = -I @top_srcdir@/include @EV_CFLAGS@
 
-lib_LTLIBRARIES = libsancus.la
+lib_LTLIBRARIES = libsancus-core.la
 
-libsancus_la_SOURCES = \\
+libsancus_core_la_SOURCES = \\
 	$(list *.c)
 
-libsancus_la_LIBADD = @EV_LIBS@
+libsancus_core_la_LIBADD = @EV_LIBS@
 EOT
