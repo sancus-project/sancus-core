@@ -110,7 +110,7 @@ static inline void ev_timer_init(struct ev_timer *w,
 #elif defined(__GNUC__)
 #	define UNUSED(x) UNUSED_ ## x __attribute__((unused))
 #else
-#	define UNUSED(x) x
+#	define UNUSED(x) UNUSED_ ## x
 #endif
 
 /**
