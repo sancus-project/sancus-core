@@ -5,6 +5,10 @@ AM_INIT_AUTOMAKE([foreign dist-bzip2 -Wall -Werror])
 
 AC_CONFIG_MACRO_DIR([m4])
 
+# automake >= 1.12 requires AM_PROG_AR,
+# but automake 1.11 doesn't recognize it
+m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
+
 LT_INIT
 
 #
