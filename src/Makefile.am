@@ -11,3 +11,5 @@ libsancus_core_la_SOURCES = \
 	stream.c \
 	tcp_conn.c \
 	tcp_server.c
+
+libsancus_core_la_LDFLAGS = -Wl,--no-undefined
