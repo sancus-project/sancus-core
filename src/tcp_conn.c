@@ -38,10 +38,10 @@
 
 #include <arpa/inet.h>
 
-#include "sancus_common.h"
-#include "sancus_fd.h"
-#include "sancus_socket.h"
-#include "sancus_tcp_conn.h"
+#include <sancus/common.h>
+#include <sancus/fd.h>
+#include <sancus/socket.h>
+#include <sancus/tcp_conn.h>
 
 static void io_cb(struct ev_loop *loop, struct ev_io *w, int revents)
 {

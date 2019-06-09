@@ -1,16 +1,17 @@
 #!/bin/sh
 
 list() {
-	echo "$@" | tr ' ' '\n' | sort -V | tr '\n' '|' |
+	sort -V | tr '\n' '|' |
 		sed -e 's,|$,,' -e 's,|, \\\n\t,g'
 }
 
 cd "${0%/*}"
 cat <<EOT | tee Makefile.am
-include_HEADERS = \\
-	$(list *.h)
+nobase_include_HEADERS = \\
+	$(find * -name '*.h' | grep -v netlink | list)
 
 if HAVE_LINUX_NETLINK
-include_HEADERS += netlink/sancus_netlink.h
+nobase_include_HEADERS += \\
+	$(find * -name '*.h' | grep netlink | list)
 endif
 EOT

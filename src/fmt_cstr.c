@@ -29,8 +29,8 @@
 
 #include <assert.h>
 
-#include "sancus_common.h"
-#include "sancus_fmt.h"
+#include <sancus/common.h>
+#include <sancus/fmt.h>
 
 #define hexa "0123456789abcdef"
 

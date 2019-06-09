@@ -38,10 +38,10 @@
 
 #include <sys/uio.h>	/* writev() */
 
-#include "sancus_common.h"
-#include "sancus_fmt.h"
-#include "sancus_fd.h"
-#include "sancus_log.h"
+#include <sancus/common.h>
+#include <sancus/fmt.h>
+#include <sancus/fd.h>
+#include <sancus/log.h>
 
 /* arbitrary sizes */
 #define STR_BUFSIZE 1024

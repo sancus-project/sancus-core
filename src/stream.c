@@ -36,10 +36,10 @@
 
 #include <fcntl.h>
 
-#include "sancus_common.h"
-#include "sancus_fd.h"
-#include "sancus_buffer.h"
-#include "sancus_stream.h"
+#include <sancus/common.h>
+#include <sancus/fd.h>
+#include <sancus/buffer.h>
+#include <sancus/stream.h>
 
 /*
  * event callbacks

@@ -36,8 +36,8 @@
 #include <sys/socket.h>
 #include <linux/netlink.h>
 
-#include "sancus_common.h"
-#include "sancus_netlink.h"
+#include <sancus/common.h>
+#include <sancus/netlink.h>
 
 /**
  * Netlink Attribute handling

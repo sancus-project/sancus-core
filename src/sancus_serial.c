@@ -34,8 +34,8 @@
 #include <termios.h>
 #include <unistd.h>
 
-#include "sancus_fd.h"
-#include "sancus_serial.h"
+#include <sancus/fd.h>
+#include <sancus/serial.h>
 
 int sancus_serial_open(struct sancus_serial *self, const char *pathname,
 		       int cloexec, struct termios *copy)

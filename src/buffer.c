@@ -33,8 +33,8 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "sancus_buffer.h"
-#include "sancus_fd.h"
+#include <sancus/buffer.h>
+#include <sancus/fd.h>
 
 void sancus_buffer_bind(struct sancus_buffer *self, char *buf, size_t size)
 {

@@ -37,10 +37,10 @@
 #include <sys/un.h>
 #include <arpa/inet.h>
 
-#include "sancus_common.h"
-#include "sancus_fd.h"
-#include "sancus_socket.h"
-#include "sancus_tcp_server.h"
+#include <sancus/common.h>
+#include <sancus/fd.h>
+#include <sancus/socket.h>
+#include <sancus/tcp_server.h>
 
 /**
  * connect_cb - called when there is incoming

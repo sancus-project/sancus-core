@@ -37,10 +37,10 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <linux/netlink.h>
-#include "sancus_common.h"
-#include "sancus_fd.h"
-#include "sancus_socket.h"
-#include "sancus_netlink.h"
+#include <sancus/common.h>
+#include <sancus/fd.h>
+#include <sancus/socket.h>
+#include <sancus/netlink.h>
 
 /**
  * sancus_nl_recvfrom - receive a netlink message
