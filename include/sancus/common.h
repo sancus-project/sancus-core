@@ -29,49 +29,7 @@
 #ifndef _SANCUS_COMMON_H
 #define _SANCUS_COMMON_H
 
-#include <ev.h>
-
-/*
- * helpers to avoid strict-aliasing problems in ev.h
- */
-#undef ev_io_init
-static inline void ev_io_init(struct ev_io *w,
-			      void (*cb) (struct ev_loop *, struct ev_io *, int),
-			      int fd, int events)
-{
-	ev_init(w, cb);
-	ev_io_set(w, fd, events);
-}
-
-#undef ev_signal_init
-static inline void ev_signal_init(struct ev_signal *w,
-				  void (*cb) (struct ev_loop *, struct ev_signal *, int),
-				  int signum)
-{
-	ev_init(w, cb);
-	ev_signal_set(w, signum);
-}
-
-#undef ev_stat_init
-static inline void ev_stat_init(struct ev_stat *w,
-				  void (*cb) (struct ev_loop *, struct ev_stat *, int),
-				  const char *path, ev_tstamp interval)
-{
-	ev_init(w, cb);
-	ev_stat_set(w, path, interval);
-}
-
-#undef ev_timer_init
-static inline void ev_timer_init(struct ev_timer *w,
-				  void (*cb) (struct ev_loop *, struct ev_timer *, int),
-				  ev_tstamp after, ev_tstamp repeat)
-{
-	ev_init(w, cb);
-	ev_timer_set(w, after, repeat);
-}
-
-#undef ev_is_active
-#define ev_is_active(w)	(w)->active
+#include <stddef.h>
 
 /**
  * container_of - find reference to container of a given struct element

@@ -27,6 +27,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <sancus/common.h>
+#include <sancus/ev.h>
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>		/* for memcpy, strlen */
@@ -36,7 +39,6 @@
 #include <sys/socket.h>
 #include <linux/netlink.h>
 
-#include <sancus/common.h>
 #include <sancus/netlink.h>
 
 /**

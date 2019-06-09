@@ -27,16 +27,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <sancus/common.h>
+#include <sancus/ev.h>
+
 #include <assert.h>
 #include <errno.h>
 #include <unistd.h>
 #include <stdbool.h>
-#include <stddef.h>
 #include <stdint.h>
 
 #include <fcntl.h>
 
-#include <sancus/common.h>
 #include <sancus/fd.h>
 #include <sancus/buffer.h>
 #include <sancus/stream.h>

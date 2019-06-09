@@ -26,9 +26,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+#include <sancus/common.h>
+#include <sancus/ev.h>
+
 #include <assert.h>
 #include <stdbool.h>
-#include <stddef.h>
 #include <unistd.h>
 #include <errno.h>
 
@@ -37,7 +40,6 @@
 #include <sys/un.h>
 #include <arpa/inet.h>
 
-#include <sancus/common.h>
 #include <sancus/fd.h>
 #include <sancus/socket.h>
 #include <sancus/tcp_server.h>

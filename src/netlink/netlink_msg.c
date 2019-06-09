@@ -27,6 +27,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <sancus/common.h>
+#include <sancus/ev.h>
 
 #include <stdint.h>		/* for uint16_t */
 #include <stdbool.h>
@@ -36,7 +38,6 @@
 #include <sys/socket.h>
 #include <linux/netlink.h>
 
-#include <sancus/common.h>
 #include <sancus/netlink.h>
 
 /**
