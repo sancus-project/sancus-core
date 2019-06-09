@@ -1,4 +1,4 @@
-AC_INIT(sancus-core, 0.x, amery@geeks.cl)
+AC_INIT(sancus-core, 0.1, amery@geeks.cl)
 
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([foreign dist-bzip2 -Wall -Werror])
@@ -16,12 +16,6 @@ LT_INIT
 #
 
 AC_PROG_CC_C99
-
-#
-# Check for libraries
-#
-
-PKG_CHECK_MODULES(EV, [libev])
 
 #
 # Check for headers
