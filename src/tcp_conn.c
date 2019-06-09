@@ -76,11 +76,11 @@ static void io_cb(struct ev_loop *loop, struct ev_io *w, int revents)
 			return;
 		}
 
-connect_done:
-		; /* pass thru */
+		/* fall-through */
 	case SANCUS_TCP_CONN_CONNECTED:
 		assert(revents & EV_WRITE);
 
+connect_done:
 		{
 			/* only reads from now on */
 			int fd = w->fd;

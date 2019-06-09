@@ -71,6 +71,7 @@ size_t sancus_fmt_ascii_cstr(char *buf, size_t buf_len, const char *data, size_t
 
 		switch(l) {
 		case 2: *buf++ = '\\';
+			/* fall-through */
 		case 1: *buf++ = e;
 			break;
 		case 4:
