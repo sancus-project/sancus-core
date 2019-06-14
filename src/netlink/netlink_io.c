@@ -80,7 +80,7 @@ static ssize_t sancus_nl_recvfrom(int fd, void *buf, size_t buflen)
 
 /* extract the netlink message from the buffer and call on_message callback */
 static inline int extract_netlink_message(struct sancus_nl_receiver *self,
-				    struct ev_loop *loop,
+				    struct sancus_ev_loop *loop,
 				    const void *buf, size_t recvbytes)
 {
 	const struct sancus_nl_receiver_settings *settings = self->settings;
@@ -110,13 +110,13 @@ out:
 /**
  * recv_cb - called when there is data received
  */
-static void recv_cb(struct ev_loop *loop, struct ev_io *w, int revents)
+static void recv_cb(struct sancus_ev_loop *loop, struct sancus_ev_fd *w, int revents)
 {
 	struct sancus_nl_receiver *self = container_of(w, struct sancus_nl_receiver,
 						      recv_watcher);
 	const struct sancus_nl_receiver_settings *settings = self->settings;
 
-	if (revents & EV_READ) {
+	if (revents & SANCUS_EV_READ) {
 		char buf[SANCUS_NL_SOCKET_BUFFER_SIZE];
 		int ret = sancus_nl_recvfrom(w->fd, buf, sizeof(buf)); 
 		if (ret < 0) {
@@ -127,7 +127,7 @@ static void recv_cb(struct ev_loop *loop, struct ev_io *w, int revents)
 		}
 	}
 
-	if (revents & EV_ERROR) {
+	if (revents & SANCUS_EV_ERROR) {
 		sancus_nl_receiver_stop(self, loop);
 		sancus_nl_receiver_close(self);
 
@@ -140,22 +140,22 @@ static void recv_cb(struct ev_loop *loop, struct ev_io *w, int revents)
  * exported functions
  */
 
-void sancus_nl_receiver_start(struct sancus_nl_receiver *self, struct ev_loop *loop)
+void sancus_nl_receiver_start(struct sancus_nl_receiver *self, struct sancus_ev_loop *loop)
 {
-	assert(!ev_is_active(&self->recv_watcher));
-	ev_io_start(loop, &self->recv_watcher);
+	assert(!sancus_ev_is_active(&self->recv_watcher));
+	sancus_ev_fd_start(loop, &self->recv_watcher);
 }
 
-void sancus_nl_receiver_stop(struct sancus_nl_receiver *self, struct ev_loop *loop)
+void sancus_nl_receiver_stop(struct sancus_nl_receiver *self, struct sancus_ev_loop *loop)
 {
-	assert(ev_is_active(&self->recv_watcher));
-	ev_io_stop(loop, &self->recv_watcher);
+	assert(sancus_ev_is_active(&self->recv_watcher));
+	sancus_ev_fd_stop(loop, &self->recv_watcher);
 }
 
 void sancus_nl_receiver_close(struct sancus_nl_receiver *self)
 {
 	assert(self->recv_watcher.fd >= 0);
-	assert(!ev_is_active(&self->recv_watcher));
+	assert(!sancus_ev_is_active(&self->recv_watcher));
 
 	sancus_close(&self->recv_watcher.fd);
 }
@@ -177,7 +177,7 @@ int sancus_nl_receiver_listen(struct sancus_nl_receiver *self,
 	assert(self);
 	assert(settings);
 
-	ev_io_init(&self->recv_watcher, recv_cb, fd, EV_READ);
+	sancus_ev_fd_init(&self->recv_watcher, recv_cb, fd, SANCUS_EV_READ);
 
 	self->settings = settings;
 	self->portid = portid;

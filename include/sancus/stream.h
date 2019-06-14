@@ -45,7 +45,7 @@ enum sancus_stream_error {
  */
 struct sancus_stream_settings {
 	bool (*on_error) (struct sancus_stream *,
-			  struct ev_loop *,
+			  struct sancus_ev_loop *,
 			  enum sancus_stream_error);
 
 	void (*on_close) (struct sancus_stream *);
@@ -58,7 +58,7 @@ struct sancus_stream_settings {
  *
  */
 struct sancus_stream {
-	struct ev_io read_watcher;
+	struct sancus_ev_fd read_watcher;
 	struct sancus_buffer read_buffer;
 
 	struct sancus_stream_settings *settings;
@@ -67,12 +67,12 @@ struct sancus_stream {
 /**
  *
  */
-void sancus_stream_start(struct sancus_stream *self, struct ev_loop *loop);
+void sancus_stream_start(struct sancus_stream *self, struct sancus_ev_loop *loop);
 
 /**
  *
  */
-void sancus_stream_stop(struct sancus_stream *self, struct ev_loop *loop);
+void sancus_stream_stop(struct sancus_stream *self, struct sancus_ev_loop *loop);
 
 /**
  *

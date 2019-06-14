@@ -47,15 +47,15 @@
 /**
  * connect_cb - called when there is incoming
  */
-static void connect_cb(struct ev_loop *loop, struct ev_io *w, int revents)
+static void connect_cb(struct sancus_ev_loop *loop, struct sancus_ev_fd *w, int revents)
 {
 	struct sancus_tcp_server *self = container_of(w, struct sancus_tcp_server,
 						      connect);
 	const struct sancus_tcp_server_settings *settings = self->settings;
 
-	assert(!(revents & EV_ERROR));
+	assert(!(revents & SANCUS_EV_ERROR));
 
-	if (revents & EV_READ) {
+	if (revents & SANCUS_EV_READ) {
 		struct sockaddr_storage addr;
 		socklen_t addrlen = sizeof(addr);
 
@@ -138,7 +138,7 @@ static inline int init_tcp(struct sancus_tcp_server *self,
 		setsockopt(fd, SOL_SOCKET, SO_LINGER, (void*)&ling, sizeof(ling));
 	}
 
-	ev_io_init(&self->connect, connect_cb, fd, EV_READ);
+	sancus_ev_fd_init(&self->connect, connect_cb, fd, SANCUS_EV_READ);
 	/* TODO: any ->data to add? */
 
 	self->settings = settings;
@@ -161,22 +161,22 @@ static inline int init_tcp(struct sancus_tcp_server *self,
  * exported functions
  */
 
-void sancus_tcp_server_start(struct sancus_tcp_server *self, struct ev_loop *loop)
+void sancus_tcp_server_start(struct sancus_tcp_server *self, struct sancus_ev_loop *loop)
 {
-	assert(!ev_is_active(&self->connect));
-	ev_io_start(loop, &self->connect);
+	assert(!sancus_ev_is_active(&self->connect));
+	sancus_ev_fd_start(loop, &self->connect);
 }
 
-void sancus_tcp_server_stop(struct sancus_tcp_server *self, struct ev_loop *loop)
+void sancus_tcp_server_stop(struct sancus_tcp_server *self, struct sancus_ev_loop *loop)
 {
-	assert(ev_is_active(&self->connect));
-	ev_io_stop(loop, &self->connect);
+	assert(sancus_ev_is_active(&self->connect));
+	sancus_ev_fd_stop(loop, &self->connect);
 }
 
 void sancus_tcp_server_close(struct sancus_tcp_server *self)
 {
 	assert(self->connect.fd >= 0);
-	assert(!ev_is_active(&self->connect));
+	assert(!sancus_ev_is_active(&self->connect));
 
 	sancus_close(&self->connect.fd);
 }

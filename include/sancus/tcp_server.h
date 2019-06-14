@@ -50,11 +50,11 @@ enum sancus_tcp_server_error {
 struct sancus_tcp_server_settings {
 	void (*pre_bind) (struct sancus_tcp_server *);
 
-	bool (*on_connect) (struct sancus_tcp_server *, struct ev_loop *,
+	bool (*on_connect) (struct sancus_tcp_server *, struct sancus_ev_loop *,
 			    int, struct sockaddr *, socklen_t);
 
 	void (*on_error) (struct sancus_tcp_server *,
-			  struct ev_loop *,
+			  struct sancus_ev_loop *,
 			  enum sancus_tcp_server_error);
 };
 
@@ -65,7 +65,7 @@ struct sancus_tcp_server_settings {
  * @settings:	driving callbacks
  */
 struct sancus_tcp_server {
-	struct ev_io connect;
+	struct sancus_ev_fd connect;
 
 	const struct sancus_tcp_server_settings *settings;
 };
@@ -78,7 +78,7 @@ struct sancus_tcp_server {
  *
  * The server shall not be already active. Nothing returned
  */
-void sancus_tcp_server_start(struct sancus_tcp_server *self, struct ev_loop *loop);
+void sancus_tcp_server_start(struct sancus_tcp_server *self, struct sancus_ev_loop *loop);
 
 /**
  * sancus_tcp_server_stop - stop watching port
@@ -87,7 +87,7 @@ void sancus_tcp_server_start(struct sancus_tcp_server *self, struct ev_loop *loo
  *
  * The server shall not be already stopped. Nothing returned
  */
-void sancus_tcp_server_stop(struct sancus_tcp_server *self, struct ev_loop *loop);
+void sancus_tcp_server_stop(struct sancus_tcp_server *self, struct sancus_ev_loop *loop);
 
 /**
  * sancus_tcp_server_close - closes an already stopped port
@@ -161,6 +161,6 @@ int sancus_tcp_local_listen(struct sancus_tcp_server *self,
  *
  * @S:	server structure to query
  */
-#define sancus_tcp_server_is_active(S)	((S)->connect.fd > 0 && ev_is_active(&(S)->connect))
+#define sancus_tcp_server_is_active(S)	((S)->connect.fd > 0 && sancus_ev_is_active(&(S)->connect))
 
 #endif /* !_SANCUS_TCP_SERVER_H */

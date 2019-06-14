@@ -61,10 +61,10 @@ enum sancus_nl_receiver_error {
  * @attribute_offset:	offset within the message where attributes start
  */
 struct sancus_nl_receiver_settings {
-	bool (*on_message) (struct sancus_nl_receiver *, struct ev_loop *, const struct nlmsghdr *);
+	bool (*on_message) (struct sancus_nl_receiver *, struct sancus_ev_loop *, const struct nlmsghdr *);
 
 	void (*on_error) (struct sancus_nl_receiver *,
-			  struct ev_loop *,
+			  struct sancus_ev_loop *,
 			  enum sancus_nl_receiver_error);
 
 	size_t attribute_offset;
@@ -78,7 +78,7 @@ struct sancus_nl_receiver_settings {
  * @portid:		port ID
  */
 struct sancus_nl_receiver {
-	struct ev_io recv_watcher;
+	struct sancus_ev_fd recv_watcher;
 
 	const struct sancus_nl_receiver_settings *settings;
 
@@ -93,7 +93,7 @@ struct sancus_nl_receiver {
  *
  * The server shall not be already active. Nothing returned
  */
-void sancus_nl_receiver_start(struct sancus_nl_receiver *self, struct ev_loop *loop);
+void sancus_nl_receiver_start(struct sancus_nl_receiver *self, struct sancus_ev_loop *loop);
 
 /**
  * sancus_nl_receiver_stop - stop watching netlink socket
@@ -102,7 +102,7 @@ void sancus_nl_receiver_start(struct sancus_nl_receiver *self, struct ev_loop *l
  *
  * The server shall not be already stopped. Nothing returned
  */
-void sancus_nl_receiver_stop(struct sancus_nl_receiver *self, struct ev_loop *loop);
+void sancus_nl_receiver_stop(struct sancus_nl_receiver *self, struct sancus_ev_loop *loop);
 
 /**
  * sancus_nl_receiver_close - closes an already stopped netlink receiver
@@ -143,7 +143,7 @@ int sancus_nl_receiver_listen(struct sancus_nl_receiver *self,
  *
  * @S:	server structure to query
  */
-#define sancus_nl_receiver_is_active(S)	((S)->recv_watcher.fd > 0 && ev_is_active(&(S)->recv_watcher))
+#define sancus_nl_receiver_is_active(S)	((S)->recv_watcher.fd > 0 && sancus_ev_is_active(&(S)->recv_watcher))
 
 
 

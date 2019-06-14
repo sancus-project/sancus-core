@@ -45,14 +45,14 @@
 /*
  * event callbacks
  */
-static void read_cb(struct ev_loop *loop, struct ev_io *w, int revents)
+static void read_cb(struct sancus_ev_loop *loop, struct sancus_ev_fd *w, int revents)
 {
 	struct sancus_stream *self = container_of(w, struct sancus_stream, read_watcher);
 	struct sancus_stream_settings *settings = self->settings;
 
-	assert((revents & EV_ERROR) == 0);
+	assert((revents & SANCUS_EV_ERROR) == 0);
 
-	if (revents & EV_READ) {
+	if (revents & SANCUS_EV_READ) {
 		struct sancus_buffer *buf = &self->read_buffer;
 		ssize_t l;
 
@@ -72,7 +72,7 @@ try_read:
 				l = settings->on_read(self, sancus_buffer_data(buf), l);
 				if (l > 0) {
 					sancus_buffer_skip(buf, l);
-					if (!ev_is_active(w))
+					if (!sancus_ev_is_active(w))
 						break;
 				} else if (l == 0)
 					break;
@@ -116,25 +116,25 @@ ssize_t sancus_stream_process(struct sancus_stream *self)
 	return l;
 }
 
-void sancus_stream_start(struct sancus_stream *self, struct ev_loop *loop)
+void sancus_stream_start(struct sancus_stream *self, struct sancus_ev_loop *loop)
 {
-	assert(!ev_is_active(&self->read_watcher));
+	assert(!sancus_ev_is_active(&self->read_watcher));
 
-	ev_io_start(loop, &self->read_watcher);
+	sancus_ev_fd_start(loop, &self->read_watcher);
 }
 
-void sancus_stream_stop(struct sancus_stream *self, struct ev_loop *loop)
+void sancus_stream_stop(struct sancus_stream *self, struct sancus_ev_loop *loop)
 {
-	assert(ev_is_active(&self->read_watcher));
+	assert(sancus_ev_is_active(&self->read_watcher));
 
-	ev_io_stop(loop, &self->read_watcher);
+	sancus_ev_fd_stop(loop, &self->read_watcher);
 
 }
 
 void sancus_stream_close(struct sancus_stream *self)
 {
 	assert(self->read_watcher.fd >= 0);
-	assert(!ev_is_active(&self->read_watcher));
+	assert(!sancus_ev_is_active(&self->read_watcher));
 
 	sancus_close(&self->read_watcher.fd);
 	self->settings->on_close(self);
@@ -155,7 +155,7 @@ int sancus_stream_init(struct sancus_stream *self,
 
 	self->settings = settings;
 
-	ev_io_init(&self->read_watcher, read_cb, fd, EV_READ);
+	sancus_ev_fd_init(&self->read_watcher, read_cb, fd, SANCUS_EV_READ);
 
 	sancus_buffer_bind(&self->read_buffer, read_buffer, read_buf_size);
 

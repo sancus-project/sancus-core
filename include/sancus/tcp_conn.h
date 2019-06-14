@@ -45,16 +45,16 @@ enum sancus_tcp_conn_state {
 
 struct sancus_tcp_conn_settings {
 	void (*on_read) (struct sancus_tcp_conn *,
-			 struct ev_loop *);
+			 struct sancus_ev_loop *);
 	void (*on_connect) (struct sancus_tcp_conn *,
-			 struct ev_loop *);
+			 struct sancus_ev_loop *);
 	void (*on_error) (struct sancus_tcp_conn *,
-			  struct ev_loop *,
+			  struct sancus_ev_loop *,
 			  enum sancus_tcp_conn_error);
 };
 
 struct sancus_tcp_conn {
-	struct ev_io io;
+	struct sancus_ev_fd io;
 
 	enum sancus_tcp_conn_state state;
 	ev_tstamp last_activity;
@@ -73,7 +73,7 @@ struct sancus_tcp_conn {
  * @loop:	event loop
  */
 void sancus_tcp_conn_start(struct sancus_tcp_conn *self,
-			   struct ev_loop *loop);
+			   struct sancus_ev_loop *loop);
 
 /**
  * sancus_tcp_conn_stop - stop watching connection
@@ -82,7 +82,7 @@ void sancus_tcp_conn_start(struct sancus_tcp_conn *self,
  * @loop:	event loop
  */
 void sancus_tcp_conn_stop(struct sancus_tcp_conn *self,
-			  struct ev_loop *loop);
+			  struct sancus_ev_loop *loop);
 
 /**
  * sancus_tcp_conn_close - closes an already stopped connection

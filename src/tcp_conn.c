@@ -44,21 +44,21 @@
 #include <sancus/socket.h>
 #include <sancus/tcp_conn.h>
 
-static void io_cb(struct ev_loop *loop, struct ev_io *w, int revents)
+static void io_cb(struct sancus_ev_loop *loop, struct sancus_ev_fd *w, int revents)
 {
 	struct sancus_tcp_conn *self = container_of(w, struct sancus_tcp_conn, io);
 	const struct sancus_tcp_conn_settings *settings = self->settings;
 
-	if (revents & EV_ERROR) {
+	if (revents & SANCUS_EV_ERROR) {
 		settings->on_error(self, loop, SANCUS_TCP_CONN_WATCHER_ERROR);
 		return;
 	}
 
 	switch (self->state) {
 	case SANCUS_TCP_CONN_INPROGRESS:
-		assert(revents & EV_WRITE);
+		assert(revents & SANCUS_EV_WRITE);
 
-		if (revents & EV_READ) {
+		if (revents & SANCUS_EV_READ) {
 			/* failed to connected? */
 			int error;
 			socklen_t len = sizeof(error);
@@ -79,15 +79,15 @@ static void io_cb(struct ev_loop *loop, struct ev_io *w, int revents)
 
 		/* fall-through */
 	case SANCUS_TCP_CONN_CONNECTED:
-		assert(revents & EV_WRITE);
+		assert(revents & SANCUS_EV_WRITE);
 
 connect_done:
 		{
 			/* only reads from now on */
 			int fd = w->fd;
-			ev_io_stop (loop, w);
-			ev_io_init(w, io_cb, fd, EV_READ);
-			ev_io_start(loop, w);
+			sancus_ev_fd_stop (loop, w);
+			sancus_ev_fd_init(w, io_cb, fd, SANCUS_EV_READ);
+			sancus_ev_fd_start(loop, w);
 		}
 
 		settings->on_connect(self, loop);
@@ -95,7 +95,7 @@ connect_done:
 		sancus_tcp_conn_touch(self, loop);
 		break;
 	case SANCUS_TCP_CONN_RUNNING:
-		if (revents & EV_READ) {
+		if (revents & SANCUS_EV_READ) {
 			settings->on_read(self, loop);
 			sancus_tcp_conn_touch(self, loop);
 		}
@@ -149,7 +149,7 @@ static inline int init_tcp(struct sancus_tcp_conn *self,
 	assert(self);
 	assert(settings);
 
-	ev_io_init(&self->io, io_cb, fd, EV_READ|EV_WRITE);
+	sancus_ev_fd_init(&self->io, io_cb, fd, SANCUS_EV_READ|SANCUS_EV_WRITE);
 
 	self->settings = settings;
 
@@ -172,25 +172,25 @@ static inline int init_tcp(struct sancus_tcp_conn *self,
 /*
  * exported functions
  */
-void sancus_tcp_conn_start(struct sancus_tcp_conn *self, struct ev_loop *loop)
+void sancus_tcp_conn_start(struct sancus_tcp_conn *self, struct sancus_ev_loop *loop)
 {
-	assert(!ev_is_active(&self->io));
-	ev_io_start(loop, &self->io);
+	assert(!sancus_ev_is_active(&self->io));
+	sancus_ev_fd_start(loop, &self->io);
 
 	if (self->last_activity == 0.0)
 		sancus_tcp_conn_touch(self, loop);
 }
 
-void sancus_tcp_conn_stop(struct sancus_tcp_conn *self, struct ev_loop *loop)
+void sancus_tcp_conn_stop(struct sancus_tcp_conn *self, struct sancus_ev_loop *loop)
 {
-	assert(ev_is_active(&self->io));
-	ev_io_stop(loop, &self->io);
+	assert(sancus_ev_is_active(&self->io));
+	sancus_ev_fd_stop(loop, &self->io);
 }
 
 void sancus_tcp_conn_close(struct sancus_tcp_conn *self)
 {
 	assert(self->io.fd >= 0);
-	assert(!ev_is_active(&self->io));
+	assert(!sancus_ev_is_active(&self->io));
 
 	sancus_close(&self->io.fd);
 }
