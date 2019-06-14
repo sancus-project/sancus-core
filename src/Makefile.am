@@ -10,7 +10,8 @@ libsancus_core_la_SOURCES = \
 	sancus_serial.c \
 	stream.c \
 	tcp_conn.c \
-	tcp_server.c
+	tcp_server.c \
+	time.c
 
 libsancus_core_la_LDFLAGS = -Wl,--no-undefined
 
@@ -28,3 +29,9 @@ endif
 TESTS =
 testdir = $(libexecdir)/sancus
 test_PROGRAMS =
+
+# test-time
+#
+TESTS += test-time
+test_PROGRAMS += test-time
+test_time_SOURCES = tests/time.c
