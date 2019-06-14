@@ -16,7 +16,7 @@ AM_CFLAGS = -I @top_srcdir@/include
 lib_LTLIBRARIES = libsancus-core.la
 
 libsancus_core_la_SOURCES = \\
-	$(find * -name '*.c' | grep -v -e '^netlink/' | list)
+	$(find * -name '*.c' | grep -v -e '^\(netlink\|tests\)/' | list)
 
 libsancus_core_la_LDFLAGS = -Wl,--no-undefined
 
@@ -28,5 +28,23 @@ libsancus_netlink_la_SOURCES = \\
 
 libsancus_netlink_la_LDFLAGS = -Wl,--no-undefined
 endif
+
+TESTS =
+testdir = \$(libexecdir)/sancus
+test_PROGRAMS =
 EOT
+
+find tests -name '*.c' 2> /dev/null 2> /dev/null | cut -d/ -f2 | sort -uV | while read f; do
+	n="test-${f%.c}"
+	N="$(echo $n | tr '-' '_')"
+	cat <<EOT >> $F~
+
+# $n
+#
+TESTS += $n
+test_PROGRAMS += $n
+${N}_SOURCES = $(find tests/$f -name '*.c' | list)
+EOT
+done
+
 mv $F~ $F

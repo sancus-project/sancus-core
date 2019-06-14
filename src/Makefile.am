@@ -24,3 +24,7 @@ libsancus_netlink_la_SOURCES = \
 
 libsancus_netlink_la_LDFLAGS = -Wl,--no-undefined
 endif
+
+TESTS =
+testdir = $(libexecdir)/sancus
+test_PROGRAMS =
