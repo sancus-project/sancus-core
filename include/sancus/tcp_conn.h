@@ -57,14 +57,14 @@ struct sancus_tcp_conn {
 	struct sancus_ev_fd io;
 
 	enum sancus_tcp_conn_state state;
-	ev_tstamp last_activity;
+	struct timespec last_activity;
 
 	const struct sancus_tcp_conn_settings *settings;
 };
 
 #define sancus_tcp_conn_fd(P)	((P)->io.fd)
-#define sancus_tcp_conn_touch(C, L)	do { (C)->last_activity = ev_now(L); } while(0)
-#define sancus_tcp_conn_elapsed(C, L)	(ev_now(L) - (C)->last_activity)
+#define sancus_tcp_conn_touch(C, L)	do { (C)->last_activity = sancus_ev_now(L); } while(0)
+#define sancus_tcp_conn_elapsed(C, L)	sancus_time_elapsed(&(C)->last_activity, &sancus_ev_now(L))
 
 /**
  * sancus_tcp_conn_start - start watching connection

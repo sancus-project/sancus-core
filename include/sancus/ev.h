@@ -1,10 +1,11 @@
 #ifndef __SANCUS_EV_H__
 #define __SANCUS_EV_H__
 
+#include <sys/time.h>
+
 struct sancus_ev_loop;
 struct sancus_ev_fd;
 
-typedef double ev_tstamp;
 typedef void (*sancus_ev_fd_cb) (struct sancus_ev_loop *, struct sancus_ev_fd *, int);
 
 enum {
@@ -13,10 +14,6 @@ enum {
 	SANCUS_EV_ERROR,
 };
 
-static inline ev_tstamp ev_now(struct sancus_ev_loop *UNUSED(loop))
-{
-	return 0.0;
-}
 
 struct sancus_ev_fd {
 	int fd;
@@ -46,4 +43,15 @@ static inline int sancus_ev_is_active(struct sancus_ev_fd *UNUSED(w))
 	return 0;
 }
 
+/*
+ * event loop
+ */
+struct sancus_ev_loop {
+	struct timespec now;
+};
+
+static inline struct timespec sancus_ev_now(struct sancus_ev_loop *loop)
+{
+	return loop->now;
+}
 #endif /* !__SANCUS_EV_H__ */
