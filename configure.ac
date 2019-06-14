@@ -1,7 +1,7 @@
 AC_INIT(sancus-core, 0.1, amery@geeks.cl)
 
 AC_CONFIG_AUX_DIR([build-aux])
-AM_INIT_AUTOMAKE([foreign dist-bzip2 -Wall -Werror])
+AM_INIT_AUTOMAKE([foreign subdir-objects dist-bzip2 -Wall -Werror])
 
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -62,6 +62,5 @@ AC_CONFIG_FILES([sancus-core.pc])
 AC_CONFIG_FILES([Makefile
 		 doc/Makefile
 		 include/Makefile
-		 src/Makefile
-		 src/netlink/Makefile])
+		 src/Makefile])
 AC_OUTPUT

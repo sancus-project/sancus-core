@@ -6,7 +6,6 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = @PACKAGE_NAME@.pc
 
 if HAVE_LINUX_NETLINK
-SUBDIRS += src/netlink
 pkgconfig_DATA += sancus-netlink.pc
 endif
 

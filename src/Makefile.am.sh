@@ -2,7 +2,7 @@
 
 set -eu
 list() {
-	echo "$@" | tr ' ' '\n' | sort -V | tr '\n' '|' |
+	sort -uV | tr '\n' '|' |
 		sed -e 's,|$,,' -e 's,|, \\\n\t,g'
 }
 
@@ -16,8 +16,17 @@ AM_CFLAGS = -I @top_srcdir@/include
 lib_LTLIBRARIES = libsancus-core.la
 
 libsancus_core_la_SOURCES = \\
-	$(list *.c)
+	$(find * -name '*.c' | grep -v -e '^netlink/' | list)
 
 libsancus_core_la_LDFLAGS = -Wl,--no-undefined
+
+if HAVE_LINUX_NETLINK
+lib_LTLIBRARIES += libsancus-netlink.la
+
+libsancus_netlink_la_SOURCES = \\
+	$(find netlink/ -name '*.c' | list)
+
+libsancus_netlink_la_LDFLAGS = -Wl,--no-undefined
+endif
 EOT
 mv $F~ $F

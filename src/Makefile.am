@@ -13,3 +13,14 @@ libsancus_core_la_SOURCES = \
 	tcp_server.c
 
 libsancus_core_la_LDFLAGS = -Wl,--no-undefined
+
+if HAVE_LINUX_NETLINK
+lib_LTLIBRARIES += libsancus-netlink.la
+
+libsancus_netlink_la_SOURCES = \
+	netlink/netlink_attr.c \
+	netlink/netlink_io.c \
+	netlink/netlink_msg.c
+
+libsancus_netlink_la_LDFLAGS = -Wl,--no-undefined
+endif
