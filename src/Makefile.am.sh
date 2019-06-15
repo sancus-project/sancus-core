@@ -44,6 +44,7 @@ find tests -name '*.c' 2> /dev/null 2> /dev/null | cut -d/ -f2 | sort -uV | whil
 TESTS += $n
 test_PROGRAMS += $n
 ${N}_SOURCES = $(find tests/$f -name '*.c' | list)
+${N}_LDADD = libsancus-core.la
 EOT
 done
 

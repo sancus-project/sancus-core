@@ -35,3 +35,4 @@ test_PROGRAMS =
 TESTS += test-time
 test_PROGRAMS += test-time
 test_time_SOURCES = tests/time.c
+test_time_LDADD = libsancus-core.la
