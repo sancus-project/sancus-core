@@ -35,27 +35,6 @@
 	(A)->tv_sec, \
 	NS_TO_MS((A)->tv_nsec < 0 ? -(A)->tv_nsec : (A)->tv_nsec)
 
-static inline void sancus_time_fix(struct timespec *a)
-{
-	long ns = a->tv_nsec;
-	long d = ns / SEC_TO_NS(1);
-
-	if (d > 0) {
-		a->tv_sec += d;
-		a->tv_nsec -= SEC_TO_NS(d);
-	} else if (ns < 0) {
-		d = -d + 1;
-
-		if (unlikely(d == 1 && a->tv_sec == 0)) {
-			/* a > -1.0 && a < 0 */
-			;
-		} else {
-			a->tv_sec -= d;
-			a->tv_nsec += SEC_TO_NS(d);
-		}
-	}
-}
-
 /* -A */
 static inline struct timespec sancus_time_neg(struct timespec a)
 {
@@ -103,27 +82,31 @@ static inline int sancus_time_is_gt(const struct timespec *a, const struct times
 	return sancus_time_cmp(a, b) > 0;
 }
 
-/* A += B */
-static inline void sancus_time_add(struct timespec *a,
-				   struct timespec b)
+/* create canonical timespec */
+struct timespec sancus_time_new2(long sec, long ns);
+
+static inline struct timespec sancus_time_new(const struct timespec *ts)
 {
-	if (sancus_time_is_zero(&b)) {
-		; // B == 0
-	} else if (sancus_time_is_zero(a)) {
-		*a = b; // A == 0
-	} else {
-		a->tv_sec += b.tv_sec;
-		a->tv_nsec += b.tv_nsec;
-		sancus_time_fix(a);
-	}
+	if (ts != NULL && !sancus_time_is_zero(ts))
+		return sancus_time_new2(ts->tv_sec, ts->tv_nsec);
+	return TIMESPEC_INIT(0, 0);
 }
 
-/* A -= B */
-static inline void sancus_time_sub(struct timespec *a,
-				   struct timespec b)
+/* A + B */
+static inline struct timespec sancus_time_add(const struct timespec *a, const struct timespec *b)
 {
-	if (!sancus_time_is_zero(&b))
-		sancus_time_add(a, sancus_time_neg(b));
+	if (!sancus_time_is_zero(b)) {
+		return sancus_time_new2(a->tv_sec + b->tv_sec,
+					a->tv_nsec + b->tv_nsec);
+	}
+	return *a;
+}
+
+/* A - B */
+static inline struct timespec sancus_time_sub(const struct timespec *a, const struct timespec *b)
+{
+	struct timespec t = sancus_time_neg(*b);
+	return sancus_time_add(a, &t);
 }
 
 /* NOW > SINCE ? NOW - SINCE : 0 */
@@ -131,9 +114,7 @@ static inline struct timespec sancus_time_elapsed(const struct timespec *now,
 						  const struct timespec *since)
 {
 	if (sancus_time_is_gt(now, since)) {
-		struct timespec ret = *now;
-		sancus_time_sub(&ret, *since);
-		return ret;
+		return sancus_time_sub(now, since);
 	}
 	return TIMESPEC_INIT(0, 0);
 }

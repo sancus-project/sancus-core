@@ -48,26 +48,24 @@ static int test_eq__time(const char *fn, struct timespec v0,
 						  F(A0,B0), \
 						  (struct timespec){A1,B1})
 
-static int test_time_fix(struct timespec v0, struct timespec v2)
+static int test_time_new(struct timespec v0, struct timespec v2)
 {
-	const char *fn = "sancus_time_fix";
-	struct timespec v1 = v0;
+	const char *fn = "sancus_time_new2";
+	struct timespec v1 = sancus_time_new(&v0);
 	int err = 0;
-
-	sancus_time_fix(&v1);
 
 	if (sancus_time_is_eq(&v1, &v2)) {
 		pr_info("%s(%ld,%ld) -> " TIMESPEC_FMT "\n",
 			fn, v0.tv_sec, v0.tv_nsec,
 			TIMESPEC_SPLIT(&v1));
 	} else {
-		pr_err("%s(%ld,%ld) -> " TIMESPEC_FMT \
-		       " expected:" TIMESPEC_FMT "\n",
+		pr_err("%s(%ld,%ld) -> " TIMESPEC_FMT " expected:" TIMESPEC_FMT "\n",
 		       fn, v0.tv_sec, v0.tv_nsec,
 		       TIMESPEC_SPLIT(&v1),
 		       TIMESPEC_SPLIT(&v2));
 		err = 1;
 	}
+
 	return err;
 }
 
@@ -145,12 +143,12 @@ int main(int UNUSED(argc), char **UNUSED(argv))
 	err += test_eq_long(NS_TO_SEC, 1000000000L, 1L);
 
 	// struct sanitisation
-	err += test_time_fix(T(0,   0), T(0,  0));
-	err += test_time_fix(T(1,  10), T(1, 10));
-	err += test_time_fix(T(1, 999), T(1,999));
-	err += test_time_fix(T(1,1000), T(2,  0));
-	err += test_time_fix(T(1,1001), T(2,  1));
-	err += test_time_fix(T(1,  -1), T(0,999));
+	err += test_time_new(T(0,   0), T(0,  0));
+	err += test_time_new(T(1,  10), T(1, 10));
+	err += test_time_new(T(1, 999), T(1,999));
+	err += test_time_new(T(1,1000), T(2,  0));
+	err += test_time_new(T(1,1001), T(2,  1));
+	err += test_time_new(T(1,  -1), T(0,999));
 
 	// timespec compare
 	err += test_t1(sancus_time_is_gt, T( 0, 2),   T( 0,   1), 1);
