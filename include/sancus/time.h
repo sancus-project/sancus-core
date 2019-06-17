@@ -93,14 +93,7 @@ static inline struct timespec sancus_time_new(const struct timespec *ts)
 }
 
 /* A + B */
-static inline struct timespec sancus_time_add(const struct timespec *a, const struct timespec *b)
-{
-	if (!sancus_time_is_zero(b)) {
-		return sancus_time_new2(a->tv_sec + b->tv_sec,
-					a->tv_nsec + b->tv_nsec);
-	}
-	return *a;
-}
+struct timespec sancus_time_add(const struct timespec *a, const struct timespec *b);
 
 /* A - B */
 static inline struct timespec sancus_time_sub(const struct timespec *a, const struct timespec *b)
