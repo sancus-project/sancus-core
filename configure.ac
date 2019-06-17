@@ -58,9 +58,18 @@ fi
 
 CFLAGS="$CFLAGS -Wall -Wextra -pedantic -Winline"
 
+dnl Doxygen
+dnl
+AC_CHECK_PROGS([DOXYGEN], [doxygen])
+if test -z "$DOXYGEN"; then
+	AC_MSG_WARN([Doxygen not found - documentation won't be generated])
+fi
+AM_CONDITIONAL([HAVE_DOXYGEN], [test -n "$DOXYGEN"])
+
 AC_CONFIG_FILES([sancus-core.pc])
 AC_CONFIG_FILES([Makefile
 		 doc/Makefile
+		 doc/Doxyfile
 		 include/Makefile
 		 src/Makefile])
 AC_OUTPUT
