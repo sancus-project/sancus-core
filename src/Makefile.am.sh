@@ -45,6 +45,10 @@ cat <<EOT > $F~
 AM_CFLAGS = @WARN_CFLAGS@
 AM_CPPFLAGS = -I @top_srcdir@/include
 
+if IS_DEBUG
+AM_CFLAGS += -Werror
+endif
+
 lib_LTLIBRARIES = libsancus-core.la
 
 $(list_find_files libsancus_core_la_SOURCES sancus/ -name '*.c')
