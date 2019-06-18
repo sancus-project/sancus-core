@@ -32,7 +32,7 @@ endif
 # private headers
 #
 EXTRA_DIST = \\
-	$(find -name '*.h' | list)
+	$(find * -name '*.h' | list)
 
 # tests
 #

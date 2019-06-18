@@ -1,7 +1,10 @@
 #!/bin/sh
 
+F="${0##*/}"
+F="${F%.sh}"
+
 cd "${0%/*}"
-cat <<EOT | tee Makefile.am
+cat <<EOT > $F~
 
 TSTAMP = doxyfile.stamp
 
@@ -16,3 +19,4 @@ all-local: \$(TSTAMP)
 
 endif
 EOT
+mv $F~ $F
