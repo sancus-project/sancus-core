@@ -23,7 +23,7 @@
 #define TIMESPEC_INIT_MS(S, MS) TIMESPEC_INIT((S), MS_TO_NS(MS))
 
 #define TIMESPEC_FMT    "%s%ld.%09ld"
-#define TIMESPEC_FMT_MS "%s%ld.%06ld"
+#define TIMESPEC_FMT_MS "%s%ld.%03ld"
 
 #define TIMESPEC_SPLIT(A) \
 	(A)->tv_nsec < 0 ? "-" : "", \
