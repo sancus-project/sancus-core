@@ -26,8 +26,8 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef _SANCUS_COMMON_H
-#define _SANCUS_COMMON_H
+#ifndef __SANCUS_COMMON_H__
+#define __SANCUS_COMMON_H__
 
 #include <stddef.h>
 
@@ -41,7 +41,7 @@
 /** likely to be 1 */
 #ifdef likely
 #elif defined(__GNUC__)
-#	define likely(e)	__builtin_expect((e), 1)
+#	define likely(e)	__builtin_expect(!!(e), 1)
 #else
 #	define likely(e)	(e)
 #endif
@@ -49,7 +49,7 @@
 /** likely to be 0 */
 #ifdef unlikely
 #elif defined(__GNUC__)
-#	define unlikely(e)	__builtin_expect((e), 0)
+#	define unlikely(e)	__builtin_expect(!!(e), 0)
 #else
 #	define unlikely(e)	(e)
 #endif
@@ -81,4 +81,4 @@
 #	define TYPECHECK_PRINTF(I, J)
 #endif
 
-#endif /* !_SANCUS_COMMON_H */
+#endif /* !__SANCUS_COMMON_H__ */
