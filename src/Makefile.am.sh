@@ -29,6 +29,13 @@ libsancus_netlink_la_SOURCES = \\
 libsancus_netlink_la_LDFLAGS = -Wl,--no-undefined
 endif
 
+# private headers
+#
+EXTRA_DIST = \\
+	$(find -name '*.h' | list)
+
+# tests
+#
 TESTS =
 testdir = \$(libexecdir)/sancus
 test_PROGRAMS =
