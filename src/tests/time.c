@@ -95,16 +95,6 @@ static int test__t0(const char *fn, struct timespec v0, struct timespec v1, stru
 /*
  * t1: f(a, b) == rc
  */
-static struct timespec test_time__add(struct timespec a, struct timespec b)
-{
-	return sancus_time_add(&a, &b);
-}
-
-static struct timespec test_time__sub(struct timespec a, struct timespec b)
-{
-	return sancus_time_sub(&a, &b);
-}
-
 static int test__t1(const char *fn, struct timespec a, struct timespec b,
 		    int r0, int r1)
 {
@@ -129,6 +119,26 @@ static int test__t1(const char *fn, struct timespec a, struct timespec b,
 /*
  * F(A, B) == C; C == D
  */
+static struct timespec test_time__add(struct timespec a, struct timespec b)
+{
+	return sancus_time_add(&a, &b);
+}
+
+static struct timespec test_time__sub(struct timespec a, struct timespec b)
+{
+	return sancus_time_sub(&a, &b);
+}
+
+static struct timespec test_time__elapsed(struct timespec a, struct timespec b)
+{
+	return sancus_time_elapsed(&a, &b);
+}
+
+static struct timespec test_time__left(struct timespec a, struct timespec b)
+{
+	return sancus_time_left(&a, &b);
+}
+
 static int test__t2(const char *fn, struct timespec a, struct timespec b,
 		    struct timespec c, struct timespec d)
 {
@@ -239,6 +249,13 @@ int main(int UNUSED(argc), char **UNUSED(argv))
 	err += test_t2(sub, T(0, 2), T(0, 2), T(0,0));
 	err += test_t2(sub, T(0, 2), T(0, 3), T(0,-1));
 	err += test_t2(sub, T(-1, 200), T(0, 300),  T(-1,500));
+
+	err += test_t2(left, T(0,800), T(1,100), T(0,300));
+	err += test_t2(left, T(1,100), T(1,100), T(0,0));
+	err += test_t2(left, T(1,400), T(1,100), T(0,0));
+	err += test_t2(elapsed, T(0,800), T(1,100), T(0,0));
+	err += test_t2(elapsed, T(1,100), T(1,100), T(0,0));
+	err += test_t2(elapsed, T(1,400), T(1,100), T(0,300));
 
 	return err == 0 ? 0 : 1;
 }

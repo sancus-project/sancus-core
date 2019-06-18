@@ -117,7 +117,10 @@ static inline struct timespec sancus_time_elapsed(const struct timespec *now,
 static inline struct timespec sancus_time_left(const struct timespec *now,
 					       const struct timespec *until)
 {
-	return sancus_time_elapsed(until, now);
+	if (sancus_time_is_gt(until, now)) {
+		return sancus_time_sub(until, now);
+	}
+	return TIMESPEC_INIT(0, 0);
 }
 
 #endif /* !__SANCUS_TIME_H__ */
