@@ -50,9 +50,9 @@ static inline void sancus_list_init(struct sancus_list *self)
 /**
  * sancus_list_inject - injects a list element between two other
  */
-static inline void sancus_list_inject(struct sancus_list *self,
-				      struct sancus_list *prev,
-				      struct sancus_list *next)
+static inline void sancus_list__inject(struct sancus_list *self,
+				       struct sancus_list *prev,
+				       struct sancus_list *next)
 {
 	*self = (struct sancus_list) { prev, next };
 
@@ -60,14 +60,18 @@ static inline void sancus_list_inject(struct sancus_list *self,
 }
 
 /**
+ * sancus_list_insert_before - inserts item before a given item
+ */
+#define sancus_list_insert_before(I, N) sancus_list__inject((I), (N)->prev, (N))
+/**
  * sancus_list_insert - inserts item at the begining of a list
  */
-#define sancus_list_insert(H, I)	sancus_list_inject((I), (H), (H)->next)
+#define sancus_list_insert(H, I)	sancus_list__inject((I), (H), (H)->next)
 
 /**
  * sancus_list_append - append item at the end of a list
  */
-#define sancus_list_append(H, I)	sancus_list_inject((I), (H)->prev, (H))
+#define sancus_list_append(H, I)	sancus_list__inject((I), (H)->prev, (H))
 
 /**
  * sancus_list_del - removes item from the list
