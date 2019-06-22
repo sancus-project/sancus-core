@@ -37,6 +37,8 @@ struct sancus_list {
 	struct sancus_list *next;
 };
 
+#define DECL_SANCUS_LIST(N) struct sancus_list N = { &N, &N }
+
 /**
  * sancus_list_init - initializes list element
  */
