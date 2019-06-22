@@ -26,8 +26,8 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef _SANCUS_LIST_H
-#define _SANCUS_LIST_H
+#ifndef __SANCUS_LIST_H__
+#define __SANCUS_LIST_H__
 
 /**
  * struct sancus_list - double linked list element
@@ -70,42 +70,42 @@ static inline void sancus_list_inject(struct sancus_list *self,
 /**
  * sancus_list_del - removes item from the list
  */
-static inline void __sancus_list_del(struct sancus_list *prev,
-				     struct sancus_list *next)
+static inline void sancus_list__del(struct sancus_list *prev,
+				    struct sancus_list *next)
 {
 	next->prev = prev;
 	prev->next = next;
 }
-#define sancus_list_del(S)	__sancus_list_del((S)->prev, (S)->next)
+#define sancus_list_del(S)	sancus_list__del((S)->prev, (S)->next)
 
 /**
  * sancus_list_foreach - iterates over a list
  */
-#define sancus_list_foreach(H, I)	for(struct sancus_list *I = (H)->next; (I) != (H); (I) = (I)->next)
+#define sancus_list_foreach(H, I)	for (struct sancus_list *I = (H)->next; (I) != (H); (I) = (I)->next)
 
 /**
  * sancus_list_foreach2 - safely iterate over a list
  */
-#define sancus_list_foreach2(H, I, N)	for(struct sancus_list *I = (H)->next, *N = (I)->next; (I) != (H); (I) = (N), (N) = (I)->next)
+#define sancus_list_foreach2(H, I, N)	for (struct sancus_list *I = (H)->next, *N = (I)->next; (I) != (H); (I) = (N), (N) = (I)->next)
 
 /**
- * sancus_list_isempty - tells if there are no (other) elements in this list
+ * sancus_list_is_empty - tells if there are no (other) elements in this list
  */
-#define sancus_list_isempty(H)		((H)->next == (H))
+#define sancus_list_is_empty(H)		((H)->next == (H))
 
 /**
  * sancus_list_first - returns the first element on a list, if any
  */
-#define sancus_list_first(H)		(sancus_list_isempty(H)?NULL:(H)->next)
+#define sancus_list_first(H)		(sancus_list_is_empty(H) ? NULL : (H)->next)
 
 /**
  * sancus_list_last - returns the last element of a list, if any
  */
-#define sancus_list_last(H)		(sancus_list_isempty(H)?NULL:(H)->prev)
+#define sancus_list_last(H)		(sancus_list_is_empty(H) ? NULL : (H)->prev)
 
 /**
  * sancus_list_next - returns the next elemnet on a list, if any
  */
-#define sancus_list_next(H, E)		((E)->next == (H) ? NULL : (E)->next)
+#define sancus_list_next(H, E)		(((H) == NULL || (E) == NULL || (E)->next == (H)) ?  NULL : (E)->next)
 
-#endif /* !_SANCUS_LIST_H */
+#endif /* !__SANCUS_LIST_H__ */
