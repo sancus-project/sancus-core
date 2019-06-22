@@ -79,6 +79,18 @@ static inline void sancus_list__del(struct sancus_list *prev,
 #define sancus_list_del(S)	sancus_list__del((S)->prev, (S)->next)
 
 /**
+ * sancus_list_swap - swaps two elements in a list
+ */
+static inline void sancus_list_swap(struct sancus_list *a, struct sancus_list *b)
+{
+	struct sancus_list aux = { a->prev, a->next };
+
+	*a = (struct sancus_list) { b->prev, b->next };
+	*b = (struct sancus_list) { aux->prev, aux->next };
+}
+
+
+/**
  * sancus_list_foreach - iterates over a list
  */
 #define sancus_list_foreach(H, I)	for (struct sancus_list *I = (H)->next; (I) != (H); (I) = (I)->next)
