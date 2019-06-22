@@ -88,7 +88,7 @@ static inline void sancus_list_swap(struct sancus_list *a, struct sancus_list *b
 	struct sancus_list aux = { a->prev, a->next };
 
 	*a = (struct sancus_list) { b->prev, b->next };
-	*b = (struct sancus_list) { aux->prev, aux->next };
+	*b = (struct sancus_list) { aux.prev, aux.next };
 }
 
 
@@ -111,6 +111,25 @@ static inline void sancus_list_swap(struct sancus_list *a, struct sancus_list *b
  * sancus_list_foreach_back2 - safely iterate over a list backward
  */
 #define sancus_list_foreach_back2(H, I, P)	for (struct sancus_list *I = (H)->prev, *P = (I)->prev; (I) != (H); (I) = (P), (P) = (I)->prev)
+
+/**
+ * sancus_list_get gets a given element on a list, backward or forward.
+ */
+static inline struct sancus_list *sancus_list_get(struct sancus_list *head, ssize_t n)
+{
+	if (n < 0) {
+		sancus_list_foreach_back(head, item) {
+			if (++n == 0)
+				return item;
+		}
+	} else {
+		sancus_list_foreach(head, item) {
+			if (n-- == 0)
+				return item;
+		}
+	}
+	return NULL;
+}
 
 /**
  * sancus_list_is_empty - tells if there are no (other) elements in this list
