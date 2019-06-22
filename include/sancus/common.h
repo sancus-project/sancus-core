@@ -30,6 +30,7 @@
 #define __SANCUS_COMMON_H__
 
 #include <stddef.h>
+#include <sys/types.h>
 
 /**
  * container_of - find reference to container of a given struct element
