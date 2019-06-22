@@ -103,6 +103,16 @@ static inline void sancus_list_swap(struct sancus_list *a, struct sancus_list *b
 #define sancus_list_foreach2(H, I, N)	for (struct sancus_list *I = (H)->next, *N = (I)->next; (I) != (H); (I) = (N), (N) = (I)->next)
 
 /**
+ * sancus_list_foreach_back - iterates over a list backward
+ */
+#define sancus_list_foreach_back(H, I)	for (struct sancus_list *I = (H)->prev; (I) != (H); (I) = (I)->prev)
+
+/**
+ * sancus_list_foreach_back2 - safely iterate over a list backward
+ */
+#define sancus_list_foreach_back2(H, I, P)	for (struct sancus_list *I = (H)->prev, *P = (I)->prev; (I) != (H); (I) = (P), (P) = (I)->prev)
+
+/**
  * sancus_list_is_empty - tells if there are no (other) elements in this list
  */
 #define sancus_list_is_empty(H)		((H)->next == (H))
