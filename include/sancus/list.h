@@ -136,6 +136,19 @@ static inline struct sancus_list *sancus_list_get(struct sancus_list *head, ssiz
 }
 
 /**
+ * sancus_list_size counts how many are there on a list
+ */
+static inline size_t sancus_list_size(const struct sancus_list *head)
+{
+	size_t i = 0;
+	sancus_list_foreach(head, item) {
+		i++;
+	}
+	return i;
+
+}
+
+/**
  * sancus_list_is_empty - tells if there are no (other) elements in this list
  */
 #define sancus_list_is_empty(H)		((H)->next == (H))
