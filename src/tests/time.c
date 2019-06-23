@@ -50,9 +50,11 @@ static int test_eq__time(const char *fn, struct timespec v0,
 
 static int test_time_new(struct timespec v0, struct timespec v2)
 {
-	const char *fn = "sancus_time_new2";
-	struct timespec v1 = sancus_time_new(&v0);
+	const char *fn = "sancus_time_fix";
+	struct timespec v1 = v0;
 	int err = 0;
+
+	sancus_time_fix(&v1);
 
 	if (sancus_time_is_eq(&v1, &v2)) {
 		pr_info("%s(%ld,%ld) -> " TIMESPEC_FMT "\n",
