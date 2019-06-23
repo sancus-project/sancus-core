@@ -35,6 +35,32 @@
 	(A)->tv_sec, \
 	NS_TO_MS((A)->tv_nsec < 0 ? -(A)->tv_nsec : (A)->tv_nsec)
 
+/* sancus_time_fp_to_ts converts a time duration from double to timespec */
+static inline struct timespec sancus_time_fp_to_ts(double d)
+{
+	struct timespec t = {
+		.tv_sec = d / 1L,
+	};
+
+	d -= t.tv_sec;
+	/* shift to nanoseconds */
+	d *= 1000000000.;
+	/* rounding */
+	d += .5;
+
+	t.tv_nsec = d / 1L;
+	return t;
+}
+
+/* sancus_time_ts_to_fs converts a time duration from timespec to double */
+static inline double sancus_time_ts_to_fp(const struct timespec *t)
+{
+	double d = t->tv_nsec;
+	d /= 1000000000.;
+	d += t->tv_sec;
+	return d;
+}
+
 /* -A */
 static inline struct timespec sancus_time_neg(struct timespec a)
 {
