@@ -2,6 +2,7 @@
 #define __SANCUS_TIME_H__
 
 #include <sys/time.h>
+#include <limits.h>
 
 #define SEC_TO_NS(S) (1000L * SEC_TO_US(S))
 #define SEC_TO_US(S) (1000L * SEC_TO_MS(S))
@@ -18,6 +19,8 @@
 #define NS_TO_MS(NS)  ((NS) / MS_TO_NS(1))
 #define NS_TO_US(NS)  ((NS) / MS_TO_US(1))
 #define NS_TO_SEC(NS) ((NS) / SEC_TO_NS(1))
+
+#define NS_TO_MS_ROUNDED(NS) (((NS) + (MS_TO_NS(1)/2)) / MS_TO_NS(1))
 
 #define TIMESPEC_INIT(S, NS)    ((struct timespec) { (S), (NS) })
 #define TIMESPEC_INIT_MS(S, MS) TIMESPEC_INIT((S), MS_TO_NS(MS))
@@ -50,6 +53,33 @@ static inline struct timespec sancus_time_fp_to_ts(double d)
 
 	t.tv_nsec = d / 1L;
 	return t;
+}
+
+/* sancus_time_fp_to_ms converts a time duration from double to milliseconds */
+static inline long sancus_time_fp_to_ms(double d)
+{
+	/* shift to milliseconds */
+	d *= 1000.;
+	/* rounding */
+	d += .5;
+
+	return d / 1L;
+}
+
+/* sancus_time_ts_to_ms converts a time duration from timespec to milliseconds */
+static inline long sancus_time_ts_to_ms(const struct timespec *ts)
+{
+	long ms;
+
+	if (ts->tv_sec <= (time_t)(LONG_MIN/SEC_TO_MS(1)))
+		ms = LONG_MIN;
+	else if (ts->tv_sec >= (time_t)(LONG_MAX/SEC_TO_MS(1)))
+		ms = LONG_MAX;
+	else if (ts->tv_sec < 0)
+		ms = SEC_TO_MS(ts->tv_sec) - NS_TO_MS_ROUNDED(ts->tv_nsec);
+	else
+		ms = SEC_TO_MS(ts->tv_sec) + NS_TO_MS_ROUNDED(ts->tv_nsec);
+	return ms;
 }
 
 /* sancus_time_ts_to_fs converts a time duration from timespec to double */
