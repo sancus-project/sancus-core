@@ -173,6 +173,9 @@ static inline struct timespec sancus_time_new(long sec, long ns)
 	return ts;
 }
 
+/* A += B */
+int sancus_time__add(struct timespec *a, const struct timespec *b);
+
 /* A + B */
 struct timespec sancus_time_add(const struct timespec *a, const struct timespec *b);
 

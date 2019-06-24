@@ -12,6 +12,18 @@ static inline struct timespec substract(struct timespec a, struct timespec b)
 	return sancus_time_new(sec, nsec);
 }
 
+int sancus_time__add(struct timespec *a, const struct timespec *b)
+{
+	*a = sancus_time_add(a, b);
+
+	if (a->tv_sec < 0 || a->tv_nsec < 0)
+		return -1;
+	else if (a->tv_sec == 0 && a->tv_nsec == 0)
+		return 0;
+	else
+		return 1;
+}
+
 struct timespec sancus_time_add(const struct timespec *a, const struct timespec *b)
 {
 	struct timespec zero = TIMESPEC_INIT(0, 0);
