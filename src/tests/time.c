@@ -123,12 +123,14 @@ static int test__t1(const char *fn, struct timespec a, struct timespec b,
  */
 static struct timespec test_time__add(struct timespec a, struct timespec b)
 {
-	return sancus_time_add(&a, &b);
+	sancus_time_add(&a, &b);
+	return a;
 }
 
 static struct timespec test_time__sub(struct timespec a, struct timespec b)
 {
-	return sancus_time_sub(&a, &b);
+	sancus_time_sub(&a, &b);
+	return a;
 }
 
 static struct timespec test_time__elapsed(struct timespec a, struct timespec b)

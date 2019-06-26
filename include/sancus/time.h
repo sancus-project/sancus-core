@@ -182,24 +182,23 @@ static inline struct timespec sancus_time_new_ms(long ms)
 }
 
 /* A += B */
-int sancus_time__add(struct timespec *a, const struct timespec *b);
+int sancus_time_add(struct timespec *a, const struct timespec *b);
+
+/* A -= B */
+int sancus_time_sub(struct timespec *a, const struct timespec *b);
 
 /* A + B */
-struct timespec sancus_time_add(const struct timespec *a, const struct timespec *b);
+struct timespec sancus_time_add2(const struct timespec *a, const struct timespec *b);
 
 /* A - B */
-static inline struct timespec sancus_time_sub(const struct timespec *a, const struct timespec *b)
-{
-	struct timespec t = sancus_time_neg(*b);
-	return sancus_time_add(a, &t);
-}
+struct timespec sancus_time_sub2(const struct timespec *a, const struct timespec *b);
 
 /* NOW > SINCE ? NOW - SINCE : 0 */
 static inline struct timespec sancus_time_elapsed(const struct timespec *now,
 						  const struct timespec *since)
 {
 	if (sancus_time_is_gt(now, since)) {
-		return sancus_time_sub(now, since);
+		return sancus_time_sub2(now, since);
 	}
 	return TIMESPEC_INIT(0, 0);
 }
@@ -210,7 +209,7 @@ static inline struct timespec sancus_time_left(const struct timespec *now,
 					       const struct timespec *until)
 {
 	if (sancus_time_is_gt(until, now)) {
-		return sancus_time_sub(until, now);
+		return sancus_time_sub2(until, now);
 	}
 	return TIMESPEC_INIT(0, 0);
 }
