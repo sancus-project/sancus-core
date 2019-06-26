@@ -173,6 +173,14 @@ static inline struct timespec sancus_time_new(long sec, long ns)
 	return ts;
 }
 
+/* create canonimcal timespec from a number of milliseconds */
+static inline struct timespec sancus_time_new_ms(long ms)
+{
+	struct timespec ts = TIMESPEC_INIT_MS(0, ms);
+	sancus_time_fix(&ts);
+	return ts;
+}
+
 /* A += B */
 int sancus_time__add(struct timespec *a, const struct timespec *b);
 
