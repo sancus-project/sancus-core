@@ -35,6 +35,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <stdbool.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>

@@ -32,6 +32,7 @@
 
 #include <assert.h>
 #include <stdbool.h>
+#include <string.h>
 #include <unistd.h>
 #include <errno.h>
 
