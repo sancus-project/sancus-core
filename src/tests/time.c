@@ -253,6 +253,7 @@ int main(int UNUSED(argc), char **UNUSED(argv))
 	err += test_t2(sub, T(0, 2), T(0, 2), T(0,0));
 	err += test_t2(sub, T(0, 2), T(0, 3), T(0,-1));
 	err += test_t2(sub, T(-1, 200), T(0, 300),  T(-1,500));
+	err += test_t2(sub, T(2, 100), T(1, 500), T(0, 600));
 
 	err += test_t2(left, T(0,800), T(1,100), T(0,300));
 	err += test_t2(left, T(1,100), T(1,100), T(0,0));

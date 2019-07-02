@@ -8,11 +8,18 @@ static int time_add(struct timespec *a, const struct timespec *b)
 		a->tv_nsec -= b->tv_nsec;
 
 		if (a->tv_nsec < 0) {
-			a->tv_sec += 1;
-			a->tv_nsec += SEC_TO_NS(1);
+			long d = 1 - a->tv_nsec / SEC_TO_NS(1);
 
-			if (a->tv_sec == 0)
+			a->tv_nsec += SEC_TO_NS(d);
+
+			if (a->tv_sec == -d) {
+				a->tv_sec = 0;
 				a->tv_nsec *= -1;
+			} else if (a->tv_sec >= d) {
+				a->tv_sec -= d;
+			} else {
+				a->tv_sec += d;
+			}
 		}
 
 	} else {
