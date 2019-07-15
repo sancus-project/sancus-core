@@ -6,7 +6,6 @@ nobase_include_HEADERS = \
 	sancus/fd.h \
 	sancus/fmt.h \
 	sancus/list.h \
-	sancus/log.h \
 	sancus/serial.h \
 	sancus/socket.h \
 	sancus/stream.h \
