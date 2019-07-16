@@ -136,7 +136,7 @@ void sancus_stream_close(struct sancus_stream *self)
 	assert(self->read_watcher.fd >= 0);
 	assert(!sancus_ev_is_active(&self->read_watcher));
 
-	sancus_close(&self->read_watcher.fd);
+	sancus_close2(&self->read_watcher.fd);
 	self->settings->on_close(self);
 }
 

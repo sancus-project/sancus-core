@@ -123,7 +123,7 @@ static void recv_cb(struct sancus_ev_loop *loop, struct sancus_ev_fd *w, int rev
 			settings->on_error(self, loop,
 					   SANCUS_NL_RECEIVER_RECVFROM_ERROR);
 		} else if (!extract_netlink_message(self, loop, buf, ret)) {
-			sancus_close(&w->fd);
+			sancus_close2(&w->fd);
 		}
 	}
 
@@ -157,7 +157,7 @@ void sancus_nl_receiver_close(struct sancus_nl_receiver *self)
 	assert(self->recv_watcher.fd >= 0);
 	assert(!sancus_ev_is_active(&self->recv_watcher));
 
-	sancus_close(&self->recv_watcher.fd);
+	sancus_close2(&self->recv_watcher.fd);
 }
 
 int sancus_nl_receiver_listen(struct sancus_nl_receiver *self,
@@ -184,7 +184,7 @@ int sancus_nl_receiver_listen(struct sancus_nl_receiver *self,
 
 	if (bind(fd, (struct sockaddr *) &sa, sizeof(sa)) < 0) { 
 		int e = errno;
-		sancus_close(&self->recv_watcher.fd);
+		sancus_close2(&self->recv_watcher.fd);
 		errno = e;
 		return -1;
 	}

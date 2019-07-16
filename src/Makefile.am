@@ -5,6 +5,7 @@ lib_LTLIBRARIES = libsancus-core.la
 libsancus_core_la_SOURCES = \
 	alloc.c \
 	buffer.c \
+	fd.c \
 	fmt_cstr.c \
 	sancus_serial.c \
 	stream.c \

@@ -26,75 +26,45 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef _SANCUS_FD_H
-#define _SANCUS_FD_H
+#ifndef __SANCUS_FD_H__
+#define __SANCUS_FD_H__
 
-#ifdef _FCNTL_H
+#include <errno.h>
+#include <unistd.h>
+
+struct iovec;
+
 /**
  * sancus_openat - auto-retrying wrapper for openat(2) with easier cloexec support
  */
-static inline int sancus_openat(int dirfd, const char *pathname, int flags, int cloexec, mode_t mode)
-{
-	int fd;
-#ifdef O_CLOEXEC
-	if (cloexec)
-		flags |= O_CLOEXEC;
-	else
-		flags &= ~O_CLOEXEC;
-#endif
-open_retry:
-	if ((fd = openat(dirfd, pathname, flags, mode)) < 0) {
-		if (errno == EINTR)
-			goto open_retry;
-		else
-			goto open_done;
-	}
-
-	if (cloexec) {
-		int fl = fcntl(fd, F_GETFL);
-		if (fl < 0)
-			goto open_failed;
-#ifdef O_CLOEXEC
-		if ((fl & FD_CLOEXEC) == 0)
-#endif
-			if (fcntl(fd, F_SETFL, fl|FD_CLOEXEC) < 0) {
-				goto open_failed;
-			}
-	}
-	goto open_done;
-open_failed:
-	close(fd);
-	fd = -1;
-open_done:
-	return fd;
-}
+int sancus_openat(int dirfd, const char *pathname, int flags, int cloexec, mode_t mode);
 
 /**
  * sancus_open - auto-retrying wrapper for open(2) with easier cloexec support
  */
-static inline int sancus_open(const char *pathname, int flags, int cloexec, mode_t mode)
+int sancus_open(const char *pathname, int flags, int cloexec, mode_t mode);
+
+/**
+ * sancus_close - auto-retrying wrapper for close(2)
+ */
+static inline int sancus_close(int fd)
 {
-	return sancus_openat(AT_FDCWD, pathname, flags, cloexec, mode);
+	while (1) {
+		if (close(fd) == 0)
+			return 0;
+		else if (errno != EINTR)
+			return -errno;
+	}
 }
 
-#endif
-
-#ifdef _UNISTD_H
-/**
- * sancus_close - auto-retrying wrapper for close(2) which resets the fd on success
- */
-static inline int sancus_close(int *fd)
+static inline int sancus_close2(int *fd)
 {
-	int ret = 0;
-	if (fd != NULL && *fd >= 0) {
-close_retry:
-		ret = close(*fd);
-		if (ret == 0)
-			*fd = -0xdead;
-		else if (errno == EINTR)
-			goto close_retry;
+	int rc = 0;
+	if (fd != NULL) {
+		rc = sancus_close(*fd);
+		*fd = -1;
 	}
-	return ret;
+	return rc;
 }
 
 /**
@@ -102,72 +72,40 @@ close_retry:
  */
 static inline ssize_t sancus_read(int fd, char *buf, size_t count)
 {
-	ssize_t rc;
-read_retry:
-	rc = read(fd, buf, count);
-	if (rc < 0 && errno == EINTR)
-		goto read_retry;
-	return rc;
+	while (1) {
+		ssize_t rc = read(fd, buf, count);
+		if (rc >= 0)
+			return rc;
+		else if (errno != EINTR)
+			return -errno;
+	}
 }
 
 /**
  * sancus_write - auto-retrying wrapper for write(2)
  */
-static inline ssize_t sancus_write(int fd, const char *data, size_t size)
+static inline ssize_t sancus_write(int fd, const char *data, size_t count)
 {
-	int wc, wt = 0;
+	ssize_t wt = 0;
 
-	while (size > 0) {
-		wc = write(fd, data, size);
+	while (count) {
+		ssize_t wc = write(fd, data, count);
+
 		if (wc > 0) {
-			wt += wc;
-			size -= wc;
+			count -= wc;
 			data += wc;
-		} else if (wc < 0 && errno != EINTR)
-			return wc;
-	}
-
-	return wt;
-}
-#endif
-
-#ifdef _SYS_UIO_H
-/**
- * sancus_writev - auto-retrying wrapper for writev(2)
- */
-static inline ssize_t sancus_writev(int fd, struct iovec *iov, int iovcnt)
-{
-	int wt = 0;
-
-	while (iovcnt) {
-		register int wc;
-try_write:
-		wc = writev(fd, iov, iovcnt);
-		if (wc > 0) {
 			wt += wc;
-
-			/* consume accordingly */
-			while (wc) {
-				if ((unsigned)wc >= iov->iov_len) {
-					wc -= iov->iov_len;
-					iovcnt--;
-					iov++;
-				} else {
-					iov->iov_len -= wc;
-					/* GCC: warning: pointer of type ‘void *’ used in arithmetic */
-					iov->iov_base = (char*)iov->iov_base+wc;
-					wc = 0;
-				}
-			}
-		} else if (wc < 0) {
-			if (errno == EINTR)
-				goto try_write;
-			return wc;
+		} else if (wc < 0 && errno != EINTR) {
+			return -errno;
 		}
 	}
 
 	return wt;
 }
-#endif /* _SYS_UIO_H */
 
-#endif /* !_SANCUS_FD_H */
+/**
+ * sancus_writev - auto-retrying wrapper for writev(2)
+ */
+ssize_t sancus_writev(int fd, struct iovec *iov, size_t iovcnt);
+
+#endif /* !__SANCUS_FD_H__ */

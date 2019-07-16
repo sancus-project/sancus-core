@@ -66,7 +66,7 @@ static void connect_cb(struct sancus_ev_loop *loop, struct sancus_ev_fd *w, int 
 					   SANCUS_TCP_SERVER_ACCEPT_ERROR);
 		} else if (!settings->on_connect(self, loop, fd,
 						 (struct sockaddr*)&addr, addrlen)) {
-			sancus_close(&fd);
+			sancus_close2(&fd);
 		}
 	}
 }
@@ -150,7 +150,7 @@ static inline int init_tcp(struct sancus_tcp_server *self,
 	if (bind(fd, sa, sa_len) < 0 ||
 	    listen(fd, backlog) < 0) {
 		int e = errno;
-		sancus_close(&self->connect.fd);
+		sancus_close2(&self->connect.fd);
 		errno = e;
 		return -1;
 	}
@@ -179,7 +179,7 @@ void sancus_tcp_server_close(struct sancus_tcp_server *self)
 	assert(self->connect.fd >= 0);
 	assert(!sancus_ev_is_active(&self->connect));
 
-	sancus_close(&self->connect.fd);
+	sancus_close2(&self->connect.fd);
 }
 
 int sancus_tcp_ipv4_listen(struct sancus_tcp_server *self,

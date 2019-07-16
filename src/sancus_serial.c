@@ -52,7 +52,7 @@ int sancus_serial_open(struct sancus_serial *self, const char *pathname,
 		memcpy(copy, &self->oldtio, sizeof(*copy));
 	goto init_done;
 init_fail:
-	sancus_close(&self->fd);
+	sancus_close2(&self->fd);
 init_done:
 	return self->fd;
 }
@@ -67,7 +67,7 @@ int sancus_serial_close(struct sancus_serial *self)
 	ret = sancus_serial_apply(self, &self->oldtio);
 	orig_errno = errno;
 
-	sancus_close(&self->fd);
+	sancus_close2(&self->fd);
 	errno = orig_errno;
 	return ret;
 }

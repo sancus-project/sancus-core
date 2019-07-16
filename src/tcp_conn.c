@@ -160,7 +160,7 @@ static inline int init_tcp(struct sancus_tcp_conn *self,
 			self->state = SANCUS_TCP_CONN_INPROGRESS;
 		} else {
 			int e = errno;
-			sancus_close(&self->io.fd);
+			sancus_close2(&self->io.fd);
 			errno = e;
 			return -1;
 		}
@@ -194,7 +194,7 @@ void sancus_tcp_conn_close(struct sancus_tcp_conn *self)
 	assert(self->io.fd >= 0);
 	assert(!sancus_ev_is_active(&self->io));
 
-	sancus_close(&self->io.fd);
+	sancus_close2(&self->io.fd);
 }
 
 int sancus_tcp_ipv4_connect(struct sancus_tcp_conn *self,
