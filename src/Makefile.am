@@ -7,6 +7,7 @@ libsancus_core_la_SOURCES = \
 	buffer.c \
 	fd.c \
 	fmt_cstr.c \
+	logger.c \
 	sancus_serial.c \
 	stream.c \
 	tcp_conn.c \
