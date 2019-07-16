@@ -73,13 +73,20 @@
 #endif
 
 /**
- * TYPECHECK_PRINTF - Check printf format
+ * __attr_printf2 - Check printf format
  */
-#ifdef TYPECHECK_PRINTF
+#ifdef __attr_printf2
 #elif defined(__GNUC__)
-#	define TYPECHECK_PRINTF(I, J)	__attribute__((format (printf, I, J)))
+#	define __attr_printf2(I, J)	__attribute__((format (printf, I, J)))
 #else
-#	define TYPECHECK_PRINTF(I, J)
+#	define __attr_printf2(I, J)
+#endif
+
+/**
+ * __attr_printf - Shortcut to check printf format
+ */
+#ifndef __attr_printf
+#	define __attr_printf(N) __attr_printf2(N, N+1)
 #endif
 
 #endif /* !__SANCUS_COMMON_H__ */
