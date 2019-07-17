@@ -230,4 +230,9 @@ int sancus_logger__hexdumpf(const struct sancus_logger *log,
 #define sancus_log_notice_dump(D, ...)        sancus_log_notice_dump2((D), SANCUS_LOG_DEBUG, __VA_ARGS__)
 #define sancus_log_notice_hexdump(D, ...)     sancus_log_notice_hexdump2((D), SANCUS_LOG_DEBUG, __VA_ARGS__)
 
+/*
+ */
+#define sancus_log_perror2(D, E, F, ...)      sancus_log_error((D), F ": %s (%d)", __VA_ARGS__, strerror(E), (E))
+#define sancus_log_perror(D, F, ...)          sancus_log_perror2((D), errno, F, __VA_ARGS__)
+
 #endif /* !__SANCUS_LOGGER_H__ */
