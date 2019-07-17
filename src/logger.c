@@ -246,3 +246,51 @@ escape2:
 write_buf:
 	return log_write(buf, out - buf, NULL, 0);
 }
+
+int sancus_logger__vhexdumpf(const struct sancus_logger *ctx,
+			     enum sancus_log_level level,
+			     const char *func, size_t line,
+			     size_t width, const void *data, size_t data_len,
+			     const char *fmt, va_list ap)
+{
+	char buf[1024];
+	const char *p = data, *pe = p + data_len;
+	ssize_t base = log_fmt(buf, sizeof(buf),
+			       ctx, level, func, line, fmt, ap);
+	unsigned off = 0;
+	int rc = 0;
+
+	if (base < 0)
+		rc = base;
+
+	while (rc >= 0 && p < pe) {
+		const char *q = p;
+		size_t l = base;
+
+		if (width) {
+			unsigned i;
+			l += snprintf(buf + l, sizeof(buf) - l, "%08x ", off);
+			for (i = 0; i < width && p < pe; i++, off++)
+				l += snprintf(buf + l, sizeof(buf) - l, " %02x", *p++ & 0xff);
+
+			/* align */
+			for (; i < width; l += 3, i++)
+				memcpy(buf + l, "   ", 3);
+		} else {
+			for (; p < pe; off++)
+				l += snprintf(buf + l, sizeof(buf) - l, " %02x", *p++ & 0xff);
+		}
+
+		/* ascii */
+		memcpy(buf + l, " |", 2); l += 2;
+		while (q < p) {
+			unsigned char c = *q++;
+			buf[l++] = (c < 0x20 || c > 0x7e) ? '.' : c;
+		}
+		memcpy(buf + l, "|\n", 3); l += 2;
+
+		rc = log_write(buf, l, NULL, 0);
+	}
+
+	return rc;
+}
