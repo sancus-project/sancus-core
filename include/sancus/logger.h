@@ -36,6 +36,13 @@ struct sancus_logger {
 	unsigned mask;
 };
 
+#define SANCUS_LOGGER_INIT(S, M) (struct sancus_logger) { \
+	.prefix = (S), \
+	.mask = (M) == 0 ? SANCUS_LOG_NORMAL : (M), \
+}
+
+#define DECL_SANCUS_LOGGER(N, S, M) struct sancus_logger N = SANCUS_LOGGER_INIT(S, M)
+
 static inline
 void sancus_logger_set_prefix(struct sancus_logger *log,
 			      const char *prefix)
