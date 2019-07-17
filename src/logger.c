@@ -10,6 +10,40 @@
 
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
+static size_t log_strcpy(char *dst, const char *src)
+{
+	size_t l = (src && *src) ? strlen(src) : 0;
+	if (l)
+		memcpy(dst, src, l + 1);
+	else
+		*dst = '\0';
+	return l;
+}
+
+__attr_printf(3)
+static ssize_t log_snprintf(char *dst, ssize_t dst_size,
+			    const char *fmt, ...)
+{
+	ssize_t ret;
+	if (dst != NULL && dst_size > 0 && fmt != NULL && *fmt != '\0') {
+		va_list ap;
+		va_start(ap, fmt);
+		ret = vsnprintf(dst, dst_size, fmt, ap);
+		va_end(ap);
+
+		if (ret >= dst_size) {
+			ret = dst_size - 1;
+			dst[ret] = '\0';
+		} else if (ret < 0) {
+			ret = 0;
+		}
+	} else {
+		ret = 0;
+	}
+
+	return ret;
+}
+
 static ssize_t log_write(const char *prefix, size_t prefix_len,
 			 const char *data, size_t data_len)
 {
@@ -149,4 +183,66 @@ int sancus_logger__vprintf(const struct sancus_logger *ctx,
 			    ctx, level, func, line, fmt, ap);
 
 	return log_write(buf, l, NULL, 0);
+}
+
+int sancus_logger__vdumpf(const struct sancus_logger *ctx,
+			  enum sancus_log_level level,
+			  const char *func, size_t line,
+			  const void *data, size_t data_len,
+			  const char *fmt, va_list ap)
+{
+	static const char hexa[] = "0123456789abcdef";
+	static const char CEC[] = "abtnvfr";
+	char buf[1024];
+	const char *p = data, *pe = p + data_len;
+	char *out = buf, *oute = buf + sizeof(buf);
+	const size_t max_suffix = 17; /* strlen("... (%zu)\n") */
+	const char *outs = oute - max_suffix; /* maximum location before the suffix */
+	ssize_t l;
+
+	l = log_fmt(buf, sizeof(buf),
+		    ctx, level, func, line, fmt, ap);
+	if (l < 0)
+		return l;
+	out += l;
+
+	if (unlikely(data == NULL)) {
+		out += log_strcpy(out, "nil\n");
+		goto write_buf;
+	}
+
+	*out++ = '"';
+	while (p < pe && out < outs) {
+		char c = *p++;
+		if (c > 0x1f && c < 0x7f) { /* ASCII printable characters */
+			switch(c) {
+				case '"':
+				case '\\':
+					goto escape2;
+				default:
+					*out++ = c;
+			}
+		} else if (c >= '\a' && c <= '\r') {
+			/* C Character Escape Codes */
+			c = CEC[c - '\a'];
+escape2:
+			*out++ = '\\';
+			*out++ = c;
+		} else if (c == 0) {
+			c = '0';
+			goto escape2;
+		} else { /* not printable, hexa encoded */
+			*out++ = '\\';
+			*out++ = 'x';
+			*out++ = hexa[(c & (0x0f << 4)) >> 4];
+			*out++ = hexa[c & 0x0f];
+		}
+	}
+
+	out += log_snprintf(out, oute - out,
+			    (p < pe) ?  "... (%zu)\n" : "\" (%zu)\n",
+			    data_len);
+
+write_buf:
+	return log_write(buf, out - buf, NULL, 0);
 }
