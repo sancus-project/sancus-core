@@ -29,6 +29,8 @@
 #ifndef _SANCUS_SERIAL_H
 #define _SANCUS_SERIAL_H
 
+#include <termios.h>
+
 struct sancus_serial {
 	int fd;
 	struct termios oldtio;

@@ -30,6 +30,7 @@
 #define __SANCUS_FD_H__
 
 #include <errno.h>
+#include <fcntl.h>
 #include <unistd.h>
 
 struct iovec;

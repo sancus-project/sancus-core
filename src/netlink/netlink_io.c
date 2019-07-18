@@ -29,17 +29,16 @@
 
 #include <sancus/common.h>
 #include <sancus/ev.h>
+#include <sancus/fd.h>
 
 #include <assert.h>
-#include <errno.h>
-#include <fcntl.h>
 #include <stdint.h>
-#include <unistd.h>
 #include <stdbool.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+
 #include <linux/netlink.h>
-#include <sancus/fd.h>
+
 #include <sancus/socket.h>
 #include <sancus/netlink.h>
 

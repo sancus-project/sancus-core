@@ -1,7 +1,6 @@
 #include <sancus/common.h>
 #include <sancus/fd.h>
 
-#include <fcntl.h>
 #include <sys/uio.h>
 
 static inline int sancus__openat(int dirfd, const char *pathname, int flags, int cloexec, mode_t mode)

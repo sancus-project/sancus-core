@@ -29,19 +29,15 @@
 
 #include <sancus/common.h>
 #include <sancus/ev.h>
+#include <sancus/fd.h>
 
 #include <assert.h>
 #include <stdbool.h>
-#include <string.h>
-#include <unistd.h>
-#include <errno.h>
-
-#include <fcntl.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+
 #include <arpa/inet.h>
 
-#include <sancus/fd.h>
 #include <sancus/socket.h>
 #include <sancus/tcp_server.h>
 

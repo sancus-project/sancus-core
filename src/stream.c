@@ -29,16 +29,12 @@
 
 #include <sancus/common.h>
 #include <sancus/ev.h>
+#include <sancus/fd.h>
 
 #include <assert.h>
-#include <errno.h>
-#include <unistd.h>
 #include <stdbool.h>
 #include <stdint.h>
 
-#include <fcntl.h>
-
-#include <sancus/fd.h>
 #include <sancus/buffer.h>
 #include <sancus/stream.h>
 

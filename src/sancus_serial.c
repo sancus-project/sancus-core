@@ -27,15 +27,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <assert.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <string.h>
-#include <termios.h>
-#include <unistd.h>
-
+#include <sancus/common.h>
 #include <sancus/fd.h>
 #include <sancus/serial.h>
+
+#include <assert.h>
+#include <string.h>
 
 int sancus_serial_open(struct sancus_serial *self, const char *pathname,
 		       int cloexec, struct termios *copy)
