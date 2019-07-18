@@ -8,15 +8,23 @@
 #include <string.h>
 
 enum sancus_log_level {
-	SANCUS_LOG_ERR   = BIT(0),
-	SANCUS_LOG_WARN  = BIT(1),
-	SANCUS_LOG_INFO  = BIT(2),
-	SANCUS_LOG_TRACE = BIT(3),
-	SANCUS_LOG_DEBUG = BIT(4),
+	SANCUS_LOG_ERROR_BIT,
+	SANCUS_LOG_WARN_BIT,
+	SANCUS_LOG_INFO_BIT,
+	SANCUS_LOG_TRACE_BIT,
+	SANCUS_LOG_DEBUG_BIT,
+
+	SANCUS_LOG_NEXT_BIT = 8,
 };
 
 enum {
-	SANCUS_LOG_NEXT  = BIT(8),
+	SANCUS_LOG_ERR = BIT(SANCUS_LOG_ERROR_BIT),
+	SANCUS_LOG_WARN = BIT(SANCUS_LOG_WARN_BIT),
+	SANCUS_LOG_INFO = BIT(SANCUS_LOG_INFO_BIT),
+	SANCUS_LOG_TRACE = BIT(SANCUS_LOG_TRACE_BIT),
+	SANCUS_LOG_DEBUG = BIT(SANCUS_LOG_DEBUG_BIT),
+
+	SANCUS_LOG_NEXT  = BIT(SANCUS_LOG_NEXT_BIT),
 
 	SANCUS_LOG_QUIET   = SANCUS_LOG_ERR | SANCUS_LOG_WARN,
 	SANCUS_LOG_NORMAL  = SANCUS_LOG_QUIET | SANCUS_LOG_INFO,
@@ -60,7 +68,7 @@ static inline
 int sancus_logger_has_level(const struct sancus_logger *log,
 			    unsigned mask)
 {
-	if (!mask || !!(mask&SANCUS_LOG_ERR))
+	if (!mask || mask&SANCUS_LOG_ERR)
 		mask = 1;
 	else if (log)
 		mask &= log->mask;
@@ -145,29 +153,29 @@ int sancus_logger__hexdumpf(const struct sancus_logger *log,
 
 /*
  */
-#define sancus_log__error(D, ...)          sancus_logger__printf((D), SANCUS_LOG_ERR,   NULL, 0, __VA_ARGS__)
-#define sancus_log__error_dump(D, ...)     sancus_logger__dumpf((D),  SANCUS_LOG_ERR,   NULL, 0, __VA_ARGS__)
-#define sancus_log__error_hexdump(D, ...)  sancus_logger__hexdumpf((D), SANCUS_LOG_ERR,   NULL, 0, __VA_ARGS__)
+#define sancus_log__error(D, ...)          sancus_logger__printf((D),   SANCUS_LOG_ERROR_BIT,   NULL, 0, __VA_ARGS__)
+#define sancus_log__error_dump(D, ...)     sancus_logger__dumpf((D),    SANCUS_LOG_ERROR_BIT,   NULL, 0, __VA_ARGS__)
+#define sancus_log__error_hexdump(D, ...)  sancus_logger__hexdumpf((D), SANCUS_LOG_ERROR_BIT,   NULL, 0, __VA_ARGS__)
 
-#define sancus_log__warn(D, ...)           sancus_logger__printf((D), SANCUS_LOG_WARN,  NULL, 0, __VA_ARGS__)
-#define sancus_log__warn_dump(D, ...)      sancus_logger__dumpf((D),  SANCUS_LOG_WARN,  NULL, 0, __VA_ARGS__)
-#define sancus_log__warn_hexdump(D, ...)   sancus_logger__hexdumpf((D), SANCUS_LOG_WARN,  NULL, 0, __VA_ARGS__)
+#define sancus_log__warn(D, ...)           sancus_logger__printf((D),   SANCUS_LOG_WARN_BIT,  NULL, 0, __VA_ARGS__)
+#define sancus_log__warn_dump(D, ...)      sancus_logger__dumpf((D),    SANCUS_LOG_WARN_BIT,  NULL, 0, __VA_ARGS__)
+#define sancus_log__warn_hexdump(D, ...)   sancus_logger__hexdumpf((D), SANCUS_LOG_WARN_BIT,  NULL, 0, __VA_ARGS__)
 
-#define sancus_log__info(D, ...)           sancus_logger__printf((D), SANCUS_LOG_INFO,  NULL, 0, __VA_ARGS__)
-#define sancus_log__info_dump(D, ...)      sancus_logger__dumpf((D),  SANCUS_LOG_INFO,  NULL, 0, __VA_ARGS__)
-#define sancus_log__info_hexdump(D, ...)   sancus_logger__hexdumpf((D), SANCUS_LOG_INFO,  NULL, 0, __VA_ARGS__)
+#define sancus_log__info(D, ...)           sancus_logger__printf((D),   SANCUS_LOG_INFO_BIT,  NULL, 0, __VA_ARGS__)
+#define sancus_log__info_dump(D, ...)      sancus_logger__dumpf((D),    SANCUS_LOG_INFO_BIT,  NULL, 0, __VA_ARGS__)
+#define sancus_log__info_hexdump(D, ...)   sancus_logger__hexdumpf((D), SANCUS_LOG_INFO_BIT,  NULL, 0, __VA_ARGS__)
 
-#define sancus_log__trace(D, ...)          sancus_logger__printf((D), SANCUS_LOG_TRACE, __func__, __LINE__, __VA_ARGS__)
-#define sancus_log__trace_dump(D, ...)     sancus_logger__dumpf((D),  SANCUS_LOG_TRACE, __func__, __LINE__, __VA_ARGS__)
-#define sancus_log__trace_hexdump(D, ...)  sancus_logger__hexdumpf((D), SANCUS_LOG_TRACE, __func__, __LINE__, __VA_ARGS__)
+#define sancus_log__trace(D, ...)          sancus_logger__printf((D),   SANCUS_LOG_TRACE_BIT, __func__, __LINE__, __VA_ARGS__)
+#define sancus_log__trace_dump(D, ...)     sancus_logger__dumpf((D),    SANCUS_LOG_TRACE_BIT, __func__, __LINE__, __VA_ARGS__)
+#define sancus_log__trace_hexdump(D, ...)  sancus_logger__hexdumpf((D), SANCUS_LOG_TRACE_BIT, __func__, __LINE__, __VA_ARGS__)
 
-#define sancus_log__debug(D, ...)          sancus_logger__printf((D), SANCUS_LOG_DEBUG, __func__, 0, __VA_ARGS__)
-#define sancus_log__debug_dump(D, ...)     sancus_logger__dumpf((D),  SANCUS_LOG_DEBUG, __func__, 0, __VA_ARGS__)
-#define sancus_log__debug_hexdump(D, ...)  sancus_logger__hexdumpf((D), SANCUS_LOG_DEBUG, __func__, 0, __VA_ARGS__)
+#define sancus_log__debug(D, ...)          sancus_logger__printf((D),   SANCUS_LOG_DEBUG_BIT, __func__, 0, __VA_ARGS__)
+#define sancus_log__debug_dump(D, ...)     sancus_logger__dumpf((D),    SANCUS_LOG_DEBUG_BIT, __func__, 0, __VA_ARGS__)
+#define sancus_log__debug_hexdump(D, ...)  sancus_logger__hexdumpf((D), SANCUS_LOG_DEBUG_BIT, __func__, 0, __VA_ARGS__)
 
-#define sancus_log__notice(D, ...)         sancus_logger__printf((D), SANCUS_LOG_DEBUG, NULL, 0, __VA_ARGS__)
-#define sancus_log__notice_dump(D, ...)    sancus_logger__dumpf((D),  SANCUS_LOG_DEBUG, NULL, 0, __VA_ARGS__)
-#define sancus_log__notice_hexdump(D, ...) sancus_logger__hexdumpf((D), SANCUS_LOG_DEBUG, NULL, 0, __VA_ARGS__)
+#define sancus_log__notice(D, ...)         sancus_logger__printf((D),   SANCUS_LOG_DEBUG_BIT, NULL, 0, __VA_ARGS__)
+#define sancus_log__notice_dump(D, ...)    sancus_logger__dumpf((D),    SANCUS_LOG_DEBUG_BIT, NULL, 0, __VA_ARGS__)
+#define sancus_log__notice_hexdump(D, ...) sancus_logger__hexdumpf((D), SANCUS_LOG_DEBUG_BIT, NULL, 0, __VA_ARGS__)
 
 #define sancus_log__if_level(D, L, F, ...) do { \
 	if (sancus_logger_has_level((D), (L))) \

@@ -78,6 +78,7 @@ static ssize_t log_fmt(char *buf, size_t buf_size,
 		       const char *func, unsigned line,
 		       const char *fmt, va_list ap)
 {
+	static char levels[] = "EWITD";
 	char *p = buf;
 	ssize_t l = buf_size;
 
@@ -87,22 +88,10 @@ static ssize_t log_fmt(char *buf, size_t buf_size,
 		fmt = NULL;
 
 	/* level */
-	{
-		char c = '\0';
-
-		switch (level) {
-		case SANCUS_LOG_ERR:   c = 'E'; break;
-		case SANCUS_LOG_WARN:  c = 'W'; break;
-		case SANCUS_LOG_INFO:  c = 'I'; break;
-		case SANCUS_LOG_TRACE: c = 'T'; break;
-		case SANCUS_LOG_DEBUG: c = 'D'; break;
-		}
-
-		if (c) {
-			*p++ = c;
-			*p++ = '/';
-			l -= 2;
-		}
+	if (level < sizeof(levels)) {
+		*p++ = levels[level];
+		*p++ = '/';
+		l -= 2;
 	}
 
 	/* logger prefix */
