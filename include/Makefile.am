@@ -2,6 +2,7 @@ nobase_include_HEADERS = \
 	sancus/alloc.h \
 	sancus/bit.h \
 	sancus/buffer.h \
+	sancus/clock.h \
 	sancus/common.h \
 	sancus/ev.h \
 	sancus/fd.h \
