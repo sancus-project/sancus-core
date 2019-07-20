@@ -1,6 +1,7 @@
 #ifndef __SANCUS_CLOCK_H__
 #define __SANCUS_CLOCK_H__
 
+#include <sancus/time.h>
 #include <time.h>
 
 struct sancus_clock {
@@ -10,6 +11,20 @@ struct sancus_clock {
 
 int sancus_now(struct timespec *);
 void sancus_set_now_clock(struct sancus_clock *);
+
+static inline struct timespec sancus_now_ts(void)
+{
+	struct timespec ts;
+	sancus_now(&ts);
+	return ts;
+}
+
+static inline double sancus_now_fp(void)
+{
+	struct timespec ts;
+	sancus_now(&ts);
+	return sancus_time_ts_to_fp(&ts);
+}
 
 static inline int sancus_gettime(struct timespec *ts)
 {
