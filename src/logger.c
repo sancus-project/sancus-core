@@ -1,12 +1,14 @@
 #include <sancus/common.h>
-#include <sancus/logger.h>
+#include <sancus/clock.h>
 #include <sancus/fd.h>
+#include <sancus/logger.h>
 
 #include <stdio.h>
 #include <sys/uio.h>
 #include <pthread.h>
 
 #define LOG_BUFFER_SIZE 1024
+#define TS 1
 
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -47,9 +49,33 @@ static ssize_t log_snprintf(char *dst, ssize_t dst_size,
 static ssize_t log_write(const char *prefix, size_t prefix_len,
 			 const char *data, size_t data_len)
 {
+	char ts_buf[32];
 	size_t iovcnt = 0;
-	struct iovec iov[3];
+	struct iovec iov[4];
 	ssize_t ret = 0;
+
+	if (TS) {
+		static struct timespec first, prev;
+		struct timespec ts, dt0, dt1;
+		size_t l;
+
+		sancus_now(&ts);
+
+		if (!sancus_time_is_zero(&prev)) {
+			dt0 = dt1 = ts;
+			sancus_time_sub(&dt0, &first);
+			sancus_time_sub(&dt1, &prev);
+		} else {
+			dt1 = dt0 = TIMESPEC_INIT(0, 0);
+			first = ts;
+		}
+
+		prev = ts;
+		l = snprintf(ts_buf, sizeof(ts_buf), "[" TIMESPEC_FMT_MS " +" TIMESPEC_FMT_MS "] ",
+			     TIMESPEC_SPLIT_MS(&dt0),
+			     TIMESPEC_SPLIT_MS(&dt1));
+		iov[iovcnt++] = (struct iovec) { ts_buf, l };
+	}
 
 	if (prefix_len > 0)
 		iov[iovcnt++] = (struct iovec) { (void*)prefix, prefix_len };
