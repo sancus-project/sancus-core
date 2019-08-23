@@ -89,4 +89,21 @@
 #	define __attr_printf(N) __attr_printf2(N, N+1)
 #endif
 
+/**
+ * __attr_scanf2 - Check scanf format
+ */
+#ifdef __attr_scanf2
+#elif defined(__GNUC__)
+#	define __attr_scanf2(I, J)	__attribute__((format (scanf, I, J)))
+#else
+#	define __attr_scanf2(I, J)
+#endif
+
+/**
+ * __attr_scanf - Shortcut to check scanf format
+ */
+#ifndef __attr_scanf
+#	define __attr_scanf(N) __attr_scanf2(N, N+1)
+#endif
+
 #endif /* !__SANCUS_COMMON_H__ */
