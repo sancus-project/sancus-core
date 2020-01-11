@@ -21,7 +21,6 @@ AC_PROG_CC_C99
 # Check for headers
 #
 
-# AC_CONFIG_HEADERS([src/config.h])
 AC_CHECK_HEADERS([linux/netlink.h], [have_linux_netlink=yes], [have_linux_netlink=no], [])
 AM_CONDITIONAL([HAVE_LINUX_NETLINK], [test $have_linux_netlink = yes])
 if test x"$have_linux_netlink" = x"yes"; then
@@ -66,10 +65,15 @@ if test -z "$DOXYGEN"; then
 fi
 AM_CONDITIONAL([HAVE_DOXYGEN], [test -n "$DOXYGEN"])
 
+dnl Output
+dnl
+AC_CONFIG_HEADERS([src/config.h])
+
 AC_CONFIG_FILES([sancus-core.pc])
 AC_CONFIG_FILES([Makefile
 		 doc/Makefile
 		 doc/Doxyfile
 		 include/Makefile
 		 src/Makefile])
+
 AC_OUTPUT
