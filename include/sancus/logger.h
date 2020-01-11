@@ -87,76 +87,49 @@ int sancus_logger_has_level(const struct sancus_logger *log,
 
 /*
  */
+__attr_vprintf(5)
 int sancus_logger__vprintf(const struct sancus_logger *log,
 			   enum sancus_log_level level,
 			   const char *func, unsigned line,
 			   const char *fmt, va_list ap);
 
-__attr_printf(5) static inline
+__attr_printf(5)
 int sancus_logger__printf(const struct sancus_logger *log,
 			  enum sancus_log_level level,
 			  const char *func, unsigned line,
-			  const char *fmt, ...)
-{
-	va_list ap;
-	int err;
-	va_start(ap, fmt);
-	err = sancus_logger__vprintf(log, level,
-				     func, line,
-				     fmt, ap);
-	va_end(ap);
-	return err;
-}
+			  const char *fmt, ...);
 
 /*
  */
+__attr_vprintf(7)
 int sancus_logger__vdumpf(const struct sancus_logger *log,
 			  enum sancus_log_level level,
 			  const char *func, size_t line,
 			  const void *data, size_t data_len,
 			  const char *fmt, va_list ap);
 
-__attr_printf(7) static inline
+__attr_printf(7)
 int sancus_logger__dumpf(const struct sancus_logger *log,
 			  enum sancus_log_level level,
 			  const char *func, unsigned line,
 			  const void *data, size_t data_len,
-			  const char *fmt, ...)
-{
-	va_list ap;
-	int err;
-	va_start(ap, fmt);
-	err = sancus_logger__vdumpf(log, level, func, line,
-				    data, data_len,
-				    fmt, ap);
-	va_end(ap);
-	return err;
-}
+			  const char *fmt, ...);
 
 /*
  */
+__attr_vprintf(8)
 int sancus_logger__vhexdumpf(const struct sancus_logger *log,
 			     enum sancus_log_level level,
 			     const char *func, size_t line,
 			     size_t width, const void *data, size_t data_len,
 			     const char *fmt, va_list ap);
 
-__attr_printf(8) static inline
+__attr_printf(8)
 int sancus_logger__hexdumpf(const struct sancus_logger *log,
 			    enum sancus_log_level level,
 			    const char *func, unsigned line,
 			    size_t width, const void *data, size_t data_len,
-			    const char *fmt, ...)
-{
-	va_list ap;
-	int err;
-	va_start(ap, fmt);
-	err = sancus_logger__vhexdumpf(log, level, func, line,
-				       width, data, data_len,
-				       fmt, ap);
-	va_end(ap);
-	return err;
-}
+			    const char *fmt, ...);
 
 /*
  */

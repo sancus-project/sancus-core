@@ -88,7 +88,7 @@ static ssize_t log_write(const char *prefix, size_t prefix_len,
 		const char *s = p->iov_base;
 
 		if (s[p->iov_len-1] != '\n')
-			iov[iovcnt++] = (struct iovec) { "\n", 1 };
+			iov[iovcnt++] = (struct iovec) { (char*)"\n", 1 };
 
 		pthread_mutex_lock(&mutex);
 		ret = sancus_writev(STDERR_FILENO, iov, iovcnt);
@@ -98,6 +98,7 @@ static ssize_t log_write(const char *prefix, size_t prefix_len,
 	return ret;
 }
 
+__attr_vprintf(7)
 static ssize_t log_fmt(char *buf, size_t buf_size,
 		       const struct sancus_logger *ctx,
 		       enum sancus_log_level level,
@@ -194,10 +195,29 @@ int sancus_logger__vprintf(const struct sancus_logger *ctx,
 			   const char *fmt, va_list ap)
 {
 	char buf[LOG_BUFFER_SIZE];
-	ssize_t l = log_fmt(buf, sizeof(buf),
-			    ctx, level, func, line, fmt, ap);
+	ssize_t l;
+
+	l = log_fmt(buf, sizeof(buf), ctx, level, func, line, fmt, ap);
 
 	return log_write(buf, l, NULL, 0);
+}
+
+int sancus_logger__printf(const struct sancus_logger *ctx,
+			  enum sancus_log_level level,
+			  const char *func, unsigned line,
+			  const char *fmt, ...)
+{
+	char buf[LOG_BUFFER_SIZE];
+	ssize_t l;
+	va_list ap;
+	int err;
+
+	va_start(ap, fmt);
+	l = log_fmt(buf, sizeof(buf), ctx, level, func, line, fmt, ap);
+	err = log_write(buf, l, NULL, 0);
+	va_end(ap);
+
+	return err;
 }
 
 int sancus_logger__vdumpf(const struct sancus_logger *ctx,
@@ -262,6 +282,22 @@ write_buf:
 	return log_write(buf, out - buf, NULL, 0);
 }
 
+int sancus_logger__dumpf(const struct sancus_logger *log,
+			  enum sancus_log_level level,
+			  const char *func, unsigned line,
+			  const void *data, size_t data_len,
+			  const char *fmt, ...)
+{
+	va_list ap;
+	int err;
+	va_start(ap, fmt);
+	err = sancus_logger__vdumpf(log, level, func, line,
+				    data, data_len,
+				    fmt, ap);
+	va_end(ap);
+	return err;
+}
+
 int sancus_logger__vhexdumpf(const struct sancus_logger *ctx,
 			     enum sancus_log_level level,
 			     const char *func, size_t line,
@@ -308,4 +344,20 @@ int sancus_logger__vhexdumpf(const struct sancus_logger *ctx,
 	}
 
 	return rc;
+}
+
+int sancus_logger__hexdumpf(const struct sancus_logger *log,
+			    enum sancus_log_level level,
+			    const char *func, unsigned line,
+			    size_t width, const void *data, size_t data_len,
+			    const char *fmt, ...)
+{
+	va_list ap;
+	int err;
+	va_start(ap, fmt);
+	err = sancus_logger__vhexdumpf(log, level, func, line,
+				       width, data, data_len,
+				       fmt, ap);
+	va_end(ap);
+	return err;
 }
