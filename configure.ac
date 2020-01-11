@@ -40,6 +40,10 @@ AC_ARG_ENABLE([debug],
 	[debugit=almost])
 AC_MSG_RESULT([$debugit])
 
+dnl Check Compiler features
+dnl
+AX_GCC_BUILTIN(__builtin_expect)
+
 dnl CFLAGS
 dnl
 if test x"$debugit" = x"yes"; then

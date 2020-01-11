@@ -45,7 +45,7 @@
 
 /** likely to be 1 */
 #ifdef likely
-#elif defined(__GNUC__)
+#elif defined(HAVE___BUILTIN_EXPECT)
 #	define likely(e)	__builtin_expect(!!(e), 1)
 #else
 #	define likely(e)	(e)
@@ -53,7 +53,7 @@
 
 /** likely to be 0 */
 #ifdef unlikely
-#elif defined(__GNUC__)
+#elif defined(HAVE___BUILTIN_EXPECT)
 #	define unlikely(e)	__builtin_expect(!!(e), 0)
 #else
 #	define unlikely(e)	(e)
