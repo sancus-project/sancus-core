@@ -115,6 +115,16 @@
 #endif
 
 /**
+ * __attr_vprintf - Check printf format, but without varadic
+ */
+#ifdef __attr_vprintf
+#elif defined(HAVE_FUNC_ATTRIBUTE_FORMAT)
+#	define __attr_vprintf(I)	__attribute__((format (printf, I, 0)))
+#else
+#	define __attr_vprintf(I)
+#endif
+
+/**
  * __attr_scanf2 - Check scanf format
  */
 #ifdef __attr_scanf2
