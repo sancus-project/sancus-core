@@ -44,7 +44,9 @@ dnl Check Compiler features
 dnl
 AX_GCC_BUILTIN(__builtin_expect)
 AX_GCC_VAR_ATTRIBUTE(unused)
+AX_GCC_FUNC_ATTRIBUTE(const)
 AX_GCC_FUNC_ATTRIBUTE(format)
+AX_GCC_FUNC_ATTRIBUTE(pure)
 
 dnl CFLAGS
 dnl

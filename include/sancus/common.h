@@ -77,6 +77,27 @@
 #endif
 
 /**
+ * __attr_pure - function only depends on arguments
+ */
+#ifdef __attr_pure
+#elif defined(HAVE_FUNC_ATTRIBUTE_PURE)
+#	define __attr_pure __attribute__((pure))
+#else
+#	define __attr_pure
+#endif
+
+/**
+ * __attr_const - function doesn't depend on anything
+ */
+#ifdef __attr_const
+#elif defined(HAVE_FUNC_ATTRIBUTE_CONST)
+#	define __attr_const __attribute__((const))
+#else
+#	define __attr_const
+#endif
+
+
+/**
  * __attr_printf2 - Check printf format
  */
 #ifdef __attr_printf2
