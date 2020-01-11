@@ -10,4 +10,7 @@ $(TSTAMP): Doxyfile
 CLEANFILES = $(TSTAMP)
 all-local: $(TSTAMP)
 
+clean-local:
+	rm -rf html man latex
+
 endif

@@ -17,6 +17,9 @@ if HAVE_DOXYGEN
 CLEANFILES = \$(TSTAMP)
 all-local: \$(TSTAMP)
 
+clean-local:
+	rm -rf html man latex
+
 endif
 EOT
 mv $F~ $F
