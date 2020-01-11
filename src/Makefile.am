@@ -1,4 +1,5 @@
-AM_CFLAGS = -I @top_srcdir@/include
+AM_CFLAGS = @WARN_CFLAGS@
+AM_CPPFLAGS = -I @top_srcdir@/include
 
 lib_LTLIBRARIES = libsancus-core.la
 

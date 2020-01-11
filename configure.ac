@@ -55,7 +55,8 @@ if test "$ac_cv_prog_cc_c99" != "no"; then
 	CFLAGS="$CFLAGS $ac_cv_prog_cc_c99"
 fi
 
-CFLAGS="$CFLAGS -Wall -Wextra -pedantic -Winline"
+dnl WARN_CFLAGS
+AX_COMPILER_FLAGS_CFLAGS
 
 dnl Doxygen
 dnl
