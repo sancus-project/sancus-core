@@ -11,28 +11,28 @@ m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 
 LT_INIT
 
-#
-# Check for programs
-#
-
+dnl
+dnl Check for programs
+dnl
 AC_PROG_CC_C99
 
-#
-# Check for headers
-#
+test -z "$SED" && SED=sed
 
+dnl
+dnl Check for headers
+dnl
 AC_CHECK_HEADERS([linux/netlink.h], [have_linux_netlink=yes], [have_linux_netlink=no], [])
 AM_CONDITIONAL([HAVE_LINUX_NETLINK], [test $have_linux_netlink = yes])
 if test x"$have_linux_netlink" = x"yes"; then
 	AC_CONFIG_FILES([sancus-netlink.pc])
 fi
 
-#
-# Options
-#
+dnl
+dnl Options
+dnl
 
-# --enable-debug
-#
+dnl --enable-debug
+dnl
 AC_MSG_CHECKING([wheter to build with debug information])
 AC_ARG_ENABLE([debug],
 	[AS_HELP_STRING([--enable-debug], [enable debug data generation (def=almost)])],
@@ -40,19 +40,19 @@ AC_ARG_ENABLE([debug],
 	[debugit=almost])
 AC_MSG_RESULT([$debugit])
 
-# CFLAGS
+dnl CFLAGS
+dnl
 if test x"$debugit" = x"yes"; then
-	AC_DEFINE([DEBUG],[],[Debug Mode])
-	CFLAGS="-g -O0"
-elif test x"$debugit" = x"no"; then
-	AC_DEFINE([NDEBUG],[],[No-debug Mode])
-	CFLAGS="-O3"
-else
-	CFLAGS="-O2"
-fi
+	dnl Remove all optimization flags from CFLAGS
+	changequote({,})
+	CFLAGS=`echo "$CFLAGS" | $SED -e 's/-O[0-9s]*//g'`
+	CXXFLAGS=`echo "$CXXFLAGS" | $SED -e 's/-O[0-9s]*//g'`
 
-if test "$ac_cv_prog_cc_c99" != "no"; then
-	CFLAGS="$CFLAGS $ac_cv_prog_cc_c99"
+	CFLAGS=`echo "$CFLAGS" | $SED -e 's/-g[0-9]*//g'`
+	CXXFLAGS=`echo "$CXXFLAGS" | $SED -e 's/-g[0-9]*//g'`
+	changequote([,])
+
+	CFLAGS="$CFLAGS -g -O0"
 fi
 
 dnl WARN_CFLAGS
