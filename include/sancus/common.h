@@ -80,7 +80,7 @@
  * __attr_printf2 - Check printf format
  */
 #ifdef __attr_printf2
-#elif defined(__GNUC__)
+#elif defined(HAVE_FUNC_ATTRIBUTE_FORMAT)
 #	define __attr_printf2(I, J)	__attribute__((format (printf, I, J)))
 #else
 #	define __attr_printf2(I, J)
@@ -97,7 +97,7 @@
  * __attr_scanf2 - Check scanf format
  */
 #ifdef __attr_scanf2
-#elif defined(__GNUC__)
+#elif defined(HAVE_FUNC_ATTRIBUTE_FORMAT)
 #	define __attr_scanf2(I, J)	__attribute__((format (scanf, I, J)))
 #else
 #	define __attr_scanf2(I, J)
