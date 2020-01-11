@@ -43,6 +43,7 @@ AC_MSG_RESULT([$debugit])
 dnl Check Compiler features
 dnl
 AX_GCC_BUILTIN(__builtin_expect)
+AX_GCC_VAR_ATTRIBUTE(unused)
 
 dnl CFLAGS
 dnl

@@ -70,7 +70,7 @@
  * UNUSED - Not used function argument
  */
 #ifdef UNUSED
-#elif defined(__GNUC__)
+#elif defined(HAVE_VAR_ATTRIBUTE_UNUSED)
 #	define UNUSED(x) UNUSED_ ## x __attribute__((unused))
 #else
 #	define UNUSED(x) UNUSED_ ## x
