@@ -3,4 +3,5 @@
 /build
 /build-aux
 /configure
+/src/config.h.in
 Makefile.in
