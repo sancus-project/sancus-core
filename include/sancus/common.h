@@ -96,6 +96,15 @@
 #	define __attr_const
 #endif
 
+/**
+ * __attr_noreturn - function doesn't return
+ */
+#ifdef __attr_noreturn
+#elif defined(HAVE_FUNC_ATTRIBUTE_NORETURN)
+#	define __attr_noreturn __attribute__((noreturn))
+#else
+#	define __attr_noreturn
+#endif
 
 /**
  * __attr_printf2 - Check printf format
