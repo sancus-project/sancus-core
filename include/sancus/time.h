@@ -141,29 +141,7 @@ static inline int sancus_time_is_gt(const struct timespec *a, const struct times
 /* turns timespec into canonical format, and returns
  * if the result is negative, positive or zero
  */
-static inline int sancus_time_fix(struct timespec *ts)
-{
-	long d = ts->tv_nsec / SEC_TO_NS(1);
-
-	if (d > 0) {
-		ts->tv_sec += d;
-		ts->tv_nsec -= SEC_TO_NS(d);
-	} else if (ts->tv_nsec < 0) {
-		d = -d + 1;
-
-		if (d != 1 || ts->tv_sec != 0) {
-			ts->tv_sec -= d;
-			ts->tv_nsec += SEC_TO_NS(d);
-		}
-	}
-
-	if (ts->tv_sec < 0 || ts->tv_nsec < 0)
-		return -1;
-	else if (ts->tv_sec == 0 && ts->tv_nsec == 0)
-		return 0;
-	else
-		return 1;
-}
+int sancus_time_fix(struct timespec *ts);
 
 /* create canonical timespec */
 static inline struct timespec sancus_time_new(long sec, long ns)

@@ -1,6 +1,30 @@
 #include <sancus/common.h>
 #include <sancus/time.h>
 
+int sancus_time_fix(struct timespec *ts)
+{
+	long d = ts->tv_nsec / SEC_TO_NS(1);
+
+	if (d > 0) {
+		ts->tv_sec += d;
+		ts->tv_nsec -= SEC_TO_NS(d);
+	} else if (ts->tv_nsec < 0) {
+		d = -d + 1;
+
+		if (d != 1 || ts->tv_sec != 0) {
+			ts->tv_sec -= d;
+			ts->tv_nsec += SEC_TO_NS(d);
+		}
+	}
+
+	if (ts->tv_sec < 0 || ts->tv_nsec < 0)
+		return -1;
+	else if (ts->tv_sec == 0 && ts->tv_nsec == 0)
+		return 0;
+	else
+		return 1;
+}
+
 static int time_add(struct timespec *a, const struct timespec *b)
 {
 	if ((a->tv_sec < 0) ^ (b->tv_sec < 0)) {
