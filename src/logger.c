@@ -122,18 +122,27 @@ static ssize_t log_fmt(char *buf, size_t buf_size,
 	}
 
 	/* logger prefix */
-	if (ctx && ctx->prefix && *ctx->prefix) {
-		size_t l0;
+	if (ctx) {
+		ssize_t l0;
 
-		if (fmt || func) {
-			l0 = snprintf(p, l, "%s: ", ctx->prefix);
-		} else {
+		if (ctx->prefixer != NULL) {
+			l0 = ctx->prefixer(ctx, p, l);
+		} else if (ctx->prefix != NULL && *ctx->prefix != '\0') {
 			l0 = strlen(ctx->prefix);
 			memcpy(p, ctx->prefix, l0);
+		} else {
+			l0 = 0;
 		}
 
-		l -= l0;
-		p += l0;
+		if (l0 > 0) {
+			if (fmt || func) {
+				memcpy(p + l0, ": ", 2);
+				l0 += 2;
+			}
+			l -= l0;
+			p += l0;
+		}
+
 	}
 
 	/* source file context */

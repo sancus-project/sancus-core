@@ -34,6 +34,7 @@ enum {
 struct sancus_logger {
 	const char *prefix;
 	unsigned mask;
+	ssize_t (*prefixer) (const struct sancus_logger *, char *, size_t);
 };
 
 #define SANCUS__LOGGER_INIT(S, M) { \
@@ -49,6 +50,13 @@ void sancus_logger_set_prefix(struct sancus_logger *log,
 			      const char *prefix)
 {
 	log->prefix = prefix;
+}
+
+static inline
+void sancus_logger_set_prefixer(struct sancus_logger *log,
+				ssize_t (*f) (const struct sancus_logger *, char *, size_t))
+{
+	log->prefixer = f;
 }
 
 static inline
