@@ -46,7 +46,7 @@ AM_CFLAGS = @WARN_CFLAGS@
 AM_CPPFLAGS = -I @top_srcdir@/include
 
 if IS_DEBUG
-AM_CFLAGS += -Wnull-dereference -Werror
+AM_CFLAGS += -Wnull-dereference -Wformat -Werror
 endif
 
 lib_LTLIBRARIES = libsancus-core.la
