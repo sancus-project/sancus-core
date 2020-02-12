@@ -108,6 +108,9 @@ static int validate_attr(const struct nlattr *attr,
 		errno = ERANGE;
 		return -1;
 	}
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch-enum"
 	switch(type) {
 	case SANCUS_NL_ATTR_TYPE_FLAG:
 		/* len is unused */
@@ -146,6 +149,7 @@ static int validate_attr(const struct nlattr *attr,
 	default: /* gcc -Wswitch warns about unhandled cases otherwise */
 		break;
 	}
+#pragma GCC diagnostic pop
 
 	return 0;
 }

@@ -99,6 +99,7 @@ connect_done:
 		}
 		break;
 	case SANCUS_TCP_CONN_FAILED:
+	default: /* -Wswitch-default */
 		assert(0); /* fix your app! */
 	}
 }

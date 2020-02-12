@@ -80,6 +80,8 @@ size_t sancus_fmt_ascii_cstr(char *buf, size_t buf_len, const char *data, size_t
 			*buf++ = 'x';
 			*buf++ = hexa[(c & 0xf0) >> 4];
 			*buf++ = hexa[(c & 0x0f)];
+		default: /* -Wswitch-default */
+			;
 		}
 	}
 
