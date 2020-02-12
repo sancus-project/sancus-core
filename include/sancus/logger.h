@@ -32,6 +32,8 @@ enum {
 };
 
 struct sancus_logger {
+	const struct sancus_logger *parent;
+
 	const char *prefix;
 	unsigned mask;
 	ssize_t (*prefixer) (const struct sancus_logger *, char *, size_t);
@@ -44,6 +46,33 @@ struct sancus_logger {
 
 #define SANCUS_LOGGER_INIT(S, M) (struct sancus_logger) SANCUS__LOGGER_INIT(S, M)
 #define DECL_SANCUS_LOGGER(N, S, M) struct sancus_logger N = SANCUS__LOGGER_INIT(S, M)
+
+static inline void sancus_logger_init2(struct sancus_logger *log,
+				       const struct sancus_logger *parent,
+				       ssize_t (*f) (const struct sancus_logger *, char *, size_t),
+				       unsigned mask,
+				       const char *prefix)
+{
+	if (log != NULL) {
+		if (mask == 0 && parent == NULL)
+			mask = SANCUS_LOG_NORMAL;
+
+		*log = (struct sancus_logger) {
+			.parent = parent,
+
+			.prefix = prefix,
+			.mask = mask,
+			.prefixer = f,
+		};
+	}
+}
+
+static inline
+void sancus_logger_init(struct sancus_logger *log,
+		       const char *prefix, unsigned mask)
+{
+	sancus_logger_init2(log, NULL, NULL, mask, prefix);
+}
 
 static inline
 void sancus_logger_set_prefix(struct sancus_logger *log,
@@ -86,10 +115,14 @@ int sancus_logger_has_level(const struct sancus_logger *log,
 {
 	if (!mask || mask&SANCUS_LOG_ERR)
 		mask = 1;
-	else if (log)
-		mask &= log->mask;
-	else
+	else if (log == NULL)
 		mask &= SANCUS_LOG_NORMAL;
+	else if (log->mask != 0)
+		mask &= log->mask;
+	else if (log->parent == NULL)
+		mask &= SANCUS_LOG_NORMAL;
+	else
+		return sancus_logger_has_level(log->parent, mask);
 
 	return !!mask;
 }

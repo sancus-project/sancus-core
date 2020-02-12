@@ -98,6 +98,32 @@ static ssize_t log_write(const char *prefix, size_t prefix_len,
 	return ret;
 }
 
+static inline ssize_t log_ctx_prefix(const struct sancus_logger *ctx,
+				     char *buf, size_t size)
+{
+	size_t l = 0;
+
+	if (ctx != NULL && buf != NULL && size > 0) {
+		if (ctx->prefixer != NULL) {
+			l = ctx->prefixer(ctx, buf, size);
+		} else if (ctx->prefix != NULL) {
+
+			if (*ctx->prefix != '\0') {
+				l = strlen(ctx->prefix);
+				if (size < l)
+					l = size-1;
+				memcpy(buf, ctx->prefix, l);
+				buf[l] = '\0';
+			}
+
+		} else if (ctx->parent != NULL) {
+			l = log_ctx_prefix(ctx->parent, buf, size);
+		}
+	}
+
+	return l;
+}
+
 __attr_vprintf(7)
 static ssize_t log_fmt(char *buf, size_t buf_size,
 		       const struct sancus_logger *ctx,
@@ -123,16 +149,7 @@ static ssize_t log_fmt(char *buf, size_t buf_size,
 
 	/* logger prefix */
 	if (ctx) {
-		ssize_t l0;
-
-		if (ctx->prefixer != NULL) {
-			l0 = ctx->prefixer(ctx, p, l);
-		} else if (ctx->prefix != NULL && *ctx->prefix != '\0') {
-			l0 = strlen(ctx->prefix);
-			memcpy(p, ctx->prefix, l0);
-		} else {
-			l0 = 0;
-		}
+		ssize_t l0 = log_ctx_prefix(ctx, p, l);
 
 		if (l0 > 0) {
 			if (fmt || func) {
