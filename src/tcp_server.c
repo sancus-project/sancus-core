@@ -166,8 +166,8 @@ void sancus_tcp_server_start(struct sancus_tcp_server *self, struct sancus_ev_lo
 
 void sancus_tcp_server_stop(struct sancus_tcp_server *self, struct sancus_ev_loop *loop)
 {
-	assert(sancus_ev_is_active(&self->connect));
-	sancus_ev_fd_stop(loop, &self->connect);
+	if (sancus_ev_is_active(&self->connect))
+		sancus_ev_fd_stop(loop, &self->connect);
 }
 
 void sancus_tcp_server_close(struct sancus_tcp_server *self)

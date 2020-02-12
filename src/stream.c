@@ -121,19 +121,18 @@ void sancus_stream_start(struct sancus_stream *self, struct sancus_ev_loop *loop
 
 void sancus_stream_stop(struct sancus_stream *self, struct sancus_ev_loop *loop)
 {
-	assert(sancus_ev_is_active(&self->read_watcher));
-
-	sancus_ev_fd_stop(loop, &self->read_watcher);
-
+	if (sancus_ev_is_active(&self->read_watcher))
+		sancus_ev_fd_stop(loop, &self->read_watcher);
 }
 
 void sancus_stream_close(struct sancus_stream *self)
 {
-	assert(self->read_watcher.fd >= 0);
-	assert(!sancus_ev_is_active(&self->read_watcher));
+	if (self->read_watcher.fd >= 0 &&
+	       !sancus_ev_is_active(&self->read_watcher)) {
 
-	sancus_close2(&self->read_watcher.fd);
-	self->settings->on_close(self);
+		sancus_close2(&self->read_watcher.fd);
+		self->settings->on_close(self);
+	}
 }
 
 int sancus_stream_init(struct sancus_stream *self,

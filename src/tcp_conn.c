@@ -172,17 +172,19 @@ static inline int init_tcp(struct sancus_tcp_conn *self,
  */
 void sancus_tcp_conn_start(struct sancus_tcp_conn *self, struct sancus_ev_loop *loop)
 {
-	assert(!sancus_ev_is_active(&self->io));
-	sancus_ev_fd_start(loop, &self->io);
+	if (!sancus_ev_is_active(&self->io)) {
 
-	if (sancus_time_is_zero(&self->last_activity))
-		sancus_tcp_conn_touch(self, loop);
+		sancus_ev_fd_start(loop, &self->io);
+
+		if (sancus_time_is_zero(&self->last_activity))
+			sancus_tcp_conn_touch(self, loop);
+	}
 }
 
 void sancus_tcp_conn_stop(struct sancus_tcp_conn *self, struct sancus_ev_loop *loop)
 {
-	assert(sancus_ev_is_active(&self->io));
-	sancus_ev_fd_stop(loop, &self->io);
+	if (sancus_ev_is_active(&self->io))
+		sancus_ev_fd_stop(loop, &self->io);
 }
 
 void sancus_tcp_conn_close(struct sancus_tcp_conn *self)

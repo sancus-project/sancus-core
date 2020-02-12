@@ -147,8 +147,8 @@ void sancus_nl_receiver_start(struct sancus_nl_receiver *self, struct sancus_ev_
 
 void sancus_nl_receiver_stop(struct sancus_nl_receiver *self, struct sancus_ev_loop *loop)
 {
-	assert(sancus_ev_is_active(&self->recv_watcher));
-	sancus_ev_fd_stop(loop, &self->recv_watcher);
+	if (sancus_ev_is_active(&self->recv_watcher))
+		sancus_ev_fd_stop(loop, &self->recv_watcher);
 }
 
 void sancus_nl_receiver_close(struct sancus_nl_receiver *self)
