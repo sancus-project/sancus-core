@@ -75,10 +75,22 @@ void sancus_logger_init(struct sancus_logger *log,
 }
 
 static inline
+const struct sancus_logger *sancus_logger_get_parent(const struct sancus_logger *log)
+{
+	return log != NULL ? log->parent : NULL;
+}
+
+static inline
 void sancus_logger_set_prefix(struct sancus_logger *log,
 			      const char *prefix)
 {
 	log->prefix = prefix;
+}
+
+static inline
+const char *sancus_logger_get_prefix(const struct sancus_logger *log)
+{
+	return log != NULL ? log->prefix : NULL;
 }
 
 static inline
