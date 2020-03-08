@@ -124,6 +124,11 @@ static inline ssize_t log_ctx_prefix(const struct sancus_logger *ctx,
 	return l;
 }
 
+ssize_t sancus_logger_render_prefix(const struct sancus_logger *ctx, char *buf, size_t size)
+{
+	return log_ctx_prefix(ctx, buf, size);
+}
+
 __attr_vprintf(7)
 static ssize_t log_fmt(char *buf, size_t buf_size,
 		       const struct sancus_logger *ctx,

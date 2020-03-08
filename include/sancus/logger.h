@@ -100,6 +100,8 @@ void sancus_logger_set_prefixer(struct sancus_logger *log,
 	log->prefixer = f;
 }
 
+ssize_t sancus_logger_render_prefix(const struct sancus_logger *, char *, size_t);
+
 static inline
 void sancus_logger_set_mask(struct sancus_logger *log,
 			    unsigned mask)
