@@ -12,6 +12,7 @@ nobase_include_HEADERS = \
 	sancus/serial.h \
 	sancus/socket.h \
 	sancus/stream.h \
+	sancus/string.h \
 	sancus/tcp_conn.h \
 	sancus/tcp_server.h \
 	sancus/time.h
