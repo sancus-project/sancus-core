@@ -19,4 +19,35 @@ static inline ssize_t sancus_memcpy(char *dest, ssize_t dest_size, const char *s
 	return ret;
 }
 
+static inline ssize_t sancus_strncpy(char *dest, ssize_t dest_size, const char *src, size_t n)
+{
+	ssize_t ret = -ENOBUFS;
+
+	if (dest_size > 0) {
+		if (n < (size_t)dest_size)
+			ret = n;
+		else
+			n = dest_size - 1;
+
+		if (n > 0)
+			memcpy(dest, src, n);
+
+		dest[n] = '\0';
+	}
+
+	return ret;
+}
+
+static inline ssize_t sancus_strcpy(char *dest, ssize_t dest_size, const char *src)
+{
+	size_t n;
+
+	if (src != NULL && *src != '\0')
+		n = strlen(src);
+	else
+		n = 0;
+
+	return sancus_strncpy(dest, dest_size, src, n);
+}
+
 #endif
