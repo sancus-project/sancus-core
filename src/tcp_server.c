@@ -33,6 +33,7 @@
 
 #include <assert.h>
 #include <stdbool.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 
