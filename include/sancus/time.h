@@ -82,13 +82,25 @@ static inline long sancus_time_ts_to_ms(const struct timespec *ts)
 	return ms;
 }
 
-/* sancus_time_ts_to_fs converts a time duration from timespec to double */
+/* sancus_time_ts_to_fp converts a time duration from timespec to double */
 static inline double sancus_time_ts_to_fp(const struct timespec *t)
 {
 	double d = t->tv_nsec;
 	d /= 1000000000.;
 	d += t->tv_sec;
 	return d;
+}
+
+/* sancus_time_ms_to_fp converts an amount of miliseconds into double */
+static inline double sancus_time_ms_to_fp(int ms)
+{
+	int x = ms < 0 ? -ms : ms;
+	double d = x / SEC_TO_MS(1);
+
+	x %= SEC_TO_MS(1);
+	d += (double)x / 1000.;
+
+	return ms < 0 ? -d : d;
 }
 
 /* -A */
