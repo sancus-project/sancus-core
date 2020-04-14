@@ -113,14 +113,14 @@ static inline
 void sancus_logger_extend_mask(struct sancus_logger *log,
 			       unsigned mask)
 {
-	log->mask = sancus_bit_cms(log->mask, mask, mask, 0);
+	log->mask = (unsigned)sancus_bit_cms(log->mask, mask, mask, 0);
 }
 
 static inline
 void sancus_logger_unset_mask(struct sancus_logger *log,
 			      unsigned mask)
 {
-	log->mask = sancus_bit_cms(log->mask, 0, mask, 0);
+	log->mask = (unsigned)sancus_bit_cms(log->mask, 0, mask, 0);
 }
 
 static inline

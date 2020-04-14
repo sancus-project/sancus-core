@@ -8,10 +8,10 @@ static inline ssize_t sancus_memcpy(char *dest, ssize_t dest_size, const char *s
 	ssize_t ret;
 
 	if ((ssize_t)n > dest_size) {
-		n = dest_size;
+		n = (size_t)dest_size;
 		ret = -ENOBUFS;
 	} else {
-		ret = n;
+		ret = (ssize_t)n;
 	}
 
 	if (n > 0)
@@ -24,10 +24,11 @@ static inline ssize_t sancus_strncpy(char *dest, ssize_t dest_size, const char *
 	ssize_t ret = -ENOBUFS;
 
 	if (dest_size > 0) {
-		if (n < (size_t)dest_size)
-			ret = n;
+		size_t sz = (size_t)dest_size;
+		if (n < sz)
+			ret = (ssize_t)n;
 		else
-			n = dest_size - 1;
+			n = sz - 1;
 
 		if (n > 0)
 			memcpy(dest, src, n);

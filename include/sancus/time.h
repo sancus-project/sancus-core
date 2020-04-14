@@ -22,7 +22,7 @@
 
 #define NS_TO_MS_ROUNDED(NS) (((NS) + (MS_TO_NS(1)/2)) / MS_TO_NS(1))
 
-#define TIMESPEC_INIT(S, NS)    ((struct timespec) { (S), (NS) })
+#define TIMESPEC_INIT(S, NS)    ((struct timespec) { (long)(S), (long)(NS) })
 #define TIMESPEC_INIT_MS(S, MS) TIMESPEC_INIT((S), MS_TO_NS(MS))
 
 #define TIMESPEC_FMT    "%s%ld.%09ld"
@@ -42,16 +42,16 @@
 static inline struct timespec sancus_time_fp_to_ts(double d)
 {
 	struct timespec t = {
-		.tv_sec = d / 1L,
+		.tv_sec = (long)d,
 	};
 
-	d -= t.tv_sec;
+	d -= (double)t.tv_sec;
 	/* shift to nanoseconds */
 	d *= 1000000000.;
 	/* rounding */
 	d += .5;
 
-	t.tv_nsec = d / 1L;
+	t.tv_nsec = (long)d;
 	return t;
 }
 
@@ -63,7 +63,7 @@ static inline long sancus_time_fp_to_ms(double d)
 	/* rounding */
 	d += .5;
 
-	return d / 1L;
+	return (long)d;
 }
 
 /* sancus_time_ts_to_ms converts a time duration from timespec to milliseconds */
@@ -85,9 +85,9 @@ static inline long sancus_time_ts_to_ms(const struct timespec *ts)
 /* sancus_time_ts_to_fp converts a time duration from timespec to double */
 static inline double sancus_time_ts_to_fp(const struct timespec *t)
 {
-	double d = t->tv_nsec;
+	double d = (double)t->tv_nsec;
 	d /= 1000000000.;
-	d += t->tv_sec;
+	d += (double)t->tv_sec;
 	return d;
 }
 
@@ -116,14 +116,14 @@ static inline struct timespec sancus_time_neg(struct timespec a)
 
 static inline int sancus_time_cmp(const struct timespec *a, const struct timespec *b)
 {
-	int ret = a->tv_sec - b->tv_sec;
+	long ret = a->tv_sec - b->tv_sec;
 	if (ret == 0) {
 		if (a->tv_sec < 0)
 			ret = b->tv_nsec - a->tv_nsec;
 		else
 			ret = a->tv_nsec - b->tv_nsec;
 	}
-	return ret;
+	return (int)ret;
 }
 
 /* A == B */

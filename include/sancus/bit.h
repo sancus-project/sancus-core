@@ -2,7 +2,7 @@
 #define __SANCUS_BIT_H__
 
 #ifndef BIT
-#define BIT(N) (1L << (N))
+#define BIT(N) (1UL << (N))
 #endif
 
 /** set element on mask using clear/mask/set */
