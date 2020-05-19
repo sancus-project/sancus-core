@@ -61,7 +61,7 @@ static inline long sancus_time_fp_to_ms(double d)
 	/* shift to milliseconds */
 	d *= 1000.;
 	/* rounding */
-	d += .5;
+	d = (d < 0.) ? d - .5 : d + .5;
 
 	return (long)d;
 }
