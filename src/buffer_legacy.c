@@ -33,7 +33,7 @@
 #include <stdint.h>
 #include <string.h>
 
-#include <sancus/buffer.h>
+#include <sancus/buffer_legacy.h>
 #include <sancus/fd.h>
 
 void sancus_buffer_bind(struct sancus_buffer *self, char *buf, size_t size)

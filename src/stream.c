@@ -35,7 +35,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include <sancus/buffer.h>
+#include <sancus/buffer_legacy.h>
 #include <sancus/stream.h>
 
 /*
