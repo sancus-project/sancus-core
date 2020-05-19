@@ -3,6 +3,7 @@ nobase_include_HEADERS = \
 	sancus/bit.h \
 	sancus/buffer.h \
 	sancus/buffer_legacy.h \
+	sancus/buffer_local.h \
 	sancus/clock.h \
 	sancus/common.h \
 	sancus/ev.h \
