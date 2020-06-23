@@ -61,13 +61,15 @@ static ssize_t log_write(const char *prefix, size_t prefix_len,
 
 		sancus_now(&ts);
 
-		if (!sancus_time_is_zero(&prev)) {
+		if (unlikely(sancus_time_is_zero(&prev) ||
+			     sancus_time_is_lt(&ts, &first))) {
+			/* first or time warped */
+			dt0 = dt1 = TIMESPEC_INIT(0, 0);
+			first = ts;
+		} else {
 			dt0 = dt1 = ts;
 			sancus_time_sub(&dt0, &first);
 			sancus_time_sub(&dt1, &prev);
-		} else {
-			dt1 = dt0 = TIMESPEC_INIT(0, 0);
-			first = ts;
 		}
 
 		prev = ts;
