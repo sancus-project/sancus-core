@@ -80,9 +80,10 @@ try_read:
 				goto close_stream;
 		} else if (errno == EINTR) {
 			goto try_read;
-		} else if (errno != EAGAIN && errno != EWOULDBLOCK) {
-			if (settings->on_error(self, loop, SANCUS_STREAM_READ_ERROR))
-				goto close_stream;
+		} else if (errno == EAGAIN) {
+			;
+		} else if (settings->on_error(self, loop, SANCUS_STREAM_READ_ERROR)) {
+			goto close_stream;
 		}
 
 	}
