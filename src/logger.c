@@ -4,6 +4,7 @@
 #include <sancus/logger.h>
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/uio.h>
 #include <pthread.h>
 
@@ -393,4 +394,23 @@ int sancus_logger__hexdumpf(const struct sancus_logger *log,
 				       fmt, ap);
 	va_end(ap);
 	return err;
+}
+
+/*
+ * assert()
+ */
+int sancus__assert(const struct sancus_logger *log, int ndebug,
+		   const char *func, size_t line, int e,
+		   const char *fmt, ...)
+{
+	if (unlikely(!e)) {
+		va_list ap;
+		va_start(ap, fmt);
+		sancus_logger__vprintf(log, SANCUS_LOG_ERR, func, line, fmt, ap);
+		va_end(ap);
+
+		if (!ndebug)
+			abort();
+	}
+	return e;
 }

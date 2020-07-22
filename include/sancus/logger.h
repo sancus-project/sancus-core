@@ -156,6 +156,7 @@ int sancus_logger__printf(const struct sancus_logger *log,
 			  const char *fmt, ...);
 
 /*
+ * logs data in printf string format
  */
 __attr_vprintf(7)
 int sancus_logger__vdumpf(const struct sancus_logger *log,
@@ -172,6 +173,7 @@ int sancus_logger__dumpf(const struct sancus_logger *log,
 			  const char *fmt, ...);
 
 /*
+ * logs data in `hexdump -C` format
  */
 __attr_vprintf(8)
 int sancus_logger__vhexdumpf(const struct sancus_logger *log,
@@ -186,6 +188,23 @@ int sancus_logger__hexdumpf(const struct sancus_logger *log,
 			    const char *func, unsigned line,
 			    size_t width, const void *data, size_t data_len,
 			    const char *fmt, ...);
+
+/*
+ * assert()
+ */
+__attr_printf(6)
+int sancus__assert(const struct sancus_logger *log, int ndebug,
+		   const char *func, size_t line, int e,
+		   const char *fmt, ...);
+
+#ifdef NDEBUG
+#define sancus__assert2(L, ...) likely(sancus__assert((L), 1, __VA_ARGS__))
+#else
+#define sancus__assert2(L, ...) likely(sancus__assert((L), 0, __VA_ARGS__))
+#endif
+
+#define sancus_assertf(L, E, ...) sancus__assert2((L), __func__, __LINE__, (E), "assertion failed: " __VA_ARGS__)
+#define sancus_assert(L, E)       sancus__assert2((L), __func__, __LINE__, (E), "assertion `%s` failed.", #E)
 
 /*
  */
