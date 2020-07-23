@@ -406,7 +406,7 @@ int sancus__assert(const struct sancus_logger *log, int ndebug,
 	if (unlikely(!e)) {
 		va_list ap;
 		va_start(ap, fmt);
-		sancus_logger__vprintf(log, SANCUS_LOG_ERR, func, line, fmt, ap);
+		sancus_logger__vprintf(log, SANCUS_LOG_ERROR_BIT, func, line, fmt, ap);
 		va_end(ap);
 
 		if (!ndebug)
