@@ -5,8 +5,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/ptrace.h>
 #include <sys/uio.h>
 #include <pthread.h>
+#include <signal.h>
 
 #define LOG_BUFFER_SIZE 1024
 #define TS 1
@@ -411,6 +413,25 @@ int sancus__assert(const struct sancus_logger *log, int ndebug,
 
 		if (!ndebug)
 			abort();
+	}
+	return e;
+}
+
+/*
+ * trap()
+ */
+int sancus__trap(const struct sancus_logger *log, int ndebug,
+		 const char *func, size_t line, int e,
+		 const char *fmt, ...)
+{
+	if (e) {
+		va_list ap;
+		va_start(ap, fmt);
+		sancus_logger__vprintf(log, SANCUS_LOG_WARN_BIT, func, line, fmt, ap);
+		va_end(ap);
+
+		if (!ndebug && ptrace(PTRACE_TRACEME, 0, NULL, 0) == -1)
+			raise(SIGTRAP);
 	}
 	return e;
 }

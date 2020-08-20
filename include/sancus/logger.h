@@ -197,14 +197,24 @@ int sancus__assert(const struct sancus_logger *log, int ndebug,
 		   const char *func, size_t line, int e,
 		   const char *fmt, ...);
 
+__attr_printf(6)
+int sancus__trap(const struct sancus_logger *log, int ndebug,
+		 const char *func, size_t line, int e,
+		 const char *fmt, ...);
+
 #ifdef NDEBUG
 #define sancus__assert2(L, ...) likely(sancus__assert((L), 1, __VA_ARGS__))
+#define sancus__trap2(L, ...)   sancus__trap((L), 1, __VA_ARGS__)
 #else
 #define sancus__assert2(L, ...) likely(sancus__assert((L), 0, __VA_ARGS__))
+#define sancus__trap2(L, ...)   sancus__trap((L), 0, __VA_ARGS__)
 #endif
 
 #define sancus_assertf(L, E, ...) sancus__assert2((L), __func__, __LINE__, (E), "assertion failed: " __VA_ARGS__)
 #define sancus_assert(L, E)       sancus__assert2((L), __func__, __LINE__, (E), "assertion `%s` failed.", #E)
+
+#define sancus_trapf(L, E, ...)   sancus__trap2((L), __func__, __LINE__, (E), "trap triggered: " __VA_ARGS__)
+#define sancus_trap(L, E)         sancus__trap2((L), __func__, __LINE__, (E), "trap `%s` triggered.", #E)
 
 /*
  */
