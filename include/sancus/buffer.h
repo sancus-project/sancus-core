@@ -1,6 +1,7 @@
 #ifndef __SANCUS_BUFFER_H__
 #define __SANCUS_BUFFER_H__
 
+#include <stdarg.h>
 #include <stdint.h>
 #include <string.h>
 
@@ -34,6 +35,9 @@ static inline ssize_t sancus_buffer_appendz(struct sancus_buffer *b, const char 
 		return sancus_buffer_append(b, s, strlen(s));
 	return 0;
 }
+
+__attr_vprintf(2)
+ssize_t sancus_buffer_appendv(struct sancus_buffer *b, const char *fmt, va_list ap);
 
 __attr_printf(2)
 ssize_t sancus_buffer_appendf(struct sancus_buffer *, const char *fmt, ...);

@@ -32,16 +32,13 @@ ssize_t sancus_buffer_append(struct sancus_buffer *b, const char *s, ssize_t l)
 	return l;
 }
 
-ssize_t sancus_buffer_appendf(struct sancus_buffer *b, const char *fmt, ...)
+ssize_t sancus_buffer_appendv(struct sancus_buffer *b, const char *fmt, va_list ap)
 {
 	ssize_t n, l = sancus_buffer_tail_size(b);
 	char *buf = sancus_buffer_tail_ptr(b);
 
 	if (l > 0) {
-		va_list ap;
-		va_start(ap, fmt);
 		n = vsnprintf(buf, l, fmt, ap);
-		va_end(ap);
 
 		if (l < n)
 			n = -ENOBUFS;
@@ -52,4 +49,16 @@ ssize_t sancus_buffer_appendf(struct sancus_buffer *b, const char *fmt, ...)
 	if (n > 0)
 		b->len += (size_t)n;
 	return n;
+}
+
+ssize_t sancus_buffer_appendf(struct sancus_buffer *b, const char *fmt, ...)
+{
+	ssize_t rc;
+	va_list ap;
+
+	va_start(ap, fmt);
+	rc = sancus_buffer_appendv(b, fmt, ap);
+	va_end(ap);
+
+	return rc;
 }
