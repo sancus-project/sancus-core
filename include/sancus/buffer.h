@@ -24,6 +24,8 @@ struct sancus_buffer {
 #define sancus_buffer_is_empty(B) (sancus_buffer_len(B)  == 0)
 #define sancus_buffer_is_off(B)   (sancus_buffer_base(B) != 0)
 
+ssize_t sancus_buffer_pop(struct sancus_buffer *, size_t);
+
 /*
  * append
  */

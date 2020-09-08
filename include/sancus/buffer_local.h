@@ -19,6 +19,8 @@
 #define sancus_lbuffer_ptr(B) sancus_buffer_ptr(sancus_lbuffer_to_buffer(B))
 #define sancus_lbuffer_len(B) sancus_buffer_len(sancus_lbuffer_to_buffer(B))
 
+#define sancus_lbuffer_pop(B, N) sancus_buffer_pop(sancus_lbuffer_to_buffer(B), (N))
+
 /*
  * append
  */

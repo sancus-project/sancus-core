@@ -6,6 +6,21 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+ssize_t sancus_buffer_pop(struct sancus_buffer *b, size_t n)
+{
+	size_t l = sancus_buffer_len(b);
+
+	if (n < l) {
+		l -= n;
+		b->buf[l - 1] = '\0';
+	} else {
+		b->base = b->len = 0;
+		b->buf[0] = '\0';
+	}
+
+	return l;
+}
+
 ssize_t sancus_buffer_append(struct sancus_buffer *b, const char *s, ssize_t l)
 {
 	char *buf = sancus_buffer_tail_ptr(b);
