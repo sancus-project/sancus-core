@@ -9,7 +9,7 @@
 } N = { .b = { \
 	.buf = (N).buf, \
 	.size = (S), \
-}, };
+}, }
 
 /*
  * accessors
