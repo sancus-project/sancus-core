@@ -6,6 +6,33 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+ssize_t sancus_buffer_strip(struct sancus_buffer *b, const char *s, ssize_t l)
+{
+	ssize_t bl = sancus_buffer_len(b);
+
+	/* s vs l */
+	if (likely(s != NULL)) {
+		if (l < 0)
+			l = strlen(s);
+	} else if (l > 0) {
+		return -EINVAL;
+	}
+
+	if (l > 0 && bl >= l) {
+		size_t off = bl - l;
+		char *p = sancus_buffer_ptr(b) + off;
+
+		if (memcmp(p, s, l) == 0) {
+			/* match, remove */
+			b->len -= l;
+			*p = '\0';
+			return l;
+		}
+	}
+
+	return 0;
+}
+
 ssize_t sancus_buffer_stripn(struct sancus_buffer *b, size_t n)
 {
 	size_t l = sancus_buffer_len(b);

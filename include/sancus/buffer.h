@@ -24,6 +24,18 @@ struct sancus_buffer {
 #define sancus_buffer_is_empty(B) (sancus_buffer_len(B)  == 0)
 #define sancus_buffer_is_off(B)   (sancus_buffer_base(B) != 0)
 
+/*
+ * strip
+ */
+ssize_t sancus_buffer_strip(struct sancus_buffer *, const char *s, ssize_t);
+
+static inline ssize_t sancus_buffer_stripz(struct sancus_buffer *b, const char *s)
+{
+	if (s)
+		return sancus_buffer_strip(b, s, strlen(s));
+	return 0;
+}
+
 ssize_t sancus_buffer_stripn(struct sancus_buffer *, size_t);
 
 #define sancus_buffer_pop(B, N) sancus_buffer_stripn((B), (N))
