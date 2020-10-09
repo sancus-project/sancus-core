@@ -6,7 +6,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-ssize_t sancus_buffer_pop(struct sancus_buffer *b, size_t n)
+ssize_t sancus_buffer_stripn(struct sancus_buffer *b, size_t n)
 {
 	size_t l = sancus_buffer_len(b);
 
