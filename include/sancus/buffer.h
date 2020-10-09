@@ -2,6 +2,7 @@
 #define __SANCUS_BUFFER_H__
 
 #include <stdarg.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
 
@@ -43,19 +44,24 @@ ssize_t sancus_buffer_stripn(struct sancus_buffer *, size_t);
 /*
  * append
  */
-ssize_t sancus_buffer_append(struct sancus_buffer *, const char *, ssize_t);
+ssize_t sancus_buffer__append(struct sancus_buffer *, bool, const char *, ssize_t);
 
-static inline ssize_t sancus_buffer_appendz(struct sancus_buffer *b, const char *s)
+static inline ssize_t sancus_buffer__appendz(struct sancus_buffer *b, bool truncate, const char *s)
 {
 	if (s)
-		return sancus_buffer_append(b, s, strlen(s));
+		return sancus_buffer__append(b, truncate, s, strlen(s));
 	return 0;
 }
 
-__attr_vprintf(2)
-ssize_t sancus_buffer_appendv(struct sancus_buffer *b, const char *fmt, va_list ap);
+__attr_vprintf(3)
+ssize_t sancus_buffer__appendv(struct sancus_buffer *b, bool, const char *fmt, va_list ap);
 
-__attr_printf(2)
-ssize_t sancus_buffer_appendf(struct sancus_buffer *, const char *fmt, ...);
+__attr_printf(3)
+ssize_t sancus_buffer__appendf(struct sancus_buffer *, bool, const char *fmt, ...);
+
+#define sancus_buffer_append(B, S, L)   sancus_buffer__append((B), false, (S), (L))
+#define sancus_buffer_appendz(B, S)     sancus_buffer__appendz((B), false, (S))
+#define sancus_buffer_appendv(B, F, AP) sancus_buffer__appendv((B), false, (F), (AP))
+#define sancus_buffer_appendf(B, ...)   sancus_buffer__appendf((B), false, __VA_ARGS__)
 
 #endif /* !__SANCUS_BUFFER_H__ */

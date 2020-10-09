@@ -6,6 +6,9 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+/*
+ * strip
+ */
 ssize_t sancus_buffer_strip(struct sancus_buffer *b, const char *s, ssize_t l)
 {
 	ssize_t bl = sancus_buffer_len(b);
@@ -48,7 +51,11 @@ ssize_t sancus_buffer_stripn(struct sancus_buffer *b, size_t n)
 	return l;
 }
 
-ssize_t sancus_buffer_append(struct sancus_buffer *b, const char *s, ssize_t l)
+/*
+ * append
+ */
+ssize_t sancus_buffer__append(struct sancus_buffer *b, bool truncate,
+			      const char *s, ssize_t l)
 {
 	char *buf = sancus_buffer_tail_ptr(b);
 	ssize_t buf_size = sancus_buffer_tail_size(b);
@@ -62,11 +69,16 @@ ssize_t sancus_buffer_append(struct sancus_buffer *b, const char *s, ssize_t l)
 	}
 
 	/* buf vs l */
-	if (buf == NULL) {
-		return -EINVAL;
-	} else if (l > buf_size) {
-		return -ENOBUFS;
-	} else if (l > 0) {
+	if (buf == NULL)
+		l = -EINVAL;
+	else if (l <= buf_size)
+		;
+	else if (truncate)
+		l = buf_size;
+	else
+		l = -ENOBUFS;
+
+	if (l > 0) {
 		memcpy(buf, s, l);
 		b->len += l;
 	}
@@ -74,7 +86,8 @@ ssize_t sancus_buffer_append(struct sancus_buffer *b, const char *s, ssize_t l)
 	return l;
 }
 
-ssize_t sancus_buffer_appendv(struct sancus_buffer *b, const char *fmt, va_list ap)
+ssize_t sancus_buffer__appendv(struct sancus_buffer *b, bool truncate,
+			       const char *fmt, va_list ap)
 {
 	ssize_t n, l = sancus_buffer_tail_size(b);
 	char *buf = sancus_buffer_tail_ptr(b);
@@ -82,8 +95,14 @@ ssize_t sancus_buffer_appendv(struct sancus_buffer *b, const char *fmt, va_list 
 	if (l > 0) {
 		n = vsnprintf(buf, l, fmt, ap);
 
-		if (l < n)
+		if (n <= 0 || l > n) {
+			;
+		} else if (truncate) {
+			n = l - 1;
+			buf[n] = '\0';
+		} else {
 			n = -ENOBUFS;
+		}
 	} else {
 		n = -ENOBUFS;
 	}
@@ -93,13 +112,14 @@ ssize_t sancus_buffer_appendv(struct sancus_buffer *b, const char *fmt, va_list 
 	return n;
 }
 
-ssize_t sancus_buffer_appendf(struct sancus_buffer *b, const char *fmt, ...)
+ssize_t sancus_buffer__appendf(struct sancus_buffer *b, bool truncate,
+			       const char *fmt, ...)
 {
 	ssize_t rc;
 	va_list ap;
 
 	va_start(ap, fmt);
-	rc = sancus_buffer_appendv(b, fmt, ap);
+	rc = sancus_buffer__appendv(b, truncate, fmt, ap);
 	va_end(ap);
 
 	return rc;
