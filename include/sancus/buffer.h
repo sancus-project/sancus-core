@@ -1,6 +1,7 @@
 #ifndef __SANCUS_BUFFER_H__
 #define __SANCUS_BUFFER_H__
 
+#include <errno.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -59,6 +60,15 @@ ssize_t sancus_buffer_stripn(struct sancus_buffer *, size_t);
 /*
  * append
  */
+static inline ssize_t sancus_buffer_sparse(struct sancus_buffer *b, size_t n)
+{
+	if (sancus_buffer_tail_size(b) < n)
+		return -EINVAL;
+
+	b->len += n;
+	return n;
+}
+
 ssize_t sancus_buffer__append(struct sancus_buffer *, bool, const char *, ssize_t);
 
 static inline ssize_t sancus_buffer__appendz(struct sancus_buffer *b, bool truncate, const char *s)
