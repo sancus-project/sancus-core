@@ -2,6 +2,7 @@
 #include <sancus/clock.h>
 #include <sancus/fd.h>
 #include <sancus/logger.h>
+#include <sancus/buffer_local.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,42 +16,7 @@
 
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-static size_t log_strcpy(char *dst, const char *src)
-{
-	size_t l = (src && *src) ? strlen(src) : 0;
-	if (l)
-		memcpy(dst, src, l + 1);
-	else
-		*dst = '\0';
-	return l;
-}
-
-__attr_printf(3)
-static ssize_t log_snprintf(char *dst, ssize_t dst_size,
-			    const char *fmt, ...)
-{
-	ssize_t ret;
-	if (dst != NULL && dst_size > 0 && fmt != NULL && *fmt != '\0') {
-		va_list ap;
-		va_start(ap, fmt);
-		ret = vsnprintf(dst, dst_size, fmt, ap);
-		va_end(ap);
-
-		if (ret >= dst_size) {
-			ret = dst_size - 1;
-			dst[ret] = '\0';
-		} else if (ret < 0) {
-			ret = 0;
-		}
-	} else {
-		ret = 0;
-	}
-
-	return ret;
-}
-
-static ssize_t log_write(const char *prefix, size_t prefix_len,
-			 const char *data, size_t data_len)
+static int log_write(const struct sancus_buffer *buf)
 {
 	char ts_buf[32];
 	size_t iovcnt = 0;
@@ -82,11 +48,11 @@ static ssize_t log_write(const char *prefix, size_t prefix_len,
 		iov[iovcnt++] = (struct iovec) { ts_buf, l };
 	}
 
-	if (prefix_len > 0)
-		iov[iovcnt++] = (struct iovec) { (void*)prefix, prefix_len };
-
-	if (data_len > 0)
-		iov[iovcnt++] = (struct iovec) { (void*)data, data_len };
+	if (sancus_buffer_len(buf) > 0)
+		iov[iovcnt++] = (struct iovec) {
+			sancus_buffer_ptr(buf),
+			sancus_buffer_len(buf)
+		};
 
 	if (iovcnt > 0) {
 		struct iovec *p = &iov[iovcnt-1];
@@ -134,16 +100,15 @@ ssize_t sancus_logger_render_prefix(const struct sancus_logger *ctx, char *buf, 
 	return log_ctx_prefix(ctx, buf, size);
 }
 
-__attr_vprintf(7)
-static ssize_t log_fmt(char *buf, size_t buf_size,
-		       const struct sancus_logger *ctx,
+__attr_vprintf(6)
+static ssize_t log_fmt(const struct sancus_logger *ctx,
+		       struct sancus_buffer *buf,
 		       enum sancus_log_level level,
 		       const char *func, unsigned line,
 		       const char *fmt, va_list ap)
 {
+	int rc = 0;
 	static char levels[] = "EWITD";
-	char *p = buf;
-	ssize_t l = buf_size;
 
 	if (func && *func == '\0')
 		func = NULL;
@@ -152,77 +117,44 @@ static ssize_t log_fmt(char *buf, size_t buf_size,
 
 	/* level */
 	if (level < sizeof(levels)) {
-		*p++ = levels[level];
-		*p++ = '/';
-		l -= 2;
+		rc = sancus_buffer_appendf(buf, "%c/", levels[level]);
+		if (rc < 0)
+			goto fail_rc;
 	}
 
 	/* logger prefix */
 	if (ctx) {
-		ssize_t l0 = log_ctx_prefix(ctx, p, l);
-
-		if (l0 > 0) {
-			if (fmt || func) {
-				memcpy(p + l0, ": ", 2);
-				l0 += 2;
-			}
-			l -= l0;
-			p += l0;
+		rc = log_ctx_prefix(ctx, sancus_buffer_tail_ptr(buf),
+				    sancus_buffer_tail_size(buf));
+		if (rc > 0) {
+			sancus_buffer_sparse(buf, rc);
+			sancus_buffer_append(buf, ": ", 2);
+		} else if (rc < 0) {
+			goto fail_rc;
 		}
 
 	}
 
 	/* source file context */
 	if (func) {
-		size_t l0;
+		sancus_buffer_appendz(buf, func);
 
-		if (line) {
-			l0 = snprintf(p, l, "%s:%u: ", func, line);
+		if (line)
+			sancus_buffer_appendf(buf, ":%u", line);
 
-			if (!fmt)
-				l0 -= 2;
-		} else if (fmt) {
-			l0 = snprintf(p, l, "%s: ", func);
-		} else {
-			l0 = strlen(func);
-			memcpy(p, func, l0);
-		}
-
-		l -= l0;
-		p += l0;
+		sancus_buffer_append(buf, ": ", 2);
 	}
 
 	/* formatted message */
 	if (fmt) {
-		ssize_t l0;
-		l0 = vsnprintf(p, l, fmt, ap);
-
-		if (l0 < 0) {
-			const char *s = "<invalid format>";
-			l0 = strlen(s);
-			memcpy(p, s, l0 + 1);
-		} else if (l0 >= l) {
-			/* truncated */
-			l0 = l - 1;
-		}
-
-		p += l0;
-		l -= l0;
+		rc = sancus_buffer__appendv(buf, true, fmt, ap);
+		if (rc < 0)
+			goto fail_rc;
 	}
 
-	if (p != buf) {
-		if (l < 1) {
-			p = buf + buf_size;
-			p -= 2;
-		}
-
-		if (p[-1] == '\n')
-			p--;
-
-		*p = '\0';
-	}
-
-	return p - buf;
+	sancus_buffer_stripany(buf, "\n\t :");
+fail_rc:
+	return rc;
 }
 
 int sancus_logger__vprintf(const struct sancus_logger *ctx,
@@ -230,12 +162,14 @@ int sancus_logger__vprintf(const struct sancus_logger *ctx,
 			   const char *func, unsigned line,
 			   const char *fmt, va_list ap)
 {
-	char buf[LOG_BUFFER_SIZE];
-	ssize_t l;
+	DECL_SANCUS_LBUFFER(lbuf, LOG_BUFFER_SIZE);
+	struct sancus_buffer *buf = sancus_lbuffer_to_buffer(&lbuf);
+	int rc;
 
-	l = log_fmt(buf, sizeof(buf), ctx, level, func, line, fmt, ap);
-
-	return log_write(buf, l, NULL, 0);
+	rc = log_fmt(ctx, buf, level, func, line, fmt, ap);
+	if (rc > 0)
+		return log_write(buf);
+	return rc;
 }
 
 int sancus_logger__printf(const struct sancus_logger *ctx,
@@ -243,79 +177,137 @@ int sancus_logger__printf(const struct sancus_logger *ctx,
 			  const char *func, unsigned line,
 			  const char *fmt, ...)
 {
-	char buf[LOG_BUFFER_SIZE];
-	ssize_t l;
+	DECL_SANCUS_LBUFFER(lbuf, LOG_BUFFER_SIZE);
+	struct sancus_buffer *buf = sancus_lbuffer_to_buffer(&lbuf);
 	va_list ap;
-	int err;
+	int rc;
 
 	va_start(ap, fmt);
-	l = log_fmt(buf, sizeof(buf), ctx, level, func, line, fmt, ap);
-	err = log_write(buf, l, NULL, 0);
+	rc = log_fmt(ctx, buf, level, func, line, fmt, ap);
+	if (rc > 0)
+		rc = log_write(buf);
 	va_end(ap);
 
-	return err;
+	return rc;
 }
 
-int sancus_logger__vdumpf(const struct sancus_logger *ctx,
-			  enum sancus_log_level level,
-			  const char *func, size_t line,
-			  const void *data, size_t data_len,
-			  const char *fmt, va_list ap)
+static inline size_t dump_enc(struct sancus_buffer *buf,
+			      const char *p, size_t l)
 {
 	static const char hexa[] = "0123456789abcdef";
 	static const char CEC[] = "abtnvfr";
-	char buf[1024];
-	const char *p = data, *pe = p + data_len;
-	char *out = buf, *oute = buf + sizeof(buf);
-	const size_t max_suffix = 17; /* strlen("... (%zu)\n") */
-	const char *outs = oute - max_suffix; /* maximum location before the suffix */
-	ssize_t l;
+	const char *pe = p + l;
+	size_t count;
 
-	l = log_fmt(buf, sizeof(buf),
-		    ctx, level, func, line, fmt, ap);
-	if (l < 0)
-		return l;
-	out += l;
+	while (p < pe) {
+		unsigned char c = *p++;
+		int rc = 0;
 
-	if (unlikely(data == NULL)) {
-		out += log_strcpy(out, "nil\n");
-		goto write_buf;
-	}
-
-	*out++ = '"';
-	while (p < pe && out < outs) {
-		char c = *p++;
-		if (c > 0x1f && c < 0x7f) { /* ASCII printable characters */
-			switch(c) {
-				case '"':
-				case '\\':
-					goto escape2;
-				default:
-					*out++ = c;
+		if (c > 0x1f && c < 0x7f) {
+			/* ASCII printable characters */
+			switch (c) {
+			case '"':
+			case '\\':
+				goto escape2;
+			default:
+				count += 1;
+				if (buf)
+					rc = sancus_buffer_append(buf,
+								  (const char *)&c,
+								  1);
 			}
 		} else if (c >= '\a' && c <= '\r') {
 			/* C Character Escape Codes */
 			c = CEC[c - '\a'];
 escape2:
-			*out++ = '\\';
-			*out++ = c;
-		} else if (c == 0) {
-			c = '0';
-			goto escape2;
+			count += 2;
+			if (buf) {
+				char out[] = { '\\', c };
+				rc =sancus_buffer_append(buf, out, 2);
+			}
 		} else { /* not printable, hexa encoded */
-			*out++ = '\\';
-			*out++ = 'x';
-			*out++ = hexa[(c & (0x0f << 4)) >> 4];
-			*out++ = hexa[c & 0x0f];
+			count += 4;
+
+			if (buf) {
+				char out[] = {
+					'\\', 'x',
+					hexa[(c & (0x0f << 4)) >> 4],
+					hexa[c & 0x0f]};
+
+				rc =sancus_buffer_append(buf, out, 2);
+			}
 		}
+
+		if (rc < 0)
+			return rc;
 	}
 
-	out += log_snprintf(out, oute - out,
-			    (p < pe) ?  "... (%zu)\n" : "\" (%zu)\n",
-			    data_len);
+	return count;
+}
 
-write_buf:
-	return log_write(buf, out - buf, NULL, 0);
+
+int sancus_logger__vdumpf(const struct sancus_logger *ctx,
+			  enum sancus_log_level level,
+			  const char *func, size_t line,
+			  const void * const data, size_t len,
+			  const char *fmt, va_list ap)
+{
+	DECL_SANCUS_LBUFFER(lbuf, LOG_BUFFER_SIZE);
+	struct sancus_buffer *buf = sancus_lbuffer_to_buffer(&lbuf);
+	const char *p = data;
+	const char * const pe = p + len;
+	const size_t min_suffix = 4 + 6; /* strlen("\" (%zu)") */
+	const size_t max_suffix = min_suffix + 3; /* min_suffix + ellipsis */
+	int rc;
+
+	if (data == NULL && len > 0)
+		return -EINVAL;
+
+	rc = log_fmt(ctx, buf, level, func, line, fmt, ap);
+	if (rc < 0)
+		goto fail_rc;
+
+	rc = sancus_buffer_append(buf, "\"", 1);
+	if (rc < 0)
+		goto fail_rc;
+
+	while (p < pe) {
+		size_t bytes;
+
+		/* to be safe, encode blocks that would fit in the worst case */
+		bytes = sancus_buffer_tail_size(buf) - min_suffix;
+		bytes = bytes / 4;
+		bytes = len > bytes ? bytes : len;
+
+		if (unlikely(bytes == 0))
+			goto truncate;
+
+		dump_enc(buf, p, bytes);
+		p += bytes;
+		len -= bytes;
+	}
+
+done:
+	/* append min suffix */
+	rc = sancus_buffer_appendf(buf, "\" (%zu)", (const char*)pe - (const char*)data);
+	if (unlikely(rc < 0))
+		goto fail_rc;
+
+	rc = log_write(buf);
+fail_rc:
+	return rc;
+truncate:
+	while ((const char *)p > (const char*)data && sancus_buffer_tail_size(buf) < max_suffix) {
+
+		rc = dump_enc(NULL, --p, 1);
+		sancus_buffer_stripn(buf, rc);
+	}
+
+	/* append max suffix */
+	rc = sancus_buffer_append(buf, "...", 3);
+	if (unlikely(rc < 0))
+		goto fail_rc;
+	goto done;
 }
 
 int sancus_logger__dumpf(const struct sancus_logger *log,
@@ -340,43 +332,61 @@ int sancus_logger__vhexdumpf(const struct sancus_logger *ctx,
 			     size_t width, const void *data, size_t data_len,
 			     const char *fmt, va_list ap)
 {
-	char buf[1024];
-	const char *p = data, *pe = p + data_len;
-	ssize_t base = log_fmt(buf, sizeof(buf),
-			       ctx, level, func, line, fmt, ap);
-	unsigned off = 0;
-	int rc = 0;
+	DECL_SANCUS_LBUFFER(lbuf, LOG_BUFFER_SIZE);
+	struct sancus_buffer *buf = sancus_lbuffer_to_buffer(&lbuf);
+	const char *p, *pe;
+	unsigned base, off;
+	int rc;
 
-	if (base < 0)
-		rc = base;
+	if (!data && data_len > 0)
+		return -EINVAL;
 
-	while (rc >= 0 && p < pe) {
+	rc = log_fmt(ctx, buf, level, func, line, fmt, ap);
+	if (rc > 0 && data_len > 0)
+		rc = sancus_buffer_append(buf, ": ", 2);
+	if (rc < 0)
+		return rc;
+	else if (data_len == 0)
+		return log_write(buf);
+
+	base = sancus_buffer_len(buf);
+	off = 0;
+	p = data;
+	pe = p + data_len;
+
+	while (p < pe) {
 		const char *q = p;
-		size_t l = base;
 
 		if (width) {
-			unsigned i;
-			l += snprintf(buf + l, sizeof(buf) - l, "%08x ", off);
+			size_t i;
+			sancus_buffer_appendf(buf, "%08x ", off);
 			for (i = 0; i < width && p < pe; i++, off++)
-				l += snprintf(buf + l, sizeof(buf) - l, " %02x", *p++ & 0xff);
+				sancus_buffer_appendf(buf, " %02x", *p++ & 0xff);
 
 			/* align */
-			for (; i < width; l += 3, i++)
-				memcpy(buf + l, "   ", 3);
+			for (; i < width; i++)
+				sancus_buffer_append(buf, "   ", 3);
 		} else {
 			for (; p < pe; off++)
-				l += snprintf(buf + l, sizeof(buf) - l, " %02x", *p++ & 0xff);
+				sancus_buffer_appendf(buf, " %02x", *p++ & 0xff);
 		}
 
 		/* ascii */
-		memcpy(buf + l, " |", 2); l += 2;
+		sancus_buffer_append(buf, " |", 2);
 		while (q < p) {
 			unsigned char c = *q++;
-			buf[l++] = (c < 0x20 || c > 0x7e) ? '.' : c;
+			if (c < 0x20 || c > 0x7e)
+				c = '.';
+			sancus_buffer_append(buf, (const char*)&c, 1);
 		}
-		memcpy(buf + l, "|\n", 3); l += 2;
 
-		rc = log_write(buf, l, NULL, 0);
+		sancus_buffer_append(buf, "|", 1);
+
+		rc = log_write(buf);
+		if (rc < 0)
+			break;
+
+		sancus_buffer_truncate(buf, base);
 	}
 
 	return rc;
