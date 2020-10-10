@@ -227,12 +227,14 @@ static int fd_logger_write(unsigned level,
 	 * extra data
 	 */
 	if (dlen) {
-		iov[iovcnt++] = (struct iovec) { (void*)data, dlen };
+		iov[iovcnt++] = log_iov(data, dlen);
 	}
 
 	/*
 	 * write
 	 */
+	iov[iovcnt++] = log_iov("\n", 1);
+
 	pthread_mutex_lock(&ctx->mutex);
 	ret = sancus_writev(ctx->fd, iov, iovcnt);
 	pthread_mutex_unlock(&ctx->mutex);
