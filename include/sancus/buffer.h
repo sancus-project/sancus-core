@@ -28,6 +28,8 @@ struct sancus_buffer {
 /*
  * strip
  */
+ssize_t sancus_buffer__stripchar(struct sancus_buffer *, bool, const char *, ssize_t);
+
 ssize_t sancus_buffer_strip(struct sancus_buffer *, const char *s, ssize_t);
 
 static inline ssize_t sancus_buffer_stripz(struct sancus_buffer *b, const char *s)
@@ -38,6 +40,9 @@ static inline ssize_t sancus_buffer_stripz(struct sancus_buffer *b, const char *
 }
 
 ssize_t sancus_buffer_stripn(struct sancus_buffer *, size_t);
+
+#define sancus_buffer_striponce(B, S) sancus_buffer__stripchar((B), false, (S), -1)
+#define sancus_buffer_stripany(B, S)  sancus_buffer__stripchar((B), true, (S), -1)
 
 #define sancus_buffer_pop(B, N) sancus_buffer_stripn((B), (N))
 

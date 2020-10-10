@@ -9,6 +9,49 @@
 /*
  * strip
  */
+ssize_t sancus_buffer__stripchar(struct sancus_buffer *b, bool many,
+				 const char *chars, ssize_t l)
+{
+	ssize_t count = 0;
+
+	if (unlikely(b == NULL))
+		return -EINVAL;
+	else if (unlikely(chars == NULL && l > 0))
+		return -EINVAL;
+
+	if (l < 0)
+		l = chars ? strlen(chars) : 0;
+
+	if (l > 0) {
+		const char *p, *pe, *q, *qe;
+
+		p = sancus_buffer_tail_ptr(b) - 1;
+		pe = sancus_buffer_ptr(b) - 1;
+		qe = chars + l;
+
+		while (p > pe) {
+
+			for (q = chars; q < qe; q++) {
+				if (*p == *q)
+					goto match;
+			}
+
+			break;
+match:
+			count++;
+			p--;
+
+			if (!many)
+				break;
+		}
+	}
+
+	if (count)
+		b->len -= count;
+
+	return count;
+}
+
 ssize_t sancus_buffer_strip(struct sancus_buffer *b, const char *s, ssize_t l)
 {
 	ssize_t bl = sancus_buffer_len(b);
