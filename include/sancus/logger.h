@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <string.h>
 
+struct sancus_logger;
+
 enum sancus_log_level {
 	SANCUS_LOG_ERROR_BIT,
 	SANCUS_LOG_WARN_BIT,
@@ -31,12 +33,19 @@ enum {
 	SANCUS_LOG_VERBOSE = SANCUS_LOG_NORMAL | SANCUS_LOG_DEBUG,
 };
 
+/*
+ * sancus_logger
+ */
+typedef ssize_t (*sancus_logger_prefixer_f) (const struct sancus_logger *logger,
+					     char *buf, size_t len);
+
 struct sancus_logger {
 	const struct sancus_logger *parent;
 
 	const char *prefix;
 	unsigned mask;
-	ssize_t (*prefixer) (const struct sancus_logger *, char *, size_t);
+
+	sancus_logger_prefixer_f prefixer;
 };
 
 #define SANCUS__LOGGER_INIT(S, M) { \
@@ -49,7 +58,7 @@ struct sancus_logger {
 
 static inline void sancus_logger_init2(struct sancus_logger *log,
 				       const struct sancus_logger *parent,
-				       ssize_t (*f) (const struct sancus_logger *, char *, size_t),
+				       sancus_logger_prefixer_f f,
 				       unsigned mask,
 				       const char *prefix)
 {
@@ -95,7 +104,7 @@ const char *sancus_logger_get_prefix(const struct sancus_logger *log)
 
 static inline
 void sancus_logger_set_prefixer(struct sancus_logger *log,
-				ssize_t (*f) (const struct sancus_logger *, char *, size_t))
+				sancus_logger_prefixer_f f)
 {
 	log->prefixer = f;
 }
