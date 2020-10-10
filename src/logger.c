@@ -11,22 +11,170 @@
 #include <pthread.h>
 #include <signal.h>
 
-#define LOG_BUFFER_SIZE 1024
-#define TS 1
+enum {
+	LOG_PRELUDE_SIZE =  64,
+	LOG_PREFIX_SIZE  = 128,
+	LOG_MESSAGE_SIZE = 256,
+	LOG_DATA_SIZE    = 256,
+};
 
-static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+/*
+ * backend
+ */
+static const struct sancus_logger_backend fd_backend;
+static const struct sancus_logger_backend *default_backend = &fd_backend;
 
-static int log_write(const struct sancus_buffer *buf)
+int sancus_logger_set_default_backend(const struct sancus_logger_backend *backend)
 {
-	char ts_buf[32];
+	if (backend == NULL)
+		backend = &fd_backend;
+	else if (backend->f == NULL)
+		return -EINVAL;
+
+	default_backend = backend;
+	return 0;
+}
+
+static inline
+const struct sancus_logger_backend *log_find_backend(const struct sancus_logger *logger,
+						     const struct sancus_logger_backend *fallback)
+{
+	for (;;) {
+		if (logger == NULL)
+			return fallback;
+		else if (logger->backend && logger->backend->f)
+			return logger->backend;
+		else
+			logger = logger->parent;
+	}
+}
+
+static inline size_t log_buffer_trim(const struct sancus_buffer *buf,
+				     const char **ptr)
+{
+	const char *base = sancus_buffer_ptr(buf);
+	const char *p = sancus_buffer_tail_ptr(buf);
+	size_t l;
+
+	while (p > base) {
+		char c = *--p;
+
+		switch (c) {
+		case ' ':
+		case '\t':
+		case '\n':
+			break;
+		default:
+			goto done;
+		}
+	}
+
+done:
+	l = p - base;
+
+	if (ptr)
+		*ptr = l ? base : NULL;
+	return l;
+}
+
+static int log_write(const struct sancus_logger *logger,
+		     unsigned level,
+		     const struct sancus_buffer *pbuf,
+		     const struct sancus_buffer *mbuf,
+		     const struct sancus_buffer *dbuf)
+{
+	const char *prefix, *msg, *data;
+	size_t plen, mlen, dlen;
+	int rc = 0;
+
+	plen = log_buffer_trim(pbuf, &prefix);
+	mlen = log_buffer_trim(mbuf, &msg);
+	dlen = log_buffer_trim(dbuf, &data);
+
+	if (plen + mlen + dlen) {
+		const struct sancus_logger_backend *d;
+		d = log_find_backend(logger, default_backend);
+
+		rc = d->f(level,
+			  prefix, plen,
+			  msg, mlen,
+			  data, dlen,
+			  d->ctx);
+	}
+
+	return rc;
+}
+
+/*
+ * stderr fd backend
+ */
+static int fd_logger_write(unsigned level,
+			   const char *prefix, size_t prefix_len,
+			   const char *msg, size_t msg_len,
+			   const char *data, size_t data_len,
+			   void *ctx);
+
+struct sancus_logger_fd_backend_data {
+	pthread_mutex_t mutex;
+	int fd;
+
+	bool timestamp;
+};
+
+static struct sancus_logger_fd_backend_data fd_backend_data = {
+	.mutex = PTHREAD_MUTEX_INITIALIZER,
+	.fd = STDERR_FILENO,
+	.timestamp = true,
+};
+
+static const struct sancus_logger_backend fd_backend = {
+	.f = fd_logger_write,
+	.ctx = &fd_backend_data,
+};
+
+int sancus_logger_set_fd_backend(int fd)
+{
+	if (fd < 0)
+		return -EINVAL;
+	fd_backend_data.fd = fd;
+	return 0;
+}
+
+static inline struct iovec log_iov(const char *s, size_t l)
+{
+	return (struct iovec) { (void*)s, l };
+}
+
+static inline struct iovec log_iov2(const struct sancus_buffer *b)
+{
+	return (struct iovec) {
+		sancus_buffer_ptr(b),
+		sancus_buffer_len(b)
+	};
+}
+
+static int fd_logger_write(unsigned level,
+			   const char *prefix, size_t plen,
+			   const char *msg, size_t mlen,
+			   const char *data, size_t dlen,
+			   void *_ctx)
+{
+	static const char levels[] = "EWITD";
+	DECL_SANCUS_LBUFFER(prelude, LOG_PRELUDE_SIZE);
+	struct sancus_logger_fd_backend_data *ctx = (struct sancus_logger_fd_backend_data *)_ctx;
 	size_t iovcnt = 0;
-	struct iovec iov[4];
+	struct iovec iov[6];
 	ssize_t ret = 0;
 
-	if (TS) {
+	if (ctx == NULL)
+		return -EINVAL;
+
+	/*
+	 * prelude
+	 */
+	if (ctx->timestamp) {
 		static struct timespec first, prev;
 		struct timespec ts, dt0, dt1;
-		size_t l;
 
 		sancus_now(&ts);
 
@@ -42,29 +190,52 @@ static int log_write(const struct sancus_buffer *buf)
 		}
 
 		prev = ts;
-		l = snprintf(ts_buf, sizeof(ts_buf), "[" TIMESPEC_FMT_MS " +" TIMESPEC_FMT_MS "] ",
-			     TIMESPEC_SPLIT_MS(&dt0),
-			     TIMESPEC_SPLIT_MS(&dt1));
-		iov[iovcnt++] = (struct iovec) { ts_buf, l };
+		sancus_lbuffer_appendf(&prelude,
+				       "[" TIMESPEC_FMT_MS " +" TIMESPEC_FMT_MS "] ",
+				       TIMESPEC_SPLIT_MS(&dt0),
+				       TIMESPEC_SPLIT_MS(&dt1));
 	}
 
-	if (sancus_buffer_len(buf) > 0)
-		iov[iovcnt++] = (struct iovec) {
-			sancus_buffer_ptr(buf),
-			sancus_buffer_len(buf)
-		};
+	if (level < sizeof(levels))
+		sancus_lbuffer_appendf(&prelude, "%c/", levels[level]);
+	else
+		sancus_lbuffer_appendf(&prelude, "%u/", level);
 
-	if (iovcnt > 0) {
-		struct iovec *p = &iov[iovcnt-1];
-		const char *s = p->iov_base;
+	iov[iovcnt++] = log_iov2(sancus_lbuffer_to_buffer(&prelude));
 
-		if (s[p->iov_len-1] != '\n')
-			iov[iovcnt++] = (struct iovec) { (char*)"\n", 1 };
+	/*
+	 * prefix
+	 */
+	if (plen) {
+		iov[iovcnt++] = log_iov(prefix, plen);
 
-		pthread_mutex_lock(&mutex);
-		ret = sancus_writev(STDERR_FILENO, iov, iovcnt);
-		pthread_mutex_unlock(&mutex);
+		if (mlen || dlen)
+			iov[iovcnt++] = log_iov(": ", 2);
 	}
+
+	/*
+	 * message
+	 */
+	if (mlen) {
+		iov[iovcnt++] = log_iov(msg, mlen);
+
+		if (dlen)
+			iov[iovcnt++] = log_iov(": ", 2);
+	}
+
+	/*
+	 * extra data
+	 */
+	if (dlen) {
+		iov[iovcnt++] = (struct iovec) { (void*)data, dlen };
+	}
+
+	/*
+	 * write
+	 */
+	pthread_mutex_lock(&ctx->mutex);
+	ret = sancus_writev(ctx->fd, iov, iovcnt);
+	pthread_mutex_unlock(&ctx->mutex);
 
 	return ret;
 }
@@ -100,40 +271,29 @@ ssize_t sancus_logger_render_prefix(const struct sancus_logger *ctx, char *buf, 
 	return log_ctx_prefix(ctx, buf, size);
 }
 
-__attr_vprintf(6)
-static ssize_t log_fmt(const struct sancus_logger *ctx,
-		       struct sancus_buffer *buf,
-		       enum sancus_log_level level,
+static inline ssize_t log_ctx_prefix2(const struct sancus_logger *ctx,
+				      struct sancus_buffer *b)
+{
+	ssize_t rc = log_ctx_prefix(ctx,
+				    sancus_buffer_tail_ptr(b),
+				    sancus_buffer_tail_size(b));
+	if (rc > 0)
+		sancus_buffer_sparse(b, rc);
+
+	return rc;
+}
+
+__attr_vprintf(4)
+static ssize_t log_fmt(struct sancus_buffer *buf,
 		       const char *func, unsigned line,
 		       const char *fmt, va_list ap)
 {
-	int rc = 0;
-	static char levels[] = "EWITD";
+	ssize_t rc = 0;
 
 	if (func && *func == '\0')
 		func = NULL;
 	if (fmt && *fmt == '\0')
 		fmt = NULL;
-
-	/* level */
-	if (level < sizeof(levels)) {
-		rc = sancus_buffer_appendf(buf, "%c/", levels[level]);
-		if (rc < 0)
-			goto fail_rc;
-	}
-
-	/* logger prefix */
-	if (ctx) {
-		rc = log_ctx_prefix(ctx, sancus_buffer_tail_ptr(buf),
-				    sancus_buffer_tail_size(buf));
-		if (rc > 0) {
-			sancus_buffer_sparse(buf, rc);
-			sancus_buffer_append(buf, ": ", 2);
-		} else if (rc < 0) {
-			goto fail_rc;
-		}
-
-	}
 
 	/* source file context */
 	if (func) {
@@ -162,13 +322,22 @@ int sancus_logger__vprintf(const struct sancus_logger *ctx,
 			   const char *func, unsigned line,
 			   const char *fmt, va_list ap)
 {
-	DECL_SANCUS_LBUFFER(lbuf, LOG_BUFFER_SIZE);
-	struct sancus_buffer *buf = sancus_lbuffer_to_buffer(&lbuf);
+	DECL_SANCUS_LBUFFER(pbuf0, LOG_PREFIX_SIZE);
+	DECL_SANCUS_LBUFFER(mbuf0, LOG_MESSAGE_SIZE);
+	struct sancus_buffer *pbuf = sancus_lbuffer_to_buffer(&pbuf0);
+	struct sancus_buffer *mbuf = sancus_lbuffer_to_buffer(&mbuf0);
 	int rc;
 
-	rc = log_fmt(ctx, buf, level, func, line, fmt, ap);
-	if (rc > 0)
-		return log_write(buf);
+	rc = log_ctx_prefix2(ctx, pbuf);
+	if (rc < 0)
+		goto done;
+
+	rc = log_fmt(mbuf, func, line, fmt, ap);
+	if (rc < 0)
+		goto done;
+
+	rc = log_write(ctx, level, pbuf, mbuf, NULL);
+done:
 	return rc;
 }
 
@@ -177,15 +346,11 @@ int sancus_logger__printf(const struct sancus_logger *ctx,
 			  const char *func, unsigned line,
 			  const char *fmt, ...)
 {
-	DECL_SANCUS_LBUFFER(lbuf, LOG_BUFFER_SIZE);
-	struct sancus_buffer *buf = sancus_lbuffer_to_buffer(&lbuf);
 	va_list ap;
 	int rc;
 
 	va_start(ap, fmt);
-	rc = log_fmt(ctx, buf, level, func, line, fmt, ap);
-	if (rc > 0)
-		rc = log_write(buf);
+	rc = sancus_logger__vprintf(ctx, level, func, line, fmt, ap);
 	va_end(ap);
 
 	return rc;
@@ -252,8 +417,14 @@ int sancus_logger__vdumpf(const struct sancus_logger *ctx,
 			  const void * const data, size_t len,
 			  const char *fmt, va_list ap)
 {
-	DECL_SANCUS_LBUFFER(lbuf, LOG_BUFFER_SIZE);
-	struct sancus_buffer *buf = sancus_lbuffer_to_buffer(&lbuf);
+	DECL_SANCUS_LBUFFER(pbuf0, LOG_PREFIX_SIZE);
+	DECL_SANCUS_LBUFFER(mbuf0, LOG_MESSAGE_SIZE);
+	DECL_SANCUS_LBUFFER(dbuf0, LOG_DATA_SIZE);
+
+	struct sancus_buffer *pbuf = sancus_lbuffer_to_buffer(&pbuf0);
+	struct sancus_buffer *mbuf = sancus_lbuffer_to_buffer(&mbuf0);
+	struct sancus_buffer *buf = sancus_lbuffer_to_buffer(&dbuf0);
+
 	const char *p = data;
 	const char * const pe = p + len;
 	const size_t min_suffix = 4 + 6; /* strlen("\" (%zu)") */
@@ -263,7 +434,11 @@ int sancus_logger__vdumpf(const struct sancus_logger *ctx,
 	if (data == NULL && len > 0)
 		return -EINVAL;
 
-	rc = log_fmt(ctx, buf, level, func, line, fmt, ap);
+	rc = log_ctx_prefix2(ctx, pbuf);
+	if (rc < 0)
+		goto fail_rc;
+
+	rc = log_fmt(mbuf, func, line, fmt, ap);
 	if (rc < 0)
 		goto fail_rc;
 
@@ -293,7 +468,7 @@ done:
 	if (unlikely(rc < 0))
 		goto fail_rc;
 
-	rc = log_write(buf);
+	rc = log_write(ctx, level, pbuf, mbuf, buf);
 fail_rc:
 	return rc;
 truncate:
@@ -332,24 +507,32 @@ int sancus_logger__vhexdumpf(const struct sancus_logger *ctx,
 			     size_t width, const void *data, size_t data_len,
 			     const char *fmt, va_list ap)
 {
-	DECL_SANCUS_LBUFFER(lbuf, LOG_BUFFER_SIZE);
-	struct sancus_buffer *buf = sancus_lbuffer_to_buffer(&lbuf);
+	DECL_SANCUS_LBUFFER(pbuf0, LOG_PREFIX_SIZE);
+	DECL_SANCUS_LBUFFER(mbuf0, LOG_MESSAGE_SIZE);
+	DECL_SANCUS_LBUFFER(dbuf0, LOG_DATA_SIZE);
+
+	struct sancus_buffer *pbuf = sancus_lbuffer_to_buffer(&pbuf0);
+	struct sancus_buffer *mbuf = sancus_lbuffer_to_buffer(&mbuf0);
+	struct sancus_buffer *buf = sancus_lbuffer_to_buffer(&dbuf0);
+
 	const char *p, *pe;
-	unsigned base, off;
+	unsigned off;
 	int rc;
 
 	if (!data && data_len > 0)
 		return -EINVAL;
 
-	rc = log_fmt(ctx, buf, level, func, line, fmt, ap);
-	if (rc > 0 && data_len > 0)
-		rc = sancus_buffer_append(buf, ": ", 2);
+	rc = log_ctx_prefix2(ctx, pbuf);
+	if (rc < 0)
+		goto fail_rc;
+
+	rc = log_fmt(mbuf, func, line, fmt, ap);
 	if (rc < 0)
 		return rc;
-	else if (data_len == 0)
-		return log_write(buf);
 
-	base = sancus_buffer_len(buf);
+	if (data_len == 0)
+		return log_write(ctx, level, pbuf, mbuf, NULL);
+
 	off = 0;
 	p = data;
 	pe = p + data_len;
@@ -382,13 +565,14 @@ int sancus_logger__vhexdumpf(const struct sancus_logger *ctx,
 
 		sancus_buffer_append(buf, "|", 1);
 
-		rc = log_write(buf);
+		rc = log_write(ctx, level, pbuf, mbuf, buf);
 		if (rc < 0)
 			break;
 
-		sancus_buffer_truncate(buf, base);
+		sancus_buffer_reset(buf);
 	}
 
+fail_rc:
 	return rc;
 }
 

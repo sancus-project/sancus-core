@@ -8,6 +8,7 @@
 #include <string.h>
 
 struct sancus_logger;
+struct sancus_logger_backend;
 
 enum sancus_log_level {
 	SANCUS_LOG_ERROR_BIT,
@@ -34,11 +35,29 @@ enum {
 };
 
 /*
- * sancus_logger
+ * sancus_logger_backend
  */
+typedef int (*sancus_logger_backend_f) (unsigned level,
+					const char *prefix, size_t prefix_len,
+					const char *msg, size_t msg_len,
+					const char *extra, size_t extra_len,
+					void *ctx);
+
 typedef ssize_t (*sancus_logger_prefixer_f) (const struct sancus_logger *logger,
 					     char *buf, size_t len);
 
+struct sancus_logger_backend {
+	sancus_logger_backend_f f;
+	void *ctx;
+};
+
+int sancus_logger_set_default_backend(const struct sancus_logger_backend *);
+
+int sancus_logger_set_fd_backend(int);
+
+/*
+ * sancus_logger
+ */
 struct sancus_logger {
 	const struct sancus_logger *parent;
 
@@ -46,6 +65,8 @@ struct sancus_logger {
 	unsigned mask;
 
 	sancus_logger_prefixer_f prefixer;
+
+	const struct sancus_logger_backend *backend;
 };
 
 #define SANCUS__LOGGER_INIT(S, M) { \
