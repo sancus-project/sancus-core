@@ -8,6 +8,7 @@ nobase_include_HEADERS = \
 	sancus/common.h \
 	sancus/ev.h \
 	sancus/ev2.h \
+	sancus/ev/watcher.h \
 	sancus/fd.h \
 	sancus/fmt.h \
 	sancus/list.h \

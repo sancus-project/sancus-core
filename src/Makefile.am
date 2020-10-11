@@ -13,6 +13,7 @@ libsancus_core_la_SOURCES = \
 	sancus/buffer_legacy.c \
 	sancus/clock.c \
 	sancus/ev/loop.c \
+	sancus/ev/watcher.c \
 	sancus/fd.c \
 	sancus/fmt_cstr.c \
 	sancus/logger.c \

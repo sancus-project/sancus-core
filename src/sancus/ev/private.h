@@ -65,3 +65,11 @@ static inline int loop__gettime(struct sancus_ev_loop *loop,
 	loop->now = now;
 	return 0;
 }
+
+/*
+ * sancus_watcher
+ */
+int sancus_watcher__init(struct sancus_watcher *w,
+			 enum sancus_watcher_type type);
+
+int sancus_watcher__finish(struct sancus_watcher *w, int err);
