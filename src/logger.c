@@ -365,7 +365,7 @@ static inline size_t dump_enc(struct sancus_buffer *buf,
 	static const char hexa[] = "0123456789abcdef";
 	static const char CEC[] = "abtnvfr";
 	const char *pe = p + l;
-	size_t count;
+	size_t count = 0;
 
 	while (p < pe) {
 		unsigned char c = *p++;
