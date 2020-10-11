@@ -65,6 +65,7 @@ static inline size_t log_buffer_trim(const struct sancus_buffer *buf,
 		case '\n':
 			break;
 		default:
+			p++;
 			goto done;
 		}
 	}
@@ -163,7 +164,7 @@ static int fd_logger_write(unsigned level,
 	DECL_SANCUS_LBUFFER(prelude, LOG_PRELUDE_SIZE);
 	struct sancus_logger_fd_backend_data *ctx = (struct sancus_logger_fd_backend_data *)_ctx;
 	size_t iovcnt = 0;
-	struct iovec iov[6];
+	struct iovec iov[7];
 	ssize_t ret = 0;
 
 	if (ctx == NULL)
