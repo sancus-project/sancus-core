@@ -14,7 +14,7 @@
 /*
  * accessors
  */
-#define sancus_lbuffer_to_buffer(B) ((B) != NULL ? &(B)->b : NULL)
+#define sancus_lbuffer_to_buffer(B) (&(B)->b)
 
 #define sancus_lbuffer_ptr(B) sancus_buffer_ptr(sancus_lbuffer_to_buffer(B))
 #define sancus_lbuffer_len(B) sancus_buffer_len(sancus_lbuffer_to_buffer(B))
