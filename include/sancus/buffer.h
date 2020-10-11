@@ -12,6 +12,20 @@ struct sancus_buffer {
 	uint_fast16_t base, len, size;
 };
 
+static inline int sancus_buffer_init(struct sancus_buffer *b,
+				     char *buf, unsigned size)
+{
+	if (b == NULL || buf == NULL || size == 0)
+		return -EINVAL;
+
+	*b = (struct sancus_buffer) {
+		.buf = buf,
+		.size = size,
+	};
+
+	return 0;
+}
+
 /*
  * accessors
  */
