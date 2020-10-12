@@ -12,6 +12,7 @@ libsancus_core_la_SOURCES = \
 	sancus/buffer.c \
 	sancus/buffer_legacy.c \
 	sancus/clock.c \
+	sancus/ev/loop.c \
 	sancus/fd.c \
 	sancus/fmt_cstr.c \
 	sancus/logger.c \
@@ -22,6 +23,7 @@ libsancus_core_la_SOURCES = \
 	sancus/time.c
 
 libsancus_core_la_LDFLAGS = -Wl,--no-undefined
+libsancus_core_la_CPPFLAGS = $(AM_CPPFLAGS) -I @srcdir@/sancus
 
 if HAVE_LINUX_NETLINK
 lib_LTLIBRARIES += libsancus-netlink.la
@@ -34,13 +36,21 @@ libsancus_netlink_la_SOURCES = \
 libsancus_netlink_la_LDFLAGS = -Wl,--no-undefined
 endif
 
-EXTRA_DIST =
+EXTRA_DIST = sancus/ev/private.h
 
 # tests
 #
 TESTS =
 testdir = $(libexecdir)/sancus
 test_PROGRAMS =
+
+# test-ev
+#
+TESTS += test-ev
+test_PROGRAMS += test-ev
+test_ev_SOURCES = tests/ev.c
+test_ev_CPPFLAGS = $(AM_CPPFLAGS) '-DTEST_NAME="ev-test"'
+test_ev_LDADD = libsancus-core.la
 
 # test-time
 #

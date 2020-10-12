@@ -54,6 +54,7 @@ lib_LTLIBRARIES = libsancus-core.la
 $(list_find_files libsancus_core_la_SOURCES sancus/ -name '*.c')
 
 libsancus_core_la_LDFLAGS = -Wl,--no-undefined
+libsancus_core_la_CPPFLAGS = \$(AM_CPPFLAGS) -I @srcdir@/sancus
 
 if HAVE_LINUX_NETLINK
 lib_LTLIBRARIES += libsancus-netlink.la

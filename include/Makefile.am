@@ -7,6 +7,7 @@ nobase_include_HEADERS = \
 	sancus/clock.h \
 	sancus/common.h \
 	sancus/ev.h \
+	sancus/ev2.h \
 	sancus/fd.h \
 	sancus/fmt.h \
 	sancus/list.h \
