@@ -59,6 +59,8 @@ $(list_find_files libsancus_netlink_la_SOURCES netlink/ -name '*.c')
 libsancus_netlink_la_LDFLAGS = -Wl,--no-undefined
 endif
 
+$(list_find_files EXTRA_DIST * -name '*.h')
+
 # tests
 #
 TESTS =

@@ -30,6 +30,8 @@ libsancus_netlink_la_SOURCES = \
 libsancus_netlink_la_LDFLAGS = -Wl,--no-undefined
 endif
 
+EXTRA_DIST =
+
 # tests
 #
 TESTS =
