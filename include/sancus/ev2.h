@@ -2,13 +2,21 @@
 #define __SANCUS_EV_H__
 
 #include <sancus/list.h>
+
 #include <pthread.h>
+
+struct sancus_ev_epoll {
+	struct sancus_list watchers;
+	int fd;
+};
 
 struct sancus_ev_loop {
 	pthread_mutex_t mu;
 
 	unsigned flags;
 	unsigned count;
+
+	struct sancus_ev_epoll epoll;
 
 	struct timespec now;
 

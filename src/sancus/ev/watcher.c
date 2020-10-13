@@ -1,6 +1,6 @@
 #include "ev/private.h"
 
-#include <sancus/ev/watcher.h>
+#include <sancus/ev/fd.h>
 
 int sancus_watcher_attach2(struct sancus_watcher *w,
 			   struct sancus_ev_loop **loop_out)
@@ -44,6 +44,7 @@ int sancus_watcher_detach(struct sancus_watcher *w)
 
 		switch (w->type) {
 		case SANCUS_W_FD:
+			return sancus_watcher_fd_detach(sancus_watcher__to_fd(w));
 		case SANCUS_W_TIMER:
 		case SANCUS_W_SIGNAL:
 			return -ENOSYS;
@@ -59,13 +60,14 @@ int sancus_watcher_detach(struct sancus_watcher *w)
 }
 
 int sancus_watcher_start(struct sancus_watcher *w,
-			 struct sancus_ev_loop *UNUSED(loop))
+			 struct sancus_ev_loop *loop)
 {
 
 	if (w != NULL) {
 
 		switch (w->type) {
 		case SANCUS_W_FD:
+			return sancus_watcher_fd_start(sancus_watcher__to_fd(w), loop);
 		case SANCUS_W_TIMER:
 		case SANCUS_W_SIGNAL:
 			return -ENOSYS;
@@ -85,6 +87,7 @@ int sancus_watcher_stop(struct sancus_watcher *w)
 
 		switch (w->type) {
 		case SANCUS_W_FD:
+			return sancus_watcher_fd_stop(sancus_watcher__to_fd(w));
 		case SANCUS_W_TIMER:
 		case SANCUS_W_SIGNAL:
 			return -ENOSYS;

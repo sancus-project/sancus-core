@@ -35,25 +35,37 @@ int sancus_ev_init(struct sancus_ev_loop *loop)
 
 	*loop = (struct sancus_ev_loop) {
 		.mu = PTHREAD_MUTEX_INITIALIZER,
+
+		.epoll = {
+			.fd = -1,
+		},
 	};
 
 	sancus_list_init(&loop->watchers);
 
 	if ((err = sancus_ev_now_update(loop, NULL)) < 0)
 		goto fail_now_update;
+	if ((err = ev_epoll_init(&loop->epoll)) < 0)
+		goto fail_epoll_init;
 
 	return 0;
 
+fail_epoll_init:
 fail_now_update:
 	return err;
 }
 
 int sancus_ev_finish(struct sancus_ev_loop *loop)
 {
-	if (!loop)
+	int err;
+
+	if (!loop_lock(loop))
 		return -EINVAL;
 
-	return 0;
+	err = ev_epoll_finish(&loop->epoll);
+	loop_unlock(loop);
+
+	return err;
 }
 
 int sancus_ev_run_once(struct sancus_ev_loop *loop, unsigned wait)
@@ -71,7 +83,9 @@ int sancus_ev_run_once(struct sancus_ev_loop *loop, unsigned wait)
 
 	loop->count = 0;
 
-	/* TODO: do things */
+	rc = ev_epoll_run_once(loop, wait, MAX_EVENTS);
+	if (rc < 0)
+		goto done;
 
 	rc = loop->count;
 	if (rc == 0) {
@@ -82,6 +96,7 @@ int sancus_ev_run_once(struct sancus_ev_loop *loop, unsigned wait)
 		rc = loop__gettime(loop, NULL);
 	}
 
+done:
 	flags = loop->flags;
 	if (flags&LOOP_ACTIVE)
 		flags &= ~LOOP_EMPTY;

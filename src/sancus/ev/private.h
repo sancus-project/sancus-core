@@ -1,6 +1,7 @@
 #include <sancus/common.h>
 
 #include <sancus/ev2.h>
+#include <sancus/ev/watcher.h>
 
 #include <sancus/bit.h>
 #include <errno.h>
@@ -29,6 +30,11 @@ enum {
 
 	LOOP_STOP_TEST  = LOOP_MUST_STOP|LOOP_MUST_ABORT|LOOP_EMPTY,
 	LOOP_STOP_CLEAR = LOOP_MUST_STOP|LOOP_MUST_ABORT,
+
+	/*
+	 * constants
+	 */
+	MAX_EVENTS = 16,
 };
 
 /*
@@ -73,3 +79,19 @@ int sancus_watcher__init(struct sancus_watcher *w,
 			 enum sancus_watcher_type type);
 
 int sancus_watcher__finish(struct sancus_watcher *w, int err);
+
+/*
+ * sancus_fd_watcher
+ */
+struct sancus_fd_watcher;
+
+int sancus_watcher__fd_finish(struct sancus_watcher *w, int err);
+
+/*
+ * epoll
+ */
+int ev_epoll_init(struct sancus_ev_epoll *epoll);
+int ev_epoll_finish(struct sancus_ev_epoll *epoll);
+
+int ev_epoll_run_once(struct sancus_ev_loop *loop,
+		      unsigned wait, unsigned nevents);
