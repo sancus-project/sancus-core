@@ -144,10 +144,22 @@ static inline int sancus_time_is_lt(const struct timespec *a, const struct times
 	return sancus_time_cmp(a, b) < 0;
 }
 
+/* A < 0 */
+static inline int sancus_time_is_lt_zero(const struct timespec *a)
+{
+	return (a->tv_sec < 0) || (a->tv_nsec < 0);
+}
+
 /* A > B */
 static inline int sancus_time_is_gt(const struct timespec *a, const struct timespec *b)
 {
 	return sancus_time_cmp(a, b) > 0;
+}
+
+/* A > 0 */
+static inline int sancus_time_is_gt_zero(const struct timespec *a)
+{
+	return (a->tv_sec > 0) && (a->tv_nsec > 0);
 }
 
 /* turns timespec into canonical format, and returns
