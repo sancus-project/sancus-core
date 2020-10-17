@@ -69,7 +69,10 @@ test_PROGRAMS =
 EOT
 
 find tests -name '*.c' 2> /dev/null 2> /dev/null | cut -d/ -f2 | sort -uV | while read f; do
-	n="test-${f%.c}"
+
+	k="${f%.c}"
+
+	n="test-$k"
 	N="$(echo $n | tr '-' '_')"
 	cat <<EOT >> $F~
 
@@ -78,6 +81,7 @@ find tests -name '*.c' 2> /dev/null 2> /dev/null | cut -d/ -f2 | sort -uV | whil
 TESTS += $n
 test_PROGRAMS += $n
 $(list_find_files ${N}_SOURCES tests/$f -name '*.c')
+${N}_CPPFLAGS = \$(AM_CPPFLAGS) '-DTEST_NAME="$k-test"'
 ${N}_LDADD = libsancus-core.la
 EOT
 done
