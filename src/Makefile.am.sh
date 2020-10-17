@@ -17,7 +17,7 @@ AM_CPPFLAGS = -I @top_srcdir@/include
 lib_LTLIBRARIES = libsancus-core.la
 
 libsancus_core_la_SOURCES = \\
-	$(find * -name '*.c' | grep -v -e '^\(netlink\|tests\)/' | list)
+	$(find sancus/ -name '*.c' | list)
 
 libsancus_core_la_LDFLAGS = -Wl,--no-undefined
 
