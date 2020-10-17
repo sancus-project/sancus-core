@@ -1,7 +1,7 @@
 AC_INIT(sancus-core, 0.3.5, amery@linux.com)
 
 AC_CONFIG_AUX_DIR([build-aux])
-AM_INIT_AUTOMAKE([foreign subdir-objects dist-bzip2 -Wall -Werror])
+AM_INIT_AUTOMAKE([foreign subdir-objects dist-xz -Wall -Werror])
 
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -27,19 +27,6 @@ if test x"$have_linux_netlink" = x"yes"; then
 	AC_CONFIG_FILES([sancus-netlink.pc])
 fi
 
-dnl
-dnl Options
-dnl
-
-dnl --enable-debug
-dnl
-AC_MSG_CHECKING([wheter to build with debug information])
-AC_ARG_ENABLE([debug],
-	[AS_HELP_STRING([--enable-debug], [enable debug data generation (def=almost)])],
-	[debugit="$enableval"],
-	[debugit=almost])
-AC_MSG_RESULT([$debugit])
-
 dnl Check Compiler features
 dnl
 AX_GCC_BUILTIN(__builtin_expect)
@@ -49,20 +36,46 @@ AX_GCC_FUNC_ATTRIBUTE(pure)
 AX_GCC_FUNC_ATTRIBUTE(noreturn)
 AX_GCC_FUNC_ATTRIBUTE(format)
 
-dnl CFLAGS
+dnl Options
 dnl
-if test x"$debugit" = x"yes"; then
-	dnl Remove all optimization flags from CFLAGS
-	changequote({,})
-	CFLAGS=`echo "$CFLAGS" | $SED -e 's/-O[0-9s]*//g'`
-	CXXFLAGS=`echo "$CXXFLAGS" | $SED -e 's/-O[0-9s]*//g'`
 
-	CFLAGS=`echo "$CFLAGS" | $SED -e 's/-g[0-9]*//g'`
-	CXXFLAGS=`echo "$CXXFLAGS" | $SED -e 's/-g[0-9]*//g'`
-	changequote([,])
+dnl --enable-release
+dnl
+AC_MSG_CHECKING([whether to build in release mode])
+AC_ARG_ENABLE([release],
+	      [AS_HELP_STRING([--enable-release], [build in release mode])],
+	      [is_release="$enableval"],
+	      [is_release=no])
+AC_MSG_RESULT([$is_release])
 
-	CFLAGS="$CFLAGS -g -O0"
+if test "x$is_release" = "xyes"; then
+	dnl -DNDEBUG
+	CPPFLAGS="$CPPFLAGS -DNDEBUG"
+else
+	AC_MSG_CHECKING([whether to build in debug mode])
+	AC_ARG_ENABLE([debug],
+		      [AS_HELP_STRING([--enable-debug], [build in debug mode])],
+		      [is_debug="$enableval"],
+		      [is_debug=no])
+	AC_MSG_RESULT([$is_debug])
+
+	if test "x$is_debug" = "xyes"; then
+		dnl Remove all optimization flags from CFLAGS
+		changequote({,})
+		CFLAGS=`echo "$CFLAGS" | $SED -e 's/-O[0-9s]*//g'`
+		CXXFLAGS=`echo "$CXXFLAGS" | $SED -e 's/-O[0-9s]*//g'`
+
+		CFLAGS=`echo "$CFLAGS" | $SED -e 's/-g[0-9]*//g'`
+		CXXFLAGS=`echo "$CXXFLAGS" | $SED -e 's/-g[0-9]*//g'`
+		changequote([,])
+
+		CFLAGS="$CFLAGS -g -O0"
+		CXXFLAGS="$CXXFLAGS -g -O0"
+	fi
 fi
+
+AM_CONDITIONAL([IS_RELEASE], [test "x$is_release" = yes])
+AM_CONDITIONAL([IS_DEBUG], [test "x$is_debug" = yes])
 
 dnl WARN_CFLAGS
 AX_COMPILER_FLAGS_CFLAGS
