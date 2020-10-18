@@ -74,8 +74,8 @@ else
 	fi
 fi
 
-AM_CONDITIONAL([IS_RELEASE], [test "x$is_release" = yes])
-AM_CONDITIONAL([IS_DEBUG], [test "x$is_debug" = yes])
+AM_CONDITIONAL([IS_RELEASE], [test "x$is_release" = xyes])
+AM_CONDITIONAL([IS_DEBUG], [test "x$is_debug" = xyes])
 
 dnl WARN_CFLAGS
 AX_COMPILER_FLAGS_CFLAGS
