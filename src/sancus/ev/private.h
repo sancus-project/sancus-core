@@ -85,13 +85,17 @@ int sancus_watcher__finish(struct sancus_watcher *w, int err);
  */
 struct sancus_fd_watcher;
 
-int sancus_watcher__fd_finish(struct sancus_watcher *w, int err);
+int sancus_watcher__fd_finish(struct sancus_fd_watcher *w, int err);
 
 /*
  * epoll
  */
 int ev_epoll_init(struct sancus_ev_epoll *epoll);
 int ev_epoll_finish(struct sancus_ev_epoll *epoll);
+
+int ev_epoll_add(struct sancus_ev_epoll *, struct sancus_fd_watcher *);
+int ev_epoll_mod(struct sancus_ev_epoll *, struct sancus_fd_watcher *, unsigned events);
+int ev_epoll_del(struct sancus_ev_epoll *, struct sancus_fd_watcher *);
 
 int ev_epoll_run_once(struct sancus_ev_loop *loop,
 		      unsigned wait, unsigned nevents);

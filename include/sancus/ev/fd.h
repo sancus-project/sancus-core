@@ -7,6 +7,7 @@ struct sancus_fd_watcher {
 	struct sancus_watcher watcher;
 
 	int fd;
+	unsigned events;
 
 	int (*cb) (struct sancus_fd_watcher *, unsigned, void *);
 };

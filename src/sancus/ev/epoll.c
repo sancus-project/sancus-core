@@ -6,6 +6,31 @@
 #include <sys/epoll.h>
 
 /*
+ * struct sancus_fd_watcher
+ */
+int ev_epoll_add(struct sancus_ev_epoll *epoll, struct sancus_fd_watcher *w)
+{
+	struct sancus_watcher *w0 = sancus_watcher_from_fd(w);
+	struct epoll_event ev = {
+		.events = w->events,
+		.data = {
+			.fd = w->fd,
+		},
+	};
+
+	if (epoll_ctl(epoll->fd, EPOLL_CTL_ADD, w->fd, &ev) < 0)
+		return -errno;
+
+	sancus_list_append(&epoll->watchers,  &w0->watcher);
+	return 0;
+}
+
+#if 0
+int ev_epoll_mod(struct sancus_ev_epoll *epoll, struct sancus_fd_watcher *w, unsigned events);
+int ev_epoll_del(struct sancus_ev_epoll *epoll, struct sancus_fd_watcher *w);
+#endif
+
+/*
  * struct sancus_ev_epoll
  */
 int ev_epoll_init(struct sancus_ev_epoll *epoll)
