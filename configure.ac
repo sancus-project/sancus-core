@@ -1,4 +1,4 @@
-AC_INIT(sancus-core, 0.3.6, amery@linux.com)
+AC_INIT([sancus-core], [0.3.7], [amery@linux.com])
 
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([foreign subdir-objects dist-xz -Wall -Werror])
