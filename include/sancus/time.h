@@ -193,6 +193,13 @@ static inline int sancus_time_add_ms(struct timespec *a, long ms)
 	return sancus_time_add(a, &b);
 }
 
+/* A += B<s> */
+static inline int sancus_time_add_fp(struct timespec *a, double sec)
+{
+	struct timespec b = sancus_time_fp_to_ts(sec);
+	return sancus_time_add(a, &b);
+}
+
 /* A -= B */
 int sancus_time_sub(struct timespec *a, const struct timespec *b);
 
