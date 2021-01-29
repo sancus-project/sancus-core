@@ -45,3 +45,11 @@ test_PROGRAMS += test-time
 test_time_SOURCES = tests/time.c
 test_time_CPPFLAGS = $(AM_CPPFLAGS) '-DTEST_NAME="time-test"'
 test_time_LDADD = libsancus-core.la
+
+# test-types
+#
+TESTS += test-types
+test_PROGRAMS += test-types
+test_types_SOURCES = tests/types.c
+test_types_CPPFLAGS = $(AM_CPPFLAGS) '-DTEST_NAME="types-test"'
+test_types_LDADD = libsancus-core.la

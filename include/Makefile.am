@@ -17,7 +17,8 @@ nobase_include_HEADERS = \
 	sancus/string.h \
 	sancus/tcp_conn.h \
 	sancus/tcp_server.h \
-	sancus/time.h
+	sancus/time.h \
+	sancus/types.h
 
 if HAVE_LINUX_NETLINK
 nobase_include_HEADERS += \
