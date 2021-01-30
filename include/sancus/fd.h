@@ -93,7 +93,7 @@ static inline ssize_t sancus_write(int fd, const char *data, size_t count)
 		ssize_t wc = write(fd, data, count);
 
 		if (wc > 0) {
-			count -= wc;
+			count -= (size_t)wc;
 			data += wc;
 			wt += wc;
 		} else if (wc < 0 && errno != EINTR) {
@@ -107,6 +107,6 @@ static inline ssize_t sancus_write(int fd, const char *data, size_t count)
 /**
  * sancus_writev - auto-retrying wrapper for writev(2)
  */
-ssize_t sancus_writev(int fd, struct iovec *iov, size_t iovcnt);
+ssize_t sancus_writev(int fd, struct iovec *iov, int iovcnt);
 
 #endif /* !__SANCUS_FD_H__ */

@@ -51,7 +51,7 @@ ssize_t sancus_buffer_read(struct sancus_buffer *self, int fd)
 	ssize_t l = sancus_read(fd, sancus_buffer_data(self)+sancus_buffer_len(self),
 				sancus_buffer_available(self));
 	if (l > 0)
-		self->len += l;
+		self->len += (unsigned)l;
 
 	return l;
 }

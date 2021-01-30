@@ -40,6 +40,7 @@
 #include <linux/netlink.h>
 
 #include <sancus/netlink.h>
+#include <sancus/types.h>
 
 /**
  * Netlink Attribute handling
@@ -47,7 +48,7 @@
 
 uint16_t sancus_nl_attr_get_type(const struct nlattr *attr)
 {
-	return attr->nla_type & NLA_TYPE_MASK;
+	return attr->nla_type & (uint16_t)NLA_TYPE_MASK;
 }
 
 uint16_t sancus_nl_attr_get_len(const struct nlattr *attr)
@@ -57,7 +58,7 @@ uint16_t sancus_nl_attr_get_len(const struct nlattr *attr)
 
 uint16_t sancus_nl_attr_get_payload_len(const struct nlattr *attr)
 {
-	return attr->nla_len - SANCUS_NL_ATTR_HDRLEN;
+	return (uint16_t)(attr->nla_len - SANCUS_NL_ATTR_HDRLEN);
 }
 
 void *sancus_nl_attr_get_payload(const struct nlattr *attr)
@@ -157,7 +158,7 @@ static int validate_attr(const struct nlattr *attr,
 int sancus_nl_attr_validate_minlen(const struct nlattr *attr,
 				   enum sancus_nl_attr_data_type type)
 {
-	int minlen;
+	size_t minlen;
 
 	if (type >= SANCUS_NL_ATTR_TYPE_MAX) {
 		errno = EINVAL;
@@ -225,14 +226,14 @@ const char *sancus_nl_attr_get_string(const struct nlattr *attr)
  * @data:	pointer to the data that will be stored by the attribute
  */
 static inline void __sancus_nl_attr_put_nocheck(struct nlmsghdr *nlh,
-						uint16_t type, size_t len,
+						uint16_t type, uint16_t len,
 						const void *data)
 {
 	struct nlattr *attr = sancus_nl_msg_get_payload_tail(nlh);
-	uint16_t payload_len = SANCUS_NL_ALIGN(sizeof(struct nlattr)) + len;
+	unsigned payload_len = SANCUS_NL_ALIGN(sizeof(struct nlattr)) + len;
 
 	attr->nla_type = type;
-	attr->nla_len = payload_len;
+	attr->nla_len = (uint16_t)payload_len;
 	memcpy(sancus_nl_attr_get_payload(attr), data, len);
 	/* update nlmsg_len field */
 	nlh->nlmsg_len += SANCUS_NL_ALIGN(payload_len);
@@ -249,7 +250,7 @@ static inline void __sancus_nl_attr_put_nocheck(struct nlmsghdr *nlh,
  * @data:	pointer to the data that will be stored by the attribute
  */
 static inline bool __sancus_nl_attr_put_check(struct nlmsghdr *nlh, size_t buflen,
-			uint16_t type, size_t len, const void *data)
+			uint16_t type, uint16_t len, const void *data)
 {
 	/* check if attribute fits into the buffer */
 	if (nlh->nlmsg_len + SANCUS_NL_ATTR_HDRLEN + SANCUS_NL_ALIGN(len) > buflen)
@@ -260,7 +261,7 @@ static inline bool __sancus_nl_attr_put_check(struct nlmsghdr *nlh, size_t bufle
 }
 
 bool sancus_nl_attr_put(struct nlmsghdr *nlh, size_t buflen,
-			uint16_t type, size_t len, const void *data)
+			uint16_t type, uint16_t len, const void *data)
 {
 	return __sancus_nl_attr_put_check(nlh, buflen, type, len, &data);
 }
@@ -287,11 +288,11 @@ bool sancus_nl_attr_put_u64(struct nlmsghdr *nlh, size_t buflen, uint16_t type, 
 
 bool sancus_nl_attr_put_string(struct nlmsghdr *nlh, size_t buflen, uint16_t type, const char *data)
 {
-	return __sancus_nl_attr_put_check(nlh, buflen, type, strlen(data), data);
+	return __sancus_nl_attr_put_check(nlh, buflen, type, sancus_u16zu(strlen(data)), data);
 }
 
 bool sancus_nl_attr_put_nul_string(struct nlmsghdr *nlh, size_t buflen, uint16_t type, const char *data)
 {
-	return __sancus_nl_attr_put_check(nlh, buflen, type, strlen(data)+1, data);
+	return __sancus_nl_attr_put_check(nlh, buflen, type, sancus_u16zu(strlen(data)+1), data);
 }
 

@@ -85,12 +85,12 @@ static inline int extract_netlink_message(struct sancus_nl_receiver *self,
 	const struct sancus_nl_receiver_settings *settings = self->settings;
 
 	int ret = 0;
-	int len = recvbytes;
+	int len = (int)recvbytes;
 	const struct nlmsghdr *nlh = buf;
 
 	while (sancus_nl_msg_ok(nlh, len)) {
 		/* check port id of netlink message against the one of the receiver */
-		if (!sancus_nl_msg_portid_ok(nlh, self->portid)) {
+		if (!sancus_nl_msg_portid_ok(nlh, (unsigned)self->portid)) {
 			errno = ESRCH;
 			return -1;
 		}
@@ -117,11 +117,11 @@ static void recv_cb(struct sancus_ev_loop *loop, struct sancus_ev_fd *w, int rev
 
 	if (revents & SANCUS_EV_READ) {
 		char buf[SANCUS_NL_SOCKET_BUFFER_SIZE];
-		int ret = sancus_nl_recvfrom(w->fd, buf, sizeof(buf)); 
+		ssize_t ret = sancus_nl_recvfrom(w->fd, buf, sizeof(buf));
 		if (ret < 0) {
 			settings->on_error(self, loop,
 					   SANCUS_NL_RECEIVER_RECVFROM_ERROR);
-		} else if (!extract_netlink_message(self, loop, buf, ret)) {
+		} else if (!extract_netlink_message(self, loop, buf, (size_t)ret)) {
 			sancus_close2(&w->fd);
 		}
 	}
@@ -166,7 +166,7 @@ int sancus_nl_receiver_listen(struct sancus_nl_receiver *self,
 	struct sockaddr_nl sa = {
 		.nl_family = AF_NETLINK,
 		.nl_groups = groups,
-		.nl_pid = portid,
+		.nl_pid = (unsigned)portid,
 	};
 
 	int fd = sancus_socket(AF_NETLINK, SOCK_RAW, bus, 0, true);

@@ -7,8 +7,8 @@
 
 /** set element on mask using clear/mask/set */
 static inline unsigned long sancus_bit_cms(unsigned long old,
-					   unsigned value,
-					   unsigned mask,
+					   unsigned long value,
+					   unsigned long mask,
 					   unsigned shift)
 {
 	old &= ~(mask << shift);

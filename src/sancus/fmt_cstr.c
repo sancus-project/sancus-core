@@ -53,7 +53,7 @@ size_t sancus_fmt_ascii_cstr(char *buf, size_t buf_len, const char *data, size_t
 	assert(data && size > 0);
 
 	while (size-- > 0) {
-		unsigned char c = *data++;
+		unsigned char c = (unsigned char)*data++;
 		char e = (c & 0x80) ? 0 : ascii[c];
 
 		if (!e)

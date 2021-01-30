@@ -101,7 +101,7 @@ void sancus_tcp_conn_close(struct sancus_tcp_conn *self);
  */
 int sancus_tcp_ipv4_connect(struct sancus_tcp_conn *self,
 			    const struct sancus_tcp_conn_settings *settings,
-			    const char *addr, unsigned port,
+			    const char *addr, uint16_t port,
 			    bool cloexec);
 
 /**
@@ -114,7 +114,7 @@ int sancus_tcp_ipv4_connect(struct sancus_tcp_conn *self,
  */
 int sancus_tcp_ipv6_connect(struct sancus_tcp_conn *self,
 			    const struct sancus_tcp_conn_settings *settings,
-			    const char *addr, unsigned port,
+			    const char *addr, uint16_t port,
 			    bool cloexec);
 
 /**

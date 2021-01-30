@@ -64,10 +64,10 @@ read_buffer_available:
 try_read:
 		l = sancus_buffer_read(buf, w->fd);
 		if (l > 0) {
-			while ((l = sancus_buffer_len(buf))) {
-				l = settings->on_read(self, sancus_buffer_data(buf), l);
+			while ((l = (ssize_t)sancus_buffer_len(buf))) {
+				l = settings->on_read(self, sancus_buffer_data(buf), (size_t)l);
 				if (l > 0) {
-					sancus_buffer_skip(buf, l);
+					sancus_buffer_skip(buf, (size_t)l);
 					if (!sancus_ev_is_active(w))
 						break;
 				} else if (l == 0)
@@ -102,12 +102,12 @@ ssize_t sancus_stream_process(struct sancus_stream *self)
 {
 	struct sancus_stream_settings *settings = self->settings;
 	struct sancus_buffer *buf = &self->read_buffer;
-	ssize_t l = sancus_buffer_len(buf);
+	ssize_t l = (ssize_t)sancus_buffer_len(buf);
 
 	if (l > 0) {
-		l = settings->on_read(self, sancus_buffer_data(buf), l);
+		l = settings->on_read(self, sancus_buffer_data(buf), (size_t)l);
 		if (l > 0)
-			sancus_buffer_skip(buf, l);
+			sancus_buffer_skip(buf, (size_t)l);
 	}
 
 	return l;

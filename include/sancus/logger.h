@@ -191,7 +191,7 @@ int sancus_logger__printf(const struct sancus_logger *log,
 __attr_vprintf(7)
 int sancus_logger__vdumpf(const struct sancus_logger *log,
 			  enum sancus_log_level level,
-			  const char *func, size_t line,
+			  const char *func, unsigned line,
 			  const void *data, size_t data_len,
 			  const char *fmt, va_list ap);
 
@@ -208,7 +208,7 @@ int sancus_logger__dumpf(const struct sancus_logger *log,
 __attr_vprintf(8)
 int sancus_logger__vhexdumpf(const struct sancus_logger *log,
 			     enum sancus_log_level level,
-			     const char *func, size_t line,
+			     const char *func, unsigned line,
 			     size_t width, const void *data, size_t data_len,
 			     const char *fmt, va_list ap);
 
@@ -224,12 +224,12 @@ int sancus_logger__hexdumpf(const struct sancus_logger *log,
  */
 __attr_printf(6)
 int sancus__assert(const struct sancus_logger *log, int ndebug,
-		   const char *func, size_t line, int e,
+		   const char *func, unsigned line, int e,
 		   const char *fmt, ...);
 
 __attr_printf(6)
 int sancus__trap(const struct sancus_logger *log, int ndebug,
-		 const char *func, size_t line, int e,
+		 const char *func, unsigned line, int e,
 		 const char *fmt, ...);
 
 #ifdef NDEBUG

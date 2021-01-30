@@ -71,7 +71,7 @@ static void connect_cb(struct sancus_ev_loop *loop, struct sancus_ev_fd *w, int 
 /*
  * init helpers
  */
-static inline int init_ipv4(struct sockaddr_in *sin, const char *addr, unsigned port)
+static inline int init_ipv4(struct sockaddr_in *sin, const char *addr, uint16_t port)
 {
 	sin->sin_port = htons(port);
 
@@ -85,7 +85,7 @@ static inline int init_ipv4(struct sockaddr_in *sin, const char *addr, unsigned 
 	return inet_pton(sin->sin_family, addr, &sin->sin_addr);
 }
 
-static inline int init_ipv6(struct sockaddr_in6 *sin6, const char *addr, unsigned port)
+static inline int init_ipv6(struct sockaddr_in6 *sin6, const char *addr, uint16_t port)
 {
 	sin6->sin6_port = htons(port);
 
@@ -145,7 +145,7 @@ static inline int init_tcp(struct sancus_tcp_server *self,
 		settings->pre_bind(self);
 
 	if (bind(fd, sa, sa_len) < 0 ||
-	    listen(fd, backlog) < 0) {
+	    listen(fd, (int)backlog) < 0) {
 		int e = errno;
 		sancus_close2(&self->connect.fd);
 		errno = e;
@@ -181,7 +181,7 @@ void sancus_tcp_server_close(struct sancus_tcp_server *self)
 
 int sancus_tcp_ipv4_listen(struct sancus_tcp_server *self,
 			   const struct sancus_tcp_server_settings *settings,
-			   const char *addr, unsigned port,
+			   const char *addr, uint16_t port,
 			   bool cloexec, unsigned backlog)
 {
 	struct sockaddr_in sin = { .sin_family = AF_INET };
@@ -196,7 +196,7 @@ int sancus_tcp_ipv4_listen(struct sancus_tcp_server *self,
 
 int sancus_tcp_ipv6_listen(struct sancus_tcp_server *self,
 			   const struct sancus_tcp_server_settings *settings,
-			   const char *addr, unsigned port,
+			   const char *addr, uint16_t port,
 			   bool cloexec, unsigned backlog)
 {
 	struct sockaddr_in6 sin6 = { .sin6_family = AF_INET6 };

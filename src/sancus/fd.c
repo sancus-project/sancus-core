@@ -53,27 +53,31 @@ int sancus_open(const char *pathname, int flags, int cloexec, mode_t mode)
 	return sancus__openat(AT_FDCWD, pathname, flags, cloexec, mode);
 }
 
-ssize_t sancus_writev(int fd, struct iovec *iov, size_t iovcnt)
+ssize_t sancus_writev(int fd, struct iovec *iov, int iovcnt)
 {
 	ssize_t wt = 0;
+
+	if (iovcnt < 0)
+		return -EINVAL;
 
 	while (iovcnt) {
 		ssize_t wc = writev(fd, iov, iovcnt);
 
 		if (wc > 0) {
+			size_t n = (size_t)wc;
 			wt += wc;
 
 			/* consume accordingly */
-			while (wc) {
-				if ((unsigned)wc >= iov->iov_len) {
-					wc -= iov->iov_len;
+			while (n) {
+				if (n >= iov->iov_len) {
+					n -= iov->iov_len;
 					iovcnt--;
 					iov++;
 				} else {
-					iov->iov_len -= wc;
+					iov->iov_len -= n;
 					/* GCC: warning: pointer of type ‘void *’ used in arithmetic */
 					iov->iov_base = (char*)iov->iov_base+wc;
-					wc = 0;
+					n = 0;
 				}
 			}
 		} else if (wc < 0 && errno != EINTR) {

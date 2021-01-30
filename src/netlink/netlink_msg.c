@@ -53,7 +53,7 @@ bool sancus_nl_msg_ok(const struct nlmsghdr *nlh, int len)
 
 struct nlmsghdr *sancus_nl_msg_next(const struct nlmsghdr *nlh, int *len)
 {
-	*len -= SANCUS_NL_ALIGN(nlh->nlmsg_len);
+	*len -= (int)SANCUS_NL_ALIGN(nlh->nlmsg_len);
 	return (struct nlmsghdr *)((struct nlmsghdr *)nlh + SANCUS_NL_ALIGN(nlh->nlmsg_len));
 }
 
@@ -79,7 +79,7 @@ void *sancus_nl_msg_get_payload_tail(const struct nlmsghdr *nlh)
 
 struct nlmsghdr *sancus_nl_msg_put_header(void *buf)
 {
-	int len = SANCUS_NL_ALIGN(sizeof(struct nlmsghdr));
+	unsigned len = SANCUS_NL_ALIGN(sizeof(struct nlmsghdr));
 	struct nlmsghdr *nlh = buf;
 
 	/* zero'ing the memory occupied by the netlink header */
@@ -93,7 +93,7 @@ struct nlmsghdr *sancus_nl_msg_put_header(void *buf)
 void *sancus_nl_msg_put_extra_header(struct nlmsghdr *nlh, size_t size)
 {
 	char *ptr = (char *)nlh + nlh->nlmsg_len;
-	size_t len = SANCUS_NL_ALIGN(size);
+	unsigned len = SANCUS_NL_ALIGN(size);
 
 	/* zero'ing the memory occupied by the extra header */
 	memset(ptr, 0, len);

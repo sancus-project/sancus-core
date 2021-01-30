@@ -58,8 +58,10 @@ ssize_t sancus_buffer_strip(struct sancus_buffer *, const char *s, ssize_t);
 
 static inline ssize_t sancus_buffer_stripz(struct sancus_buffer *b, const char *s)
 {
-	if (s)
-		return sancus_buffer_strip(b, s, strlen(s));
+	if (s) {
+		ssize_t l = (ssize_t)strlen(s);
+		return sancus_buffer_strip(b, s, l);
+	}
 	return 0;
 }
 
@@ -80,15 +82,17 @@ static inline ssize_t sancus_buffer_sparse(struct sancus_buffer *b, size_t n)
 		return -EINVAL;
 
 	b->len += n;
-	return n;
+	return (ssize_t)n;
 }
 
 ssize_t sancus_buffer__append(struct sancus_buffer *, bool, const char *, ssize_t);
 
 static inline ssize_t sancus_buffer__appendz(struct sancus_buffer *b, bool truncate, const char *s)
 {
-	if (s)
-		return sancus_buffer__append(b, truncate, s, strlen(s));
+	if (s) {
+		ssize_t l = (ssize_t)strlen(s);
+		return sancus_buffer__append(b, truncate, s, l);
+	}
 	return 0;
 }
 

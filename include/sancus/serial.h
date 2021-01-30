@@ -63,7 +63,7 @@ static inline void sancus_serial_setup_8N1(struct termios *tio,
 {
 	tio->c_cflag |= (CLOCAL|CREAD);
 
-	tio->c_cflag &= ~(CSIZE|PARENB|CSTOPB);
+	tio->c_cflag &= (unsigned)~(CSIZE|PARENB|CSTOPB);
 	tio->c_cflag |= CS8;
 
 	if (baudrate) {

@@ -108,14 +108,14 @@ connect_done:
 /*
  * init helpers
  */
-static inline int init_ipv4(struct sockaddr_in *sin, const char *addr, unsigned port)
+static inline int init_ipv4(struct sockaddr_in *sin, const char *addr, uint16_t port)
 {
 	sin->sin_port = htons(port);
 
 	return inet_pton(sin->sin_family, addr, &sin->sin_addr);
 }
 
-static inline int init_ipv6(struct sockaddr_in6 *sin6, const char *addr, unsigned port)
+static inline int init_ipv6(struct sockaddr_in6 *sin6, const char *addr, uint16_t port)
 {
 	sin6->sin6_port = htons(port);
 
@@ -199,7 +199,7 @@ void sancus_tcp_conn_close(struct sancus_tcp_conn *self)
 
 int sancus_tcp_ipv4_connect(struct sancus_tcp_conn *self,
 			    const struct sancus_tcp_conn_settings *settings,
-			    const char *addr, unsigned port,
+			    const char *addr, uint16_t port,
 			    bool cloexec)
 {
 	struct sockaddr_in sin = { .sin_family = AF_INET };
@@ -214,7 +214,7 @@ int sancus_tcp_ipv4_connect(struct sancus_tcp_conn *self,
 
 int sancus_tcp_ipv6_connect(struct sancus_tcp_conn *self,
 			    const struct sancus_tcp_conn_settings *settings,
-			    const char *addr, unsigned port,
+			    const char *addr, uint16_t port,
 			    bool cloexec)
 {
 	struct sockaddr_in6 sin6 = { .sin6_family = AF_INET6 };

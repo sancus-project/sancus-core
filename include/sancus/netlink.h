@@ -152,8 +152,8 @@ int sancus_nl_receiver_listen(struct sancus_nl_receiver *self,
  */
 
 /* Netlink message headers and its attributes are always aligned to four bytes. */
-#define SANCUS_NL_ALIGNTO		4
-#define SANCUS_NL_ALIGN(len)	(((len)+SANCUS_NL_ALIGNTO-1) & ~(SANCUS_NL_ALIGNTO-1))
+#define SANCUS_NL_ALIGNTO	4
+#define SANCUS_NL_ALIGN(len)	((unsigned)((len)+(SANCUS_NL_ALIGNTO-1)) & (unsigned)(0xffff - SANCUS_NL_ALIGNTO + 1))
 #define SANCUS_NL_MSG_HDRLEN	SANCUS_NL_ALIGN(sizeof(struct nlmsghdr))
 
 /**
@@ -312,7 +312,7 @@ int sancus_nl_attr_validate_explen(const struct nlattr *attr,
  */
 #define sancus_nl_attr_foreach(attr, nlh, offset) \
 	for ((attr) = sancus_nl_msg_get_payload_offset((nlh), (offset)); \
-	     sancus_nl_attr_ok((attr), (char *)sancus_nl_msg_get_payload_tail(nlh) - (char *)(attr)); \
+	     sancus_nl_attr_ok((attr), (int)((char *)sancus_nl_msg_get_payload_tail(nlh) - (char *)(attr))); \
 	     (attr) = sancus_nl_attr_next(attr))
 
 
@@ -358,7 +358,7 @@ const char *sancus_nl_attr_get_string(const struct nlattr *attr);
  * @data:	pointer to the data that will be stored by the new attribute
  */
 bool sancus_nl_attr_put(struct nlmsghdr *nlh, size_t buflen,
-			uint16_t type, size_t len, const void *data);
+			uint16_t type, uint16_t len, const void *data);
 
 /**
  * sancus_nl_attr_put_u8 - add 8-bit unsigned integer attribute to netlink message

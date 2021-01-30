@@ -12,7 +12,7 @@
 ssize_t sancus_buffer__stripchar(struct sancus_buffer *b, bool many,
 				 const char *chars, ssize_t l)
 {
-	ssize_t count = 0;
+	size_t count = 0;
 
 	if (unlikely(b == NULL))
 		return -EINVAL;
@@ -20,7 +20,7 @@ ssize_t sancus_buffer__stripchar(struct sancus_buffer *b, bool many,
 		return -EINVAL;
 
 	if (l < 0)
-		l = chars ? strlen(chars) : 0;
+		l = chars ? (ssize_t)strlen(chars) : 0;
 
 	if (l > 0) {
 		const char *p, *pe, *q, *qe;
@@ -49,28 +49,29 @@ match:
 	if (count)
 		b->len -= count;
 
-	return count;
+	return (ssize_t)count;
 }
 
 ssize_t sancus_buffer_strip(struct sancus_buffer *b, const char *s, ssize_t l)
 {
-	ssize_t bl = sancus_buffer_len(b);
+	size_t bl = sancus_buffer_len(b);
 
 	/* s vs l */
 	if (likely(s != NULL)) {
 		if (l < 0)
-			l = strlen(s);
+			l = (ssize_t)strlen(s);
 	} else if (l > 0) {
 		return -EINVAL;
 	}
 
-	if (l > 0 && bl >= l) {
-		size_t off = bl - l;
+	if (l > 0 && bl >= (size_t)l) {
+		size_t lu = (size_t)l;
+		size_t off = bl - lu;
 		char *p = sancus_buffer_ptr(b) + off;
 
-		if (memcmp(p, s, l) == 0) {
+		if (memcmp(p, s, lu) == 0) {
 			/* match, remove */
-			b->len -= l;
+			b->len -= lu;
 			*p = '\0';
 			return l;
 		}
@@ -91,7 +92,7 @@ ssize_t sancus_buffer_stripn(struct sancus_buffer *b, size_t n)
 		b->buf[0] = '\0';
 	}
 
-	return l;
+	return (ssize_t)l;
 }
 
 /*
@@ -101,12 +102,12 @@ ssize_t sancus_buffer__append(struct sancus_buffer *b, bool truncate,
 			      const char *s, ssize_t l)
 {
 	char *buf = sancus_buffer_tail_ptr(b);
-	ssize_t buf_size = sancus_buffer_tail_size(b);
+	ssize_t buf_size = (ssize_t)sancus_buffer_tail_size(b);
 
 	/* s vs l */
 	if (likely(s != NULL)) {
 		if (l < 0)
-			l = strlen(s);
+			l = (ssize_t)strlen(s);
 	} else if (l > 0) {
 		return -EINVAL;
 	}
@@ -122,8 +123,8 @@ ssize_t sancus_buffer__append(struct sancus_buffer *b, bool truncate,
 		l = -ENOBUFS;
 
 	if (l > 0) {
-		memcpy(buf, s, l);
-		b->len += l;
+		memcpy(buf, s, (size_t)l);
+		b->len += (size_t)l;
 	}
 
 	return l;
@@ -132,11 +133,11 @@ ssize_t sancus_buffer__append(struct sancus_buffer *b, bool truncate,
 ssize_t sancus_buffer__appendv(struct sancus_buffer *b, bool truncate,
 			       const char *fmt, va_list ap)
 {
-	ssize_t n, l = sancus_buffer_tail_size(b);
+	ssize_t n, l = (ssize_t)sancus_buffer_tail_size(b);
 	char *buf = sancus_buffer_tail_ptr(b);
 
 	if (l > 0) {
-		n = vsnprintf(buf, l, fmt, ap);
+		n = vsnprintf(buf, (size_t)l, fmt, ap);
 
 		if (n <= 0 || l > n) {
 			;

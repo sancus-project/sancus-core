@@ -111,7 +111,7 @@ void sancus_tcp_server_close(struct sancus_tcp_server *self);
  */
 int sancus_tcp_ipv4_listen(struct sancus_tcp_server *self,
 			   const struct sancus_tcp_server_settings *settings,
-			   const char *addr, unsigned port,
+			   const char *addr, uint16_t port,
 			   bool cloexec, unsigned backlog);
 
 /**
@@ -129,7 +129,7 @@ int sancus_tcp_ipv4_listen(struct sancus_tcp_server *self,
  */
 int sancus_tcp_ipv6_listen(struct sancus_tcp_server *self,
 			   const struct sancus_tcp_server_settings *settings,
-			   const char *addr, unsigned port,
+			   const char *addr, uint16_t port,
 			   bool cloexec, unsigned backlog);
 
 /**
