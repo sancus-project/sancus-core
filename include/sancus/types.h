@@ -86,12 +86,24 @@ DECL_SANCUS_STRTO(ulls, strtoull, unsigned long long, 10)
 DECL_SANCUS_STRTO(fs,   strtod,   double)
 DECL_SANCUS_STRTO(ffs,  strtold,  long double)
 
+#define DECL_SANCUS_GELE_STRTO(N,F0,F1,T0,T1) \
+static inline bool sancus_get_##N(const char *s, T0 a, T0 b, T1 *out) \
+{ \
+	T0 v; \
+	bool ret = false; \
+	if (sancus_get_##F0(s, &v)) \
+		ret = sancus_get_##F1(v,a,b,out); \
+	return ret; \
+}
+
 /*
  * value within range as unsigned
  */
 DECL_SANCUS_NUMERIC_GELE_CAST(urll, long long, unsigned)
 DECL_SANCUS_NUMERIC_GELE_CAST(urzu, size_t,    unsigned)
 DECL_SANCUS_NUMERIC_GELE_CAST(urzd, ssize_t,   unsigned)
+
+DECL_SANCUS_GELE_STRTO(urlls, lls, urll, long long, unsigned)
 
 /*
  * value as uintN_t
