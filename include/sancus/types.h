@@ -106,6 +106,17 @@ DECL_SANCUS_NUMERIC_GELE_CAST(urzd, ssize_t,   unsigned)
 DECL_SANCUS_GELE_STRTO(urlls, lls, urll, long long, unsigned)
 
 /*
+ * value within range as int
+ */
+DECL_SANCUS_NUMERIC_GELE_CAST(drl,  long,      int)
+DECL_SANCUS_NUMERIC_GELE_CAST(drll, long long, int)
+DECL_SANCUS_NUMERIC_GELE_CAST(drzu, size_t,    int)
+DECL_SANCUS_NUMERIC_GELE_CAST(drzd, ssize_t,   int)
+
+DECL_SANCUS_GELE_STRTO(drls,  ls, drl, long, int)
+DECL_SANCUS_GELE_STRTO(drlls, lls, drll, long long, int)
+
+/*
  * value as uintN_t
  */
 #define DECL_SANCUS_uint(N,T0,B)  DECL_SANCUS_NUMERIC_GELE_CAST_K(N, T0, uint##B##_t, 0, MASK##B)
