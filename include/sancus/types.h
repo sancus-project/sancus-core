@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 #ifndef BIT
 #define BIT(N) (1UL << N)
@@ -17,11 +18,13 @@
  * safe numeric conversions
  */
 #define DECL_SANCUS_GET_CONVERTED(N,T0,T1,V,TEST,FN,...) \
-static inline T1 sancus_ ##N(T0 V, ##__VA_ARGS__) { \
+static inline T1 sancus_ ##N(T0 V, ##__VA_ARGS__) \
+{ \
 	assert(TEST); \
 	return FN; \
 } \
-static inline bool sancus_get_ ##N(T0 V, ##__VA_ARGS__, T1  *out) { \
+static inline bool sancus_get_ ##N(T0 V, ##__VA_ARGS__, T1  *out) \
+{ \
 	if (TEST) { \
 		if (out != NULL) \
 			*out = FN; \
@@ -55,6 +58,33 @@ static inline bool sancus_get_ ##N(T0 V, ##__VA_ARGS__, T1  *out) { \
 
 #define DECL_SANCUS_NUMERIC_GELE_CAST_K(N,T0,T1,A,B) \
 	DECL_SANCUS_NUMERIC_CMP2_CAST_K(N,T0,T1,>=,A,<=,B)
+
+/* string to numeric */
+#define DECL_SANCUS_STRTO(N,F,T,...) \
+static inline bool sancus_get_##N(const char *s, T *out) \
+{ \
+	T v = 0; \
+	bool ret = false; \
+\
+	if (s != NULL && *s != '\0') { \
+		char *end = NULL; \
+		\
+		v = F(s, &end, ##__VA_ARGS__); \
+		if (end != NULL && *end == '\0') \
+			ret = true; \
+	} \
+\
+	if (out != NULL) \
+		*out = v; \
+	return ret; \
+}
+
+DECL_SANCUS_STRTO(ls,   strtol,   long, 10)
+DECL_SANCUS_STRTO(lls,  strtoll,  long long, 10)
+DECL_SANCUS_STRTO(uls,  strtoul,  unsigned long, 10)
+DECL_SANCUS_STRTO(ulls, strtoull, unsigned long long, 10)
+DECL_SANCUS_STRTO(fs,   strtod,   double)
+DECL_SANCUS_STRTO(ffs,  strtold,  long double)
 
 /*
  * value within range as unsigned
