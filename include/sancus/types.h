@@ -2,6 +2,7 @@
 #define __SANCUS_TYPES_H__
 
 #include <assert.h>
+#include <limits.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -96,6 +97,19 @@ static inline bool sancus_get_##N(const char *s, T0 a, T0 b, T1 *out) \
 	return ret; \
 }
 
+#define DECL_SANCUS_GELE_STRTO_K(N,F0,F1,T0,T1,A,B) \
+static inline bool sancus_get_##N(const char *s, T1 *out) \
+{ \
+	T0 v; \
+	bool ret = false; \
+	if (sancus_get_##F0(s, &v) && v >= A && v <= B) { \
+		if (out != NULL) \
+			*out = (T1)v; \
+		ret = true; \
+	} \
+	return ret; \
+}
+
 /*
  * value within range as unsigned
  */
@@ -115,6 +129,8 @@ DECL_SANCUS_NUMERIC_GELE_CAST(drzd, ssize_t,   int)
 
 DECL_SANCUS_GELE_STRTO(drls,  ls, drl, long, int)
 DECL_SANCUS_GELE_STRTO(drlls, lls, drll, long long, int)
+
+DECL_SANCUS_GELE_STRTO_K(ds, ls, drl, long, int, INT_MIN, INT_MAX)
 
 /*
  * value within range as double
