@@ -43,15 +43,6 @@ static inline int sancus_buffer_init(struct sancus_buffer *b,
 /*
  * strip
  */
-static inline void sancus_buffer_truncate(struct sancus_buffer *b, size_t n)
-{
-	if (n < b->len) {
-		b->len -= n;
-	} else {
-		b->base = b->len = 0;
-	}
-}
-
 ssize_t sancus_buffer__stripchar(struct sancus_buffer *, bool, const char *, ssize_t);
 
 ssize_t sancus_buffer_strip(struct sancus_buffer *, const char *s, ssize_t);
@@ -65,6 +56,7 @@ static inline ssize_t sancus_buffer_stripz(struct sancus_buffer *b, const char *
 	return 0;
 }
 
+ssize_t sancus_buffer_truncate(struct sancus_buffer *, size_t);
 ssize_t sancus_buffer_stripn(struct sancus_buffer *, size_t);
 
 #define sancus_buffer_striponce(B, S) sancus_buffer__stripchar((B), false, (S), -1)

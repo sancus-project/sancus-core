@@ -80,19 +80,27 @@ ssize_t sancus_buffer_strip(struct sancus_buffer *b, const char *s, ssize_t l)
 	return 0;
 }
 
+ssize_t sancus_buffer_truncate(struct sancus_buffer *b, size_t n)
+{
+	if (n < b->len)
+		b->len = n;
+
+	if (b->len == 0)
+		b->base = 0;
+
+	b->buf[b->base + b->len] = '\0';
+	return (ssize_t)b->len;
+}
+
 ssize_t sancus_buffer_stripn(struct sancus_buffer *b, size_t n)
 {
-	size_t l = sancus_buffer_len(b);
-
-	if (n < l) {
-		l -= n;
-		b->buf[l - 1] = '\0';
-	} else {
+	if (n < b->len)
+		b->len -= n;
+	else
 		b->base = b->len = 0;
-		b->buf[0] = '\0';
-	}
 
-	return (ssize_t)l;
+	b->buf[b->base + b->len] = '\0';
+	return (ssize_t)b->len;
 }
 
 /*
