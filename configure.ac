@@ -59,6 +59,8 @@ else
 		      [is_debug=no])
 	AC_MSG_RESULT([$is_debug])
 
+	dnl -g -O0
+	dnl
 	if test "x$is_debug" = "xyes"; then
 		dnl Remove all optimization flags from CFLAGS
 		changequote({,})
@@ -71,6 +73,18 @@ else
 
 		CFLAGS="$CFLAGS -g -O0"
 		CXXFLAGS="$CXXFLAGS -g -O0"
+	fi
+
+	AC_MSG_CHECKING([whether to allow assert to abort])
+	AC_ARG_ENABLE([assert],
+		      [AS_HELP_STRING([--disable-assert], [disable abort and trap calls])],
+		      [can_assert="$enableval"],
+		      [can_assert=yes])
+	AC_MSG_RESULT([$can_assert])
+
+	dnl -DNDEBUG
+	if test "x$can_assert" = "xno"; then
+		CPPFLAGS="$CPPFLAGS -DNDEBUG"
 	fi
 fi
 
