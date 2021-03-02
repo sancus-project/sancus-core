@@ -73,7 +73,7 @@ static inline ssize_t sancus_buffer_sparse(struct sancus_buffer *b, size_t n)
 	if (sancus_buffer_tail_size(b) < n)
 		return -EINVAL;
 
-	b->len += n;
+	b->len += (uint_fast16_t)n;
 	return (ssize_t)n;
 }
 

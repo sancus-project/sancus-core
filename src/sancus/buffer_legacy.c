@@ -42,7 +42,7 @@ void sancus_buffer_bind(struct sancus_buffer *self, char *buf, size_t size)
 
 	*self = (struct sancus_buffer) {
 		.buf = buf,
-		.size = size,
+		.size = (unsigned)size,
 	};
 }
 
@@ -74,8 +74,10 @@ size_t sancus_buffer_skip(struct sancus_buffer *self, size_t step)
 		sancus_buffer_reset(self);
 		return self->size;
 	} else if (step > 0) {
-		self->base += step;
-		self->len -= step;
+		uint_fast16_t n = (uint_fast16_t)step;
+
+		self->base += n;
+		self->len -= n;
 	}
 
 	/* if there is less than 10% available, try to rebase */

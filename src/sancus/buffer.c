@@ -47,7 +47,7 @@ match:
 	}
 
 	if (count)
-		b->len -= count;
+		b->len -= (uint_fast16_t)count;
 
 	return (ssize_t)count;
 }
@@ -71,7 +71,7 @@ ssize_t sancus_buffer_strip(struct sancus_buffer *b, const char *s, ssize_t l)
 
 		if (memcmp(p, s, lu) == 0) {
 			/* match, remove */
-			b->len -= lu;
+			b->len -= (uint_fast16_t)lu;
 			*p = '\0';
 			return l;
 		}
@@ -83,7 +83,7 @@ ssize_t sancus_buffer_strip(struct sancus_buffer *b, const char *s, ssize_t l)
 ssize_t sancus_buffer_truncate(struct sancus_buffer *b, size_t n)
 {
 	if (n < b->len)
-		b->len = n;
+		b->len = (uint_fast16_t)n;
 
 	if (b->len == 0)
 		b->base = 0;
@@ -95,7 +95,7 @@ ssize_t sancus_buffer_truncate(struct sancus_buffer *b, size_t n)
 ssize_t sancus_buffer_stripn(struct sancus_buffer *b, size_t n)
 {
 	if (n < b->len)
-		b->len -= n;
+		b->len -= (uint_fast16_t)n;
 	else
 		b->base = b->len = 0;
 
@@ -132,7 +132,7 @@ ssize_t sancus_buffer__append(struct sancus_buffer *b, bool truncate,
 
 	if (l > 0) {
 		memcpy(buf, s, (size_t)l);
-		b->len += (size_t)l;
+		b->len += (uint_fast16_t)l;
 	}
 
 	return l;
@@ -160,7 +160,7 @@ ssize_t sancus_buffer__appendv(struct sancus_buffer *b, bool truncate,
 	}
 
 	if (n > 0)
-		b->len += (size_t)n;
+		b->len += (uint_fast16_t)n;
 	return n;
 }
 
