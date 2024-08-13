@@ -394,7 +394,7 @@ escape2:
 			count += 2;
 			if (buf) {
 				char out[] = { '\\', (char)c };
-				rc =sancus_buffer_append(buf, out, 2);
+				rc = sancus_buffer_append(buf, out, 2);
 			}
 		} else { /* not printable, hexa encoded */
 			count += 4;
@@ -405,7 +405,7 @@ escape2:
 					hexa[(c & (0x0f << 4)) >> 4],
 					hexa[c & 0x0f]};
 
-				rc =sancus_buffer_append(buf, out, 2);
+				rc = sancus_buffer_append(buf, out, 4);
 			}
 		}
 
