@@ -55,7 +55,13 @@ int sancus_serial_apply(struct sancus_serial *, struct termios *);
 
 static inline void sancus_serial_setup_raw(struct termios *tio)
 {
-	cfmakeraw(tio);
+	/* Implement cfmakeraw() inline to avoid BSD extension dependency */
+	tio->c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP
+	                  | INLCR | IGNCR | ICRNL | IXON);
+	tio->c_oflag &= ~OPOST;
+	tio->c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG | IEXTEN);
+	tio->c_cflag &= ~(CSIZE | PARENB);
+	tio->c_cflag |= CS8;
 }
 
 static inline void sancus_serial_setup_8N1(struct termios *tio,
